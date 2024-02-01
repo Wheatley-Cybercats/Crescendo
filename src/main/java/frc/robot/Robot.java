@@ -1,13 +1,14 @@
-// Copyright (c) FIRST and other WPILib contributors.
+package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
 
 // Java Imports
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 // FRC Imports
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Team 3171 Imports
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Commands.*;
+import frc.robot.Subsystems.Flywheel;
+import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.LimeLight;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.sensors.Pigeon2Wrapper;
@@ -34,11 +40,12 @@ public class Robot extends TimedRobot implements RobotProperties {
 
   // Controllers
   private XboxController driveController;
+  private Joystick operatorController;
 
   // Drive Objects
-  private SwerveDrive swerveDrive;
-  private Pigeon2Wrapper gyro;
-  private ThreadedPIDController gyroPIDController;
+  public static SwerveDrive swerveDrive;
+  public static Pigeon2Wrapper gyro;
+  public static ThreadedPIDController gyroPIDController;
 
   // Auton Recorder
   private AutonRecorder autonRecorder;
@@ -48,12 +55,12 @@ public class Robot extends TimedRobot implements RobotProperties {
   private boolean saveNewAuton;
 
   // Selected Auton String
-  private boolean selectedAutonType;
+  private String selectedAutonType;
   private String selectedAutonMode;
 
   // Shuffleboard Choosers
-  private SendableChooser<Boolean> autonTypeChooser, fieldOrientationChooser;
-  private SendableChooser<String> autonModeChooser;
+  private SendableChooser<Boolean> fieldOrientationChooser;
+  private SendableChooser<String> autonModeChooser, autonTypeChooser, PPPath;
 
   // Global Variables
   private boolean fieldOrientationChosen;
@@ -61,14 +68,33 @@ public class Robot extends TimedRobot implements RobotProperties {
   // Edge Triggers
   private boolean zeroEdgeTrigger;
 
-  private LimeLight ll = new LimeLight();
+  public static final Flywheel flywheel = new Flywheel();
+  public static final Indexer indexer = new Indexer();
+  public static final LimeLight limelight = new LimeLight();
+
+  /** Shooter Commands **/
+  private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
+  private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand(flywheel, indexer);
+  private final ShootAmpCommand SAC = new ShootAmpCommand(flywheel, indexer);
+  private final ShootTrapCommand STC = new ShootTrapCommand(flywheel, indexer);
+  //private final AlignWithSpeakerCommand AWS = new AlignWithSpeakerCommand(limelight);
+
+
+  /** Button Numbers **/
+  int A = 1;
+  int B = 2;
+  int X = 3;
+  int Y = 4;
+  int leftTrig = 5;
+  int rightTrig = 6;
 
   @Override
   public void robotInit() {
     // Controllers Init
     driveController = new XboxController(0);
+    operatorController = new Joystick(1);
 
-    // Drive Controller Init
+    // Swerve Drivetrain Init
     swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
 
     // Sensors
@@ -86,11 +112,15 @@ public class Robot extends TimedRobot implements RobotProperties {
     saveNewAuton = false;
 
     // Auton Type init
-    selectedAutonType = false;
-    autonTypeChooser = new SendableChooser<>();
-    autonTypeChooser.setDefaultOption("Playback Auton", false);
-    autonTypeChooser.addOption("Record Auton", true);
-    SmartDashboard.putData("Auton Type", autonTypeChooser);
+    selectedAutonType = "Playback";
+    autonTypeChooser= new SendableChooser<>();
+    autonTypeChooser.setDefaultOption("Playback Auto", "Playback");
+    autonTypeChooser.addOption("Record Auto", "Record");
+    autonTypeChooser.addOption("PathPlanner", "PathPlanner");
+    SmartDashboard.putData("Auto Type: Recorded/PathPlanner", autonTypeChooser);
+
+    //PathPlanner Auto Chooser
+    PPPath = new SendableChooser<>();
 
     // Field Orientation Chooser
     fieldOrientationChooser = new SendableChooser<>();
@@ -100,24 +130,37 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putData("Field Orientation Chooser", fieldOrientationChooser);
     SmartDashboard.putBoolean("Flipped", false);
 
-    // Auton Modes init
+    // Auton Routine init
     selectedAutonMode = DEFAULT_AUTON;
     autonModeChooser = new SendableChooser<>();
     autonModeChooser.setDefaultOption(DEFAULT_AUTON, DEFAULT_AUTON);
     for (final String autonMode : AUTON_OPTIONS) {
       autonModeChooser.addOption(autonMode, autonMode);
     }
-    SmartDashboard.putData("Auto Modes", autonModeChooser);
+    SmartDashboard.putData("Auto Routines", autonModeChooser);
 
     // Global Variable Init
     fieldOrientationChosen = false;
 
     // Edge Trigger Init
     zeroEdgeTrigger = false;
+
+    JoystickButton shootSpeaker = new JoystickButton(operatorController, B);
+    shootSpeaker.whileTrue(SSC);
+    JoystickButton intakeFromShooter = new JoystickButton(operatorController, X);
+    intakeFromShooter.whileTrue(IFS);
+    JoystickButton shootAmp = new JoystickButton(operatorController, A);
+    shootAmp.whileTrue(SAC);
+    JoystickButton shootTrap = new JoystickButton(operatorController, Y);
+    shootTrap.whileTrue(STC);
+    //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
+    //alignSpeaker.whileTrue(AWS);
   }
 
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+
     // Gyro Value
     final double gyroValue = gyroPIDController.getSensorValue();
 
@@ -183,6 +226,10 @@ public class Robot extends TimedRobot implements RobotProperties {
     }
 
     zeroEdgeTrigger = zeroTrigger;
+
+
+    SmartDashboard.putNumber("Top Flywheel Speed", flywheel.getTopRPM());
+    SmartDashboard.putNumber("Bottom Flywheel Speed", flywheel.getBotRPM());
   }
 
   @Override
@@ -190,9 +237,10 @@ public class Robot extends TimedRobot implements RobotProperties {
     // Update Auton Selected Mode and load the auton
     selectedAutonType = autonTypeChooser.getSelected();
     selectedAutonMode = autonModeChooser.getSelected();
-    if (selectedAutonType) {
+    if (selectedAutonType.equals("Record")) {
       playbackData = null;
-    } else {
+    }
+    else if (selectedAutonType.equals("Playback")) {
       switch (selectedAutonMode) {
         case DEFAULT_AUTON:
           disabledInit();
@@ -204,6 +252,11 @@ public class Robot extends TimedRobot implements RobotProperties {
           robotControlsInit();
           break;
       }
+    }
+    else { //pathplanner
+      SmartDashboard.putData("PathPlanner Auto", PPPath);
+      //TODO: Do pathplanner things
+
     }
     // Update the autonStartTime
     autonStartTime = Timer.getFPGATimestamp();
@@ -243,7 +296,7 @@ public class Robot extends TimedRobot implements RobotProperties {
     selectedAutonType = autonTypeChooser.getSelected();
     selectedAutonMode = autonModeChooser.getSelected();
     autonRecorder.clear();
-    saveNewAuton = selectedAutonType;
+    saveNewAuton = selectedAutonType.equals("Record");
 
     // Reset the robot controls
     robotControlsInit();
@@ -274,6 +327,8 @@ public class Robot extends TimedRobot implements RobotProperties {
           break;
       }
     }
+
+
   }
 
   @Override
@@ -328,7 +383,6 @@ public class Robot extends TimedRobot implements RobotProperties {
     final double rightStickX = HelperFunctions.Deadzone_With_Map(JOYSTICK_DEADZONE, driveControllerState.getRightX(), -MAX_ROTATION_SPEED, MAX_ROTATION_SPEED);
 
     // Calculate the left stick angle and magnitude
-    // Calculate the left stick angle and magnitude
     final double leftStickAngle = Normalize_Gryo_Value(Math.toDegrees(Math.atan2(leftStickX, leftStickY)));
     double leftStickMagnitude;
     leftStickMagnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2));
@@ -363,7 +417,15 @@ public class Robot extends TimedRobot implements RobotProperties {
       }
       swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ? gyroPIDController.getPIDValue() : 0, boostMode);
     }
-
+    // Operator Controls
+    if (operatorControllerState.getBButton()) {
+      SSC.schedule();
+    }
+    /*
+    else if (operatorControllerState.getAButton()){
+      IFS.execute();
+    }
+ */
   }
 
 }

@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 // FRC Imports
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Team 3171 Imports
@@ -63,6 +64,7 @@ public class SwerveDrive implements RobotProperties {
 
         // Load the save slew calibrations
         loadSlewCalibration();
+
     }
 
     public void driveInit() {
@@ -77,6 +79,11 @@ public class SwerveDrive implements RobotProperties {
     }
 
     public void drive(final double driveAngle, final double driveMagnitude, final double rotationalMagnitude, final boolean boostMode) {
+
+        SmartDashboard.putNumber("driveAngle", driveAngle);
+        SmartDashboard.putNumber("driveMagnitude", driveMagnitude);
+        SmartDashboard.putNumber("rotationalMagitude", rotationalMagnitude);
+
         double leftFrontMagnitude, leftRearMagnitude, rightFrontMagnitude, rightRearMagnitude;
         if (driveMagnitude != 0 || rotationalMagnitude != 0) {
             // Create the initial vector

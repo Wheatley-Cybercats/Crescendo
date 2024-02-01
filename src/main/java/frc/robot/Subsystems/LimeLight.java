@@ -3,15 +3,29 @@ package frc.robot.Subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimeLight {
 
     private NetworkTable tableEntry;
+    private NetworkTable table;
+    private NetworkTableEntry tx;
+    private NetworkTableEntry ty;
+    private NetworkTableEntry ta;
+    private NetworkTableEntry tv;
+    private double[] botpose;
 
     public LimeLight(){
         tableEntry = NetworkTableInstance.getDefault().getTable("limelight");
+//        this.tx = table.getEntry("tx");
+//        this.ty = table.getEntry("ty");
+//        this.ta = table.getEntry("ta");
+//        this.tv = table.getEntry("tv");
+//        this.botpose = getBOTPOSE();
     }
-
+   /* public double[] readValues(){
+        return new double[]{getTX(), getTY(), getTA(), getTV()};
+    }*/
     public double getTV(){
         return tableEntry.getEntry("tv").getDouble(0);
     }
