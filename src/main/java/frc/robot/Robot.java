@@ -19,9 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.*;
-import frc.robot.Subsystems.Flywheel;
-import frc.robot.Subsystems.Indexer;
-import frc.robot.Subsystems.LimeLight;
+import frc.robot.Subsystems.*;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.sensors.Pigeon2Wrapper;
 import frc.team2872.sensors.ThreadedPIDController;
@@ -40,7 +38,8 @@ public class Robot extends TimedRobot implements RobotProperties {
 
   // Controllers
   private XboxController driveController;
-  private Joystick operatorController;
+  private XboxController operatorController;
+  private Joystick operatorJOYSTICKController;
 
   // Drive Objects
   public static SwerveDrive swerveDrive;
@@ -70,6 +69,8 @@ public class Robot extends TimedRobot implements RobotProperties {
 
   public static final Flywheel flywheel = new Flywheel();
   public static final Indexer indexer = new Indexer();
+  public static final Intake intake = new Intake();
+  public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
 
   /** Shooter Commands **/
@@ -77,6 +78,10 @@ public class Robot extends TimedRobot implements RobotProperties {
   private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand(flywheel, indexer);
   private final ShootAmpCommand SAC = new ShootAmpCommand(flywheel, indexer);
   private final ShootTrapCommand STC = new ShootTrapCommand(flywheel, indexer);
+  private final IntakeCommand IC = new IntakeCommand(intake, indexer);
+  //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
+
+
   //private final AlignWithSpeakerCommand AWS = new AlignWithSpeakerCommand(limelight);
 
 
@@ -92,7 +97,8 @@ public class Robot extends TimedRobot implements RobotProperties {
   public void robotInit() {
     // Controllers Init
     driveController = new XboxController(0);
-    operatorController = new Joystick(1);
+    operatorController = new XboxController(1);
+    operatorJOYSTICKController = new Joystick(1); //TODO: both Operator Controllers are from port 1
 
     // Swerve Drivetrain Init
     swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
@@ -145,14 +151,18 @@ public class Robot extends TimedRobot implements RobotProperties {
     // Edge Trigger Init
     zeroEdgeTrigger = false;
 
-    JoystickButton shootSpeaker = new JoystickButton(operatorController, B);
+    JoystickButton shootSpeaker = new JoystickButton(operatorJOYSTICKController, B);
     shootSpeaker.whileTrue(SSC);
-    JoystickButton intakeFromShooter = new JoystickButton(operatorController, X);
+    JoystickButton intakeFromShooter = new JoystickButton(operatorJOYSTICKController, X);
     intakeFromShooter.whileTrue(IFS);
-    JoystickButton shootAmp = new JoystickButton(operatorController, A);
+    JoystickButton shootAmp = new JoystickButton(operatorJOYSTICKController, A);
     shootAmp.whileTrue(SAC);
-    JoystickButton shootTrap = new JoystickButton(operatorController, Y);
+    JoystickButton shootTrap = new JoystickButton(operatorJOYSTICKController, Y);
     shootTrap.whileTrue(STC);
+    JoystickButton intake = new JoystickButton(operatorJOYSTICKController, leftTrig);
+    intake.whileTrue(IC);
+    //JoystickButton autoaim = new JoystickButton(operatorJOYSTICKController, rightTrig);
+    //autoaim.whileTrue(AAC);
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
     //alignSpeaker.whileTrue(AWS);
   }
@@ -309,7 +319,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public void teleopPeriodic() {
     // Get the controller states
     final XboxControllerState driveControllerState = new XboxControllerState(driveController);
-    final XboxControllerState operatorControllerState = new XboxControllerState();
+    final XboxControllerState operatorControllerState = new XboxControllerState(operatorController);
 
     // Robot drive controls
     robotControlsPeriodic(driveControllerState, operatorControllerState);

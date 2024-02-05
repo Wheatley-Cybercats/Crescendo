@@ -23,8 +23,8 @@ public class ShootSpeakerCommand extends Command {
 
     @Override
     public void execute() {
-        flywheel.setTopFlywheelMotorVolt(7);
-        flywheel.setBotFlywheelMotorVolt(-7);
+        flywheel.setTopFlywheelMotorVolt(8);
+        flywheel.setBotFlywheelMotorVolt(-8);
         if(flywheel.topflywheelAtSpeed() && flywheel.botflywheelAtSpeed()){
             indexer.setSpeed(RobotProperties.IndexerProperties.shootingSpeed);
         }

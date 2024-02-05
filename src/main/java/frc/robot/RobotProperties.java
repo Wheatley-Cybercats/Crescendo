@@ -1,9 +1,6 @@
 package frc.robot;
 
 // Team 3171 Imports
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import frc.team2872.drive.SwerveUnitConfig;
 import frc.team2872.drive.SwerveUnitConfig.ENCODER_TYPE;
 import frc.team2872.drive.SwerveUnitConfig.MOTOR_TYPE;
@@ -68,7 +65,7 @@ public interface RobotProperties {
         public static final class IndexerProperties {
                 public static final int INDEXER_MOTOR_ID = 9;
                 public static final double shootingSpeed = -.17;
-                public static final double intakingSpeed = .09;
+                public static final double indexerIntakingSpeed = .1;
         }
 
         /** Lead Screw Constants **/
@@ -76,7 +73,9 @@ public interface RobotProperties {
 
         /** Intake Constants **/
         public static final class IntakeProperties {
-                public static final int INTAKE_MOTOR_ID = 5;
+                public static final int INTAKE_MOTOR1_ID = 5;
+                public static final int INTAKE_MOTOR2_ID = 6;
+                public static final double intakeIntakingSpeed = .4;
         }
         /** AprilTag/Limelight constants **/
         public static final double angleOfLL = 30;

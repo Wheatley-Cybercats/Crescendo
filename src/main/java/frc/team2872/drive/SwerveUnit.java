@@ -1,32 +1,27 @@
 package frc.team2872.drive;
 
 // Java Imports
-import java.util.function.DoubleSupplier;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-// FRC Imports
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-
-// CTRE Imports
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-
-// REV Imports
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-// Team 3171 Imports
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.RobotProperties;
 import frc.team2872.HelperFunctions;
 import frc.team2872.drive.SwerveUnitConfig.ENCODER_TYPE;
 import frc.team2872.drive.SwerveUnitConfig.MOTOR_TYPE;
 import frc.team2872.sensors.ThreadedPIDController;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.DoubleSupplier;
+
 import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
 
 /**

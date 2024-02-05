@@ -1,18 +1,17 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.RobotProperties;
 import frc.robot.Subsystems.Flywheel;
 import frc.robot.Subsystems.Indexer;
 
 
 public class ShootTrapCommand extends Command {
-    private final Flywheel flywheel;
-    private final Indexer indexer;
+    private final Flywheel flywheel = Robot.flywheel;
+    private final Indexer indexer = Robot.indexer;
 
     public ShootTrapCommand(Flywheel flywheel, Indexer indexer) {
-        this.flywheel = flywheel;
-        this.indexer = indexer;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.flywheel, this.indexer);

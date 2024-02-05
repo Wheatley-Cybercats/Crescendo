@@ -61,11 +61,11 @@ public class Flywheel extends SubsystemBase {
     }
     public boolean topflywheelAtSpeed(){
         //return (topFlywheelPIDController.atSetpoint());
-        return topFlywheelMotor.getEncoder().getVelocity() > 3500;
+        return topFlywheelMotor.getEncoder().getVelocity() > 4300;
     }
     public boolean botflywheelAtSpeed(){
         //return(botFlywheelPIDController.atSetpoint());
-        return botFlywheelMotor.getEncoder().getVelocity() < -3500;
+        return botFlywheelMotor.getEncoder().getVelocity() < -4300;
     }
     public boolean topflywheelAtAmpSpeed(){
         //return (topFlywheelPIDController.atSetpoint());

@@ -3,42 +3,42 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Subsystems.Flywheel;
 import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.Intake;
 
 
-public class IntakeFromShooterCommand extends Command {
-    private final Flywheel flywheel = Robot.flywheel;
+public class IntakeCommand extends Command {
+    private final Intake intake = Robot.intake;
     private final Indexer indexer = Robot.indexer;
 
-    public IntakeFromShooterCommand(Flywheel flywheel, Indexer indexer) {
+    public IntakeCommand(Intake intake, Indexer indexer) {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.flywheel, this.indexer);
+        addRequirements(this.intake, this.indexer);
     }
 
     @Override
     public void initialize() {
-        flywheel.resetPID();
 
     }
 
     @Override
     public void execute() {
-        flywheel.setTopFlywheelMotorVolt(.3);
-        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed);
+        intake.setSpeed(RobotProperties.IntakeProperties.intakeIntakingSpeed);
+        indexer.setSpeed(-RobotProperties.IndexerProperties.indexerIntakingSpeed);
     }
 
     @Override
     public boolean isFinished() {
-        // TODO: Make this return true when this Command no longer needs to run execute()
+
+        //TODO: when beam break detects note, this will return true, which will call end()
+
         return false;
     }
 
     @Override
     public void end(boolean interrupted) {
-        flywheel.stop();
         indexer.stop();
-        flywheel.resetPID();
+        intake.stop();
     }
 }

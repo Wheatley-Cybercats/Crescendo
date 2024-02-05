@@ -1,27 +1,16 @@
 package frc.team2872.drive;
 
 // Java Imports
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotProperties;
+import frc.team2872.sensors.UDPClient;
+
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
-// FRC Imports
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-// Team 3171 Imports
-import frc.robot.RobotProperties;
-import frc.team2872.sensors.UDPClient;
-import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
-import static frc.team2872.HelperFunctions.Add_Two_Vectors;
-import static frc.team2872.HelperFunctions.Return_Vector_With_Largest_Magnitude;
-import static frc.team2872.HelperFunctions.Map;
-import static frc.team2872.HelperFunctions.Get_Gyro_Displacement;
+import static frc.team2872.HelperFunctions.*;
 
 /**
  * @author Mark Ebert
