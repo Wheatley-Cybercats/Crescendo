@@ -14,15 +14,15 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
        intakeMotor1.setIdleMode(CANSparkFlex.IdleMode.kBrake);
-       //intakeMotor2.setIdleMode(CANSparkFlex.IdleMode.kBrake);
+       intakeMotor2.setIdleMode(CANSparkFlex.IdleMode.kBrake);
     }
 
     public void setSpeed(double speed){
         intakeMotor1.set(speed);
-       // intakeMotor2.set(speed);
+        intakeMotor2.set(speed);
     }
     public void stop(){
         intakeMotor1.set(0);
-        intakeMotor1.set(0);
+        intakeMotor2.set(0);
     }
 }
