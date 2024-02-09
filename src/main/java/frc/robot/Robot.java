@@ -39,7 +39,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   // Controllers
   private XboxController driveController;
   private XboxController operatorController;
-  private Joystick operatorJOYSTICKController;
+ //private Joystick operatorJOYSTICKController;
 
   // Drive Objects
   public static SwerveDrive swerveDrive;
@@ -98,7 +98,7 @@ public class Robot extends TimedRobot implements RobotProperties {
     // Controllers Init
     driveController = new XboxController(0);
     operatorController = new XboxController(1);
-    operatorJOYSTICKController = new Joystick(1); //TODO: both Operator Controllers are from port 1
+    //operatorJOYSTICKController = new Joystick(1); //TODO: both Operator Controllers are from port 1
 
     // Swerve Drivetrain Init
     swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
@@ -151,17 +151,17 @@ public class Robot extends TimedRobot implements RobotProperties {
     // Edge Trigger Init
     zeroEdgeTrigger = false;
 
-    JoystickButton shootSpeaker = new JoystickButton(operatorJOYSTICKController, B);
+    JoystickButton shootSpeaker = new JoystickButton(operatorController, B);
     shootSpeaker.whileTrue(SSC);
-    JoystickButton intakeFromShooter = new JoystickButton(operatorJOYSTICKController, X);
+    JoystickButton intakeFromShooter = new JoystickButton(operatorController, X);
     intakeFromShooter.whileTrue(IFS);
-    JoystickButton shootAmp = new JoystickButton(operatorJOYSTICKController, A);
+    JoystickButton shootAmp = new JoystickButton(operatorController, A);
     shootAmp.whileTrue(SAC);
-    JoystickButton shootTrap = new JoystickButton(operatorJOYSTICKController, Y);
+    JoystickButton shootTrap = new JoystickButton(operatorController, Y);
     shootTrap.whileTrue(STC);
-    JoystickButton intake = new JoystickButton(operatorJOYSTICKController, leftTrig);
+    JoystickButton intake = new JoystickButton(operatorController, leftTrig);
     intake.whileTrue(IC);
-    //JoystickButton autoaim = new JoystickButton(operatorJOYSTICKController, rightTrig);
+    //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
     //alignSpeaker.whileTrue(AWS);
@@ -240,6 +240,9 @@ public class Robot extends TimedRobot implements RobotProperties {
 
     SmartDashboard.putNumber("Top Flywheel Speed", flywheel.getTopRPM());
     SmartDashboard.putNumber("Bottom Flywheel Speed", flywheel.getBotRPM());
+    SmartDashboard.putNumber("Top Flywheel Absolute", flywheel.getTopAFlywheel());
+
+    SmartDashboard.putNumberArray("Botpose LL", limelight.getBOTPOSE());
   }
 
   @Override
@@ -404,16 +407,18 @@ public class Robot extends TimedRobot implements RobotProperties {
     final double fieldCorrectedAngle = FIELD_ORIENTED_SWERVE ? Normalize_Gryo_Value(leftStickAngle - gyroValue) : leftStickAngle;
 
     // Drive Controls
-    final boolean boostMode = driveControllerState.getLeftBumper() || driveControllerState.getRightBumper();
-    if (rightStickX != 0) {
+    final boolean precisionMode = driveControllerState.getLeftBumper() || driveControllerState.getRightBumper();
+    SmartDashboard.putBoolean("precisionMode", precisionMode);
+    if (rightStickX >= 0.06 || rightStickX <= -0.06) {
       // Manual turning
       gyroPIDController.disablePID();
-      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, rightStickX, boostMode);
+      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, rightStickX, precisionMode);
     } else {
       // Normal gyro locking
       gyroPIDController.enablePID();
 
       // Quick Turning
+      SmartDashboard.putBoolean("POV pressed", driveControllerState.getPOV() != -1);
       if (driveControllerState.getPOV() != -1) {
         gyroPIDController.updateSensorLockValueWithoutReset(Normalize_Gryo_Value(driveControllerState.getPOV()));
       } else if (driveControllerState.getYButton()) {
@@ -425,17 +430,19 @@ public class Robot extends TimedRobot implements RobotProperties {
       } else if (driveControllerState.getXButton()) {
         gyroPIDController.updateSensorLockValueWithoutReset(-90);
       }
-      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ? gyroPIDController.getPIDValue() : 0, boostMode);
+      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ? gyroPIDController.getPIDValue() : 0, precisionMode);
     }
     // Operator Controls
     if (operatorControllerState.getBButton()) {
       SSC.schedule();
+    }else{
+      CommandScheduler.getInstance().cancel(SSC);
     }
-    /*
-    else if (operatorControllerState.getAButton()){
-      IFS.execute();
+    if (operatorControllerState.getLeftBumper()) {
+      IC.schedule();
+    }else{
+      CommandScheduler.getInstance().cancel(IC);
     }
- */
   }
 
 }

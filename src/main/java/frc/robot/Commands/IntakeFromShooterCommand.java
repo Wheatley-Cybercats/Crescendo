@@ -26,7 +26,7 @@ public class IntakeFromShooterCommand extends Command {
     @Override
     public void execute() {
         flywheel.setTopFlywheelMotorVolt(.3);
-        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed);
+        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed*1.2);
     }
 
     @Override

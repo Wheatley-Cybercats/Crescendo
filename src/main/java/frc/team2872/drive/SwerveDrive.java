@@ -67,7 +67,7 @@ public class SwerveDrive implements RobotProperties {
         rightRearUnit.enable();
     }
 
-    public void drive(final double driveAngle, final double driveMagnitude, final double rotationalMagnitude, final boolean boostMode) {
+    public void drive(final double driveAngle, final double driveMagnitude, final double rotationalMagnitude, final boolean precisionMode) {
 
         SmartDashboard.putNumber("driveAngle", driveAngle);
         SmartDashboard.putNumber("driveMagnitude", driveMagnitude);
@@ -83,7 +83,6 @@ public class SwerveDrive implements RobotProperties {
             final double[] leftRearResultantVector = Add_Two_Vectors(driveVector, new double[] { -45, rotationalMagnitude });//-45 || -135
             final double[] rightFrontResultantVector = Add_Two_Vectors(driveVector, new double[] { 135, rotationalMagnitude });//135 || 45
             final double[] rightRearResultantVector = Add_Two_Vectors(driveVector, new double[] { -135, rotationalMagnitude });//-135 || 135
-            //2872 NOTE: CHANGED THE ANGLE SO THAT THE WHEELS PHYSICALLY POINTS IN THE RIGHT DIRECTION FOR ROTATING
 
             // Update the angles
             leftFrontAngle = leftFrontResultantVector[0];
@@ -96,10 +95,10 @@ public class SwerveDrive implements RobotProperties {
                     rightRearResultantVector);
 
             // Update the magnitudes, if the largest vector exceeds 1.0 then scale all others relative to it
-            leftFrontMagnitude = Map(leftFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, boostMode ? 1 : MAX_DRIVE_SPEED);
-            leftRearMagnitude = Map(leftRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, boostMode ? 1 : MAX_DRIVE_SPEED);
-            rightFrontMagnitude = Map(rightFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, boostMode ? 1 : MAX_DRIVE_SPEED);
-            rightRearMagnitude = Map(rightRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, boostMode ? 1 : MAX_DRIVE_SPEED);
+            leftFrontMagnitude = Map(leftFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
+            leftRearMagnitude = Map(leftRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
+            rightFrontMagnitude = Map(rightFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
+            rightRearMagnitude = Map(rightRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode  ?  0.2 : MAX_DRIVE_SPEED);
         } else {
             // Keep the current wheel angles but update the magnitudes
             leftFrontMagnitude = 0;

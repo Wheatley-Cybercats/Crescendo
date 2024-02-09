@@ -1,8 +1,6 @@
 package frc.robot.Subsystems;
 
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.*;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -16,6 +14,8 @@ public class Flywheel extends SubsystemBase {
 
     private RelativeEncoder topFlywheelEncoder;
     private RelativeEncoder botFlywheelEncoder;
+    private AbsoluteEncoder topFlywheelAEnconder;
+    private AbsoluteEncoder botFlywheelAEncoder;
     private final BangBangController topFlywheelBangBangController = new BangBangController();
     private final BangBangController botFlywheelBangBangController = new BangBangController();
     private final PIDController topFlywheelPIDController = new PIDController(RobotProperties.FlywheelProperties.topFlywheelKp,RobotProperties.FlywheelProperties.topFlywheelKi,RobotProperties.FlywheelProperties.topFlywheelKd);
@@ -26,8 +26,10 @@ public class Flywheel extends SubsystemBase {
     public Flywheel() {
         topFlywheelMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
         topFlywheelEncoder = topFlywheelMotor.getEncoder();
+        topFlywheelAEnconder = topFlywheelMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
         topFlywheelEncoder.setPosition(0);
         botFlywheelMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
+        botFlywheelAEncoder = botFlywheelMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
         botFlywheelEncoder = botFlywheelMotor.getEncoder();
         botFlywheelEncoder.setPosition(0);
 
@@ -52,6 +54,10 @@ public class Flywheel extends SubsystemBase {
     }
     public double getBotRPM(){
         return botFlywheelMotor.getEncoder().getVelocity();
+    }
+
+    public double getTopAFlywheel(){
+        return topFlywheelAEnconder.getPosition();
     }
     public void setTopMotor(double speed){
         topFlywheelMotor.set(speed);

@@ -9,8 +9,8 @@ import frc.robot.RobotProperties;
 
 public class Intake extends SubsystemBase {
 
-    CANSparkMax intakeMotor1 = new CANSparkMax(RobotProperties.IntakeProperties.INTAKE_MOTOR1_ID, CANSparkLowLevel.MotorType.kBrushless);
-    CANSparkMax intakeMotor2 = new CANSparkMax(RobotProperties.IntakeProperties.INTAKE_MOTOR2_ID, CANSparkLowLevel.MotorType.kBrushless);
+    CANSparkMax intakeMotor1 = new CANSparkMax(RobotProperties.IntakeProperties.TOP_INTAKE_MOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
+    CANSparkMax intakeMotor2 = new CANSparkMax(RobotProperties.IntakeProperties.BOT_INTAKE_MOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
 
     public Intake() {
        intakeMotor1.setIdleMode(CANSparkFlex.IdleMode.kBrake);
@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
 
     public void setSpeed(double speed){
         intakeMotor1.set(speed);
-        intakeMotor2.set(speed);
+        intakeMotor2.set(-speed);
     }
     public void stop(){
         intakeMotor1.set(0);

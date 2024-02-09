@@ -21,7 +21,7 @@ public interface RobotProperties {
          **/
         public static final boolean FIELD_ORIENTED_SWERVE = true;
         public static final double JOYSTICK_DEADZONE = .08;
-        public static final double MAX_DRIVE_SPEED = .8, MAX_ROTATION_SPEED = .9;
+        public static final double MAX_DRIVE_SPEED = 1, MAX_ROTATION_SPEED = .9;
         public static final boolean PINWHEEL_ZERO_ORIENTATION = false;
 
         public static final boolean SWERVE_UNIT_ORIENTATION_OPTIMIZATION = true;
@@ -73,8 +73,8 @@ public interface RobotProperties {
 
         /** Intake Constants **/
         public static final class IntakeProperties {
-                public static final int INTAKE_MOTOR1_ID = 5;
-                public static final int INTAKE_MOTOR2_ID = 6;
+                public static final int TOP_INTAKE_MOTOR_ID = 5;
+                public static final int BOT_INTAKE_MOTOR_ID = 4;
                 public static final double intakeIntakingSpeed = .4;
         }
         /** AprilTag/Limelight constants **/
