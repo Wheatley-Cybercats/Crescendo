@@ -1,5 +1,7 @@
 package frc.team2872.drive;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * @author Mark Ebert
  */
@@ -19,35 +21,36 @@ public class SwerveUnitConfig {
     private final boolean SLEW_MOTOR_INVERTED, DRIVE_MOTOR_INVERTED, ABSOLUTE_ENCODER_INVERTED;
     private final String CANBUS;
     private final boolean LOG_PID_DATA;
+    private final Translation2d MODULE_LOCATION;
 
     /**
      * Constructor
-     * 
+     *
      * @param SLEW_MOTOR_TYPE
      *            The motor type of the {@link MotorController} used to control the slew motor.
      * @param SLEW_MOTOR_CAN_ID
      *            The CAN ID of the {@link MotorController} used to control the slew motor.
      * @param SLEW_MOTOR_INVERTED
      *            Whether or not the direction of the slew motor needs to be inverted.
-     * 
+     *
      * @param DRIVE_MOTOR_TYPE
      *            The motor type of the {@link MotorController} used to control the drive motor.
      * @param DRIVE_MOTOR_CAN_ID
      *            The CAN ID of the {@link MotorController} used to control the drive motor.
      * @param DRIVE_MOTOR_INVERTED
      *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
+     *
      * @param ABSOLUTE_ENCODER_TYPE
      *            The encoder type used to tell the positiion of the wheel.
      * @param ABSOLUTE_ENCODER_CAN_ID
      *            The CAN ID of the encoder used to tell the positiion of the wheel.
      * @param ABSOLUTE_ENCODER_INVERTED
      *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
+     *
      * @param CANBUS
      *            The {@link String} of the CAN bus that the devices are located on. All three devices of the unit should be
      *            on the same bus.
-     * 
+     *
      * @param LOG_PID_DATA
      *            Whether or not to log the PID values from this swerve unit.
      */
@@ -55,7 +58,7 @@ public class SwerveUnitConfig {
             final MOTOR_TYPE SLEW_MOTOR_TYPE, final int SLEW_MOTOR_CAN_ID, final boolean SLEW_MOTOR_INVERTED,
             final MOTOR_TYPE DRIVE_MOTOR_TYPE, final int DRIVE_MOTOR_CAN_ID, final boolean DRIVE_MOTOR_INVERTED,
             final ENCODER_TYPE ABSOLUTE_ENCODER_TYPE, final int ABSOLUTE_ENCODER_CAN_ID, final boolean ABSOLUTE_ENCODER_INVERTED, final String CANBUS,
-            final boolean LOG_PID_DATA) {
+            final boolean LOG_PID_DATA, final Translation2d MODULE_LOCATION) {
         this.SLEW_MOTOR_TYPE = SLEW_MOTOR_TYPE;
         this.SLEW_MOTOR_CAN_ID = SLEW_MOTOR_CAN_ID;
         this.SLEW_MOTOR_INVERTED = SLEW_MOTOR_INVERTED;
@@ -71,109 +74,16 @@ public class SwerveUnitConfig {
         this.CANBUS = CANBUS;
 
         this.LOG_PID_DATA = LOG_PID_DATA;
+
+        this.MODULE_LOCATION = MODULE_LOCATION;
     }
 
-    /**
-     * Constructor
-     * 
-     * @param SLEW_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_INVERTED
-     *            Whether or not the direction of the slew motor needs to be inverted.
-     * 
-     * @param DRIVE_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
-     * @param ABSOLUTE_ENCODER_TYPE
-     *            The encoder type used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_CAN_ID
-     *            The CAN ID of the encoder used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
-     * @param CANBUS
-     *            The {@link String} of the CAN bus that the devices are located on. All three devices of the unit should be
-     *            on the same bus.
-     */
     public SwerveUnitConfig(
             final MOTOR_TYPE SLEW_MOTOR_TYPE, final int SLEW_MOTOR_CAN_ID, final boolean SLEW_MOTOR_INVERTED,
             final MOTOR_TYPE DRIVE_MOTOR_TYPE, final int DRIVE_MOTOR_CAN_ID, final boolean DRIVE_MOTOR_INVERTED,
-            final ENCODER_TYPE ABSOLUTE_ENCODER_TYPE, final int ABSOLUTE_ENCODER_CAN_ID, final boolean ABSOLUTE_ENCODER_INVERTED, final String CANBUS) {
+            final ENCODER_TYPE ABSOLUTE_ENCODER_TYPE, final int ABSOLUTE_ENCODER_CAN_ID, final boolean ABSOLUTE_ENCODER_INVERTED, final Translation2d MODULE_LOCATION) {
         this(SLEW_MOTOR_TYPE, SLEW_MOTOR_CAN_ID, SLEW_MOTOR_INVERTED, DRIVE_MOTOR_TYPE, DRIVE_MOTOR_CAN_ID, DRIVE_MOTOR_INVERTED, ABSOLUTE_ENCODER_TYPE,
-                ABSOLUTE_ENCODER_CAN_ID, ABSOLUTE_ENCODER_INVERTED, CANBUS, false);
-    }
-
-    /**
-     * Constructor
-     * 
-     * @param SLEW_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_INVERTED
-     *            Whether or not the direction of the slew motor needs to be inverted.
-     * 
-     * @param DRIVE_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
-     * @param ABSOLUTE_ENCODER_TYPE
-     *            The encoder type used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_CAN_ID
-     *            The CAN ID of the encoder used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     */
-    public SwerveUnitConfig(
-            final MOTOR_TYPE SLEW_MOTOR_TYPE, final int SLEW_MOTOR_CAN_ID, final boolean SLEW_MOTOR_INVERTED,
-            final MOTOR_TYPE DRIVE_MOTOR_TYPE, final int DRIVE_MOTOR_CAN_ID, final boolean DRIVE_MOTOR_INVERTED,
-            final ENCODER_TYPE ABSOLUTE_ENCODER_TYPE, final int ABSOLUTE_ENCODER_CAN_ID, final boolean ABSOLUTE_ENCODER_INVERTED) {
-        this(SLEW_MOTOR_TYPE, SLEW_MOTOR_CAN_ID, SLEW_MOTOR_INVERTED, DRIVE_MOTOR_TYPE, DRIVE_MOTOR_CAN_ID, DRIVE_MOTOR_INVERTED, ABSOLUTE_ENCODER_TYPE,
-                ABSOLUTE_ENCODER_CAN_ID, ABSOLUTE_ENCODER_INVERTED, "", false);
-    }
-
-    /**
-     * Constructor
-     * 
-     * @param SLEW_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the slew motor.
-     * @param SLEW_MOTOR_INVERTED
-     *            Whether or not the direction of the slew motor needs to be inverted.
-     * 
-     * @param DRIVE_MOTOR_TYPE
-     *            The motor type of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_CAN_ID
-     *            The CAN ID of the {@link MotorController} used to control the drive motor.
-     * @param DRIVE_MOTOR_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
-     * @param ABSOLUTE_ENCODER_TYPE
-     *            The encoder type used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_CAN_ID
-     *            The CAN ID of the encoder used to tell the positiion of the wheel.
-     * @param ABSOLUTE_ENCODER_INVERTED
-     *            Whether or not the direction of the drive motor needs to be inverted.
-     * 
-     * @param LOG_PID_DATA
-     *            Whether or not to log the PID values from this swerve unit.
-     */
-    public SwerveUnitConfig(
-            final MOTOR_TYPE SLEW_MOTOR_TYPE, final int SLEW_MOTOR_CAN_ID, final boolean SLEW_MOTOR_INVERTED,
-            final MOTOR_TYPE DRIVE_MOTOR_TYPE, final int DRIVE_MOTOR_CAN_ID, final boolean DRIVE_MOTOR_INVERTED,
-            final ENCODER_TYPE ABSOLUTE_ENCODER_TYPE, final int ABSOLUTE_ENCODER_CAN_ID, final boolean ABSOLUTE_ENCODER_INVERTED, final boolean LOG_PID_DATA) {
-        this(SLEW_MOTOR_TYPE, SLEW_MOTOR_CAN_ID, SLEW_MOTOR_INVERTED, DRIVE_MOTOR_TYPE, DRIVE_MOTOR_CAN_ID, DRIVE_MOTOR_INVERTED, ABSOLUTE_ENCODER_TYPE,
-                ABSOLUTE_ENCODER_CAN_ID, ABSOLUTE_ENCODER_INVERTED, "", LOG_PID_DATA);
+                ABSOLUTE_ENCODER_CAN_ID, ABSOLUTE_ENCODER_INVERTED, "", false, MODULE_LOCATION);
     }
 
     public MOTOR_TYPE getDRIVE_MOTOR_TYPE() {
@@ -218,6 +128,10 @@ public class SwerveUnitConfig {
 
     public boolean getLOG_PID_DATA() {
         return LOG_PID_DATA;
+    }
+
+    public Translation2d getMODULE_LOCATION(){
+        return this.MODULE_LOCATION;
     }
 
 }

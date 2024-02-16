@@ -4,14 +4,13 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 
 
 // Java Imports
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 // FRC Imports
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -35,6 +34,11 @@ import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
  * project, you must also update the build.gradle file in the project.
  */
 public class Robot extends TimedRobot implements RobotProperties {
+
+  public static double driveAngle = 0;
+  public static double driveMag = 0;
+  public static double rotMag = 0;
+
 
   // Controllers
   private XboxController driveController;
@@ -66,42 +70,47 @@ public class Robot extends TimedRobot implements RobotProperties {
 
   // Edge Triggers
   private boolean zeroEdgeTrigger;
+  public static boolean quickTurning;
 
   public static final Flywheel flywheel = new Flywheel();
   public static final Indexer indexer = new Indexer();
   public static final Intake intake = new Intake();
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
+  public static final LED blinkin = new LED();
+  public static final Climber climber = new Climber();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
   private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand(flywheel, indexer);
   private final ShootAmpCommand SAC = new ShootAmpCommand(flywheel, indexer);
   private final ShootTrapCommand STC = new ShootTrapCommand(flywheel, indexer);
-  private final IntakeCommand IC = new IntakeCommand(intake, indexer);
+  private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand(intake, indexer);
+  private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
+  private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
+  private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
   //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
-
-
-  //private final AlignWithSpeakerCommand AWS = new AlignWithSpeakerCommand(limelight);
-
 
   /** Button Numbers **/
   int A = 1;
   int B = 2;
   int X = 3;
   int Y = 4;
-  int leftTrig = 5;
-  int rightTrig = 6;
+  int leftTop = 5;
+  int rightTop = 6;
+  int leftMid = 7;
+  int rightMid = 8;
+  int leftJoystickPressed = 9;
+  int rightJoystickPressed = 10;
+  int leftTriggerAxis = 2;
+  int rightTriggerAxis = 3;
+
 
   @Override
   public void robotInit() {
     // Controllers Init
     driveController = new XboxController(0);
     operatorController = new XboxController(1);
-    //operatorJOYSTICKController = new Joystick(1); //TODO: both Operator Controllers are from port 1
-
-    // Swerve Drivetrain Init
-    swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
 
     // Sensors
     gyro = new Pigeon2Wrapper(GYRO_CAN_ID);
@@ -110,6 +119,10 @@ public class Robot extends TimedRobot implements RobotProperties {
     // PID Controllers
     gyroPIDController = new ThreadedPIDController(gyro.asSupplier(), GYRO_KP, GYRO_KI, GYRO_KD, GYRO_MIN, GYRO_MAX, true);
     gyroPIDController.start();
+
+    // Swerve Drivetrain Init
+    swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
+
 
     // Auton Recorder init
     autonRecorder = new AutonRecorder();
@@ -159,8 +172,13 @@ public class Robot extends TimedRobot implements RobotProperties {
     shootAmp.whileTrue(SAC);
     JoystickButton shootTrap = new JoystickButton(operatorController, Y);
     shootTrap.whileTrue(STC);
-    JoystickButton intake = new JoystickButton(operatorController, leftTrig);
+    JoystickButton intake = new JoystickButton(operatorController, leftTop);
     intake.whileTrue(IC);
+    JoystickButton alignHoriz = new JoystickButton(driveController, rightTop);
+    alignHoriz.whileTrue(AHC);
+    JoystickButton outtake = new JoystickButton(operatorController, rightTop);
+    outtake.whileTrue(OC);
+
     //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
@@ -237,12 +255,14 @@ public class Robot extends TimedRobot implements RobotProperties {
 
     zeroEdgeTrigger = zeroTrigger;
 
+    //swerveDrive.updatePose();
+
 
     SmartDashboard.putNumber("Top Flywheel Speed", flywheel.getTopRPM());
     SmartDashboard.putNumber("Bottom Flywheel Speed", flywheel.getBotRPM());
     SmartDashboard.putNumber("Top Flywheel Absolute", flywheel.getTopAFlywheel());
 
-    SmartDashboard.putNumberArray("Botpose LL", limelight.getBOTPOSE());
+    //SmartDashboard.putNumberArray("Botpose LL", limelight.getBOTPOSE());
   }
 
   @Override
@@ -316,6 +336,8 @@ public class Robot extends TimedRobot implements RobotProperties {
 
     // Update the autonStartTime
     autonStartTime = Timer.getFPGATimestamp();
+
+    quickTurning = false;
   }
 
   @Override
@@ -341,6 +363,12 @@ public class Robot extends TimedRobot implements RobotProperties {
       }
     }
 
+    /*
+    if(driveController.getRawButton(X)){
+      CommandScheduler.getInstance().schedule(swerveDrive.followPathCommand(new Pose2d(5, 1, new Rotation2d(0))));
+    }
+
+     */
 
   }
 
@@ -407,21 +435,47 @@ public class Robot extends TimedRobot implements RobotProperties {
     final double fieldCorrectedAngle = FIELD_ORIENTED_SWERVE ? Normalize_Gryo_Value(leftStickAngle - gyroValue) : leftStickAngle;
 
     // Drive Controls
-    final boolean precisionMode = driveControllerState.getLeftBumper() || driveControllerState.getRightBumper();
+    final boolean precisionMode = driveControllerState.getLeftBumper();
     SmartDashboard.putBoolean("precisionMode", precisionMode);
-    if (rightStickX >= 0.06 || rightStickX <= -0.06) {
+    if (rightStickX >= 0.05 || rightStickX <= -0.05) {
       // Manual turning
+
+      quickTurning = false;
+
       gyroPIDController.disablePID();
       swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, rightStickX, precisionMode);
+      SmartDashboard.putNumber("angularVelocityZ", Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()));
+
+
     } else {
       // Normal gyro locking
+
+      SmartDashboard.putNumber("averageDriveSpeed", swerveDrive.getAverageDriveSpeed());
+      //(swerveDrive.getAverageDriveSpeed() > 0.8 || swerveDrive.getAverageDriveSpeed() < -0.8)
+
+      //SmartDashboard.putNumber("angularVelocityY", Math.abs(gyro.getAngularVelocityYDevice().getValueAsDouble()));
+      //SmartDashboard.putNumber("angularVelocityX", Math.abs(gyro.getAngularVelocityXDevice().getValueAsDouble()));
+      //SmartDashboard.putNumber("angularVelocityZ", Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()));
+
+      if(!quickTurning && Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 15){
+        //gyroPIDController.disablePID();
+        gyroPIDController.updateSensorLockValue();
+      }
+      else{
+        gyroPIDController.enablePID();
+      }
+      /*
+      if(swerveDrive.getAverageDriveSpeed() > 0){
+        gyroPIDController.updateSensorLockValue();
+      }
+       */
       gyroPIDController.enablePID();
 
       // Quick Turning
-      SmartDashboard.putBoolean("POV pressed", driveControllerState.getPOV() != -1);
       if (driveControllerState.getPOV() != -1) {
         gyroPIDController.updateSensorLockValueWithoutReset(Normalize_Gryo_Value(driveControllerState.getPOV()));
-      } else if (driveControllerState.getYButton()) {
+        quickTurning = true;
+      } /* else if (driveControllerState.getYButton()) {
         gyroPIDController.updateSensorLockValueWithoutReset(0);
       } else if (driveControllerState.getBButton()) {
         gyroPIDController.updateSensorLockValueWithoutReset(90);
@@ -429,8 +483,12 @@ public class Robot extends TimedRobot implements RobotProperties {
         gyroPIDController.updateSensorLockValueWithoutReset(180);
       } else if (driveControllerState.getXButton()) {
         gyroPIDController.updateSensorLockValueWithoutReset(-90);
-      }
-      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ? gyroPIDController.getPIDValue() : 0, precisionMode);
+      } */
+
+      SmartDashboard.putNumber("gyroSensorLockValue", gyroPIDController.getSensorLockValue());
+      SmartDashboard.putNumber("gyroPIDValue", gyroPIDController.getPIDValue());
+      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ?  gyroPIDController.getPIDValue() : 0, precisionMode);
+
     }
     // Operator Controls
     if (operatorControllerState.getBButton()) {
@@ -438,11 +496,21 @@ public class Robot extends TimedRobot implements RobotProperties {
     }else{
       CommandScheduler.getInstance().cancel(SSC);
     }
+
     if (operatorControllerState.getLeftBumper()) {
       IC.schedule();
     }else{
       CommandScheduler.getInstance().cancel(IC);
     }
+
+
+    //reset gyro to 0
+    if (driveController.getRawButton(3)){
+      gyroPIDController.disablePID();
+      gyro.reset();
+      gyroPIDController.enablePID();
+    }
+
   }
 
 }

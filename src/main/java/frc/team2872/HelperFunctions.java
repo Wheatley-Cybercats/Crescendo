@@ -1,5 +1,7 @@
 package frc.team2872;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * @author Mark Ebert
  */
@@ -213,4 +215,16 @@ public class HelperFunctions {
 		return maxVector;
 	}
 
+	public static double rotToMetersTraveled(double rot, double radius){
+		double circumference = 2*Math.PI*radius;
+		double metersTraveled = circumference*rot;
+		return Units.inchesToMeters(metersTraveled);
+	}
+
+	public static double RPMToMPS(double rpm){
+		double rps = rpm/60;
+		double wheelRps = rps / 6.75;
+		double wheelCircumferenceM = Math.PI * 0.1016;
+		return wheelRps * wheelCircumferenceM;
+	}
 }

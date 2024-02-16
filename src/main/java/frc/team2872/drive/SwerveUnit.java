@@ -12,7 +12,11 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotProperties;
 import frc.team2872.HelperFunctions;
 import frc.team2872.drive.SwerveUnitConfig.ENCODER_TYPE;
@@ -22,7 +26,7 @@ import frc.team2872.sensors.ThreadedPIDController;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.DoubleSupplier;
 
-import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
+import static frc.team2872.HelperFunctions.*;
 
 /**
  * @author Mark Ebert
@@ -393,6 +397,19 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
 
     public ConcurrentLinkedQueue<String> getSlewPIDData() {
         return slewPIDData;
+    }
+    public SwerveModulePosition getSwerveModulePosition(){
+        SmartDashboard.putNumber("Integrated meters", rotToMetersTraveled(getIntegratedEncoderValue(), 2));
+        return new SwerveModulePosition(rotToMetersTraveled(getIntegratedEncoderValue(), 2), new Rotation2d(getSlewAngle()));
+    }
+
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(RPMToMPS(getIntegratedEncoderVelocity()), new Rotation2d(getSlewAngle()));
+    }
+
+    public void setTargetState(SwerveModuleState targetState){
+        setDriveSpeed(targetState.speedMetersPerSecond/10);//TODO: maybe
+        setSlewSpeed(targetState.angle.getDegrees());
     }
 
 }

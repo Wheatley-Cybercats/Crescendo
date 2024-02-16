@@ -1,6 +1,9 @@
 package frc.robot;
 
 // Team 3171 Imports
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.team2872.drive.SwerveUnitConfig;
 import frc.team2872.drive.SwerveUnitConfig.ENCODER_TYPE;
 import frc.team2872.drive.SwerveUnitConfig.MOTOR_TYPE;
@@ -26,19 +29,22 @@ public interface RobotProperties {
 
         public static final boolean SWERVE_UNIT_ORIENTATION_OPTIMIZATION = true;
         public static final boolean USE_ODOMETRY_DRIVE_TO_POINT = true;
+        public static final Pose2d redSpeakerPose = new Pose2d(16.178, 5.45, Rotation2d.fromDegrees(180));
+        public static final Pose2d blueSpeakerPose = new Pose2d(0, 1, Rotation2d.fromDegrees(0));;
 
-        /**
-         * Swerve Unit Configuration
-         **/
         /** Swerve Unit Configuration **/
         public static final SwerveUnitConfig leftRear_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 52, true,
-                MOTOR_TYPE.REV, 51, false, ENCODER_TYPE.CTRE, 12, false);
+                MOTOR_TYPE.REV, 51, false, ENCODER_TYPE.CTRE, 12, false,
+                new Translation2d(-0.318, -0.318));
         public static final SwerveUnitConfig leftFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 62, true,
-                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false);
+                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false,
+                new Translation2d(-0.318, 0.318));
         public static final SwerveUnitConfig rightFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 50, true,
-                MOTOR_TYPE.REV, 49, false, ENCODER_TYPE.CTRE, 11, false);
+                MOTOR_TYPE.REV, 49, false, ENCODER_TYPE.CTRE, 11, false,
+                new Translation2d(0.318, 0.318));
         public static final SwerveUnitConfig rightRear_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 55, true,
-                MOTOR_TYPE.REV, 56, false, ENCODER_TYPE.CTRE, 13, false);
+                MOTOR_TYPE.REV, 56, false, ENCODER_TYPE.CTRE, 13, false,
+                new Translation2d(0.318, -0.318));
 
 
 
@@ -75,15 +81,25 @@ public interface RobotProperties {
         public static final class IntakeProperties {
                 public static final int TOP_INTAKE_MOTOR_ID = 5;
                 public static final int BOT_INTAKE_MOTOR_ID = 4;
-                public static final double intakeIntakingSpeed = .4;
+                public static final double intakeIntakingSpeed = .6;
+        }
+        /** Climb Constants **/
+        public static final class Climber {
+                public static final int LEFT_CLIMB_MOTOR_ID = 20;
+                public static final int RIGHT_CLIMB_MOTOR_ID = 21;
+                public static final double upSpeed = .1;
+                public static final double downSpeed = .2;
+
         }
         /** AprilTag/Limelight constants **/
         public static final double angleOfLL = 30;
-        public static final double heightOfTarget = 70;//height of speaker
         public static double LLmultiplier = 1;
         /** PID Properties **/
-        public static final double GYRO_KP = -0.00005, GYRO_KI = 0, GYRO_KD = 0, GYRO_MIN = -5, GYRO_MAX = 5;
-        public static final double SLEW_KP = -0.0065, SLEW_KI = -0.004, SLEW_KD = 0.0005, SLEW_KF = 0, SLEW_PID_MIN = -.7, SLEW_PID_MAX = .5;//-1 and 1
+
+        //-0.00005, 0, 0
+        //.013, 0.00075, 0.00075
+        public static final double GYRO_KP = 0.01, GYRO_KI = 0.0005, GYRO_KD = 0.0006, GYRO_MIN = -0.5, GYRO_MAX = 0.5;//-0.5, 0.000008
+        public static final double SLEW_KP = -0.0065, SLEW_KI = -0.004, SLEW_KD = 0.0005, SLEW_KF = 0, SLEW_PID_MIN = -.7, SLEW_PID_MAX = .5;
 
         /** Auton Mode Constants **/
         public static final String DEFAULT_AUTON = "Disabled";

@@ -23,14 +23,15 @@ public class ShootSpeakerCommand extends Command {
 
     @Override
     public void execute() {
-        flywheel.setTopFlywheelMotorVolt(8);
-        flywheel.setBotFlywheelMotorVolt(-8);
+        flywheel.setTopFlywheelMotorVolt(7.5);
+        flywheel.setBotFlywheelMotorVolt(-7.5);
         if(flywheel.topflywheelAtSpeed() && flywheel.botflywheelAtSpeed()){
             indexer.setSpeed(RobotProperties.IndexerProperties.shootingSpeed);
         }
         else{
             indexer.stop();
         }
+        Robot.blinkin.rainbow_party();
 
     }
 
@@ -44,5 +45,6 @@ public class ShootSpeakerCommand extends Command {
         flywheel.stop();
         indexer.stop();
         flywheel.resetPID();
+        Robot.blinkin.set(0);
     }
 }

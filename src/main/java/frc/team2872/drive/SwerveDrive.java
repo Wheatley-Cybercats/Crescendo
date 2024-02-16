@@ -2,11 +2,29 @@ package frc.team2872.drive;
 
 // Java Imports
 
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.RobotProperties;
+import frc.robot.Subsystems.LimeLight;
 import frc.team2872.sensors.UDPClient;
 
 import java.io.*;
+import java.sql.Driver;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +43,9 @@ public class SwerveDrive implements RobotProperties {
 
     // PID Data Logger
     private List<UDPClient> udpClients;
+    private SwerveDriveKinematics swerveDriveKinematics;
+
+    private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
     public SwerveDrive(final SwerveUnitConfig lrUnitConfig, final SwerveUnitConfig lfUnitConfig, final SwerveUnitConfig rfUnitConfig,
             final SwerveUnitConfig rrUnitConfig) {
@@ -53,6 +74,22 @@ public class SwerveDrive implements RobotProperties {
 
         // Load the save slew calibrations
         loadSlewCalibration();
+
+        swerveDriveKinematics = new SwerveDriveKinematics(
+                lfUnitConfig.getMODULE_LOCATION(),
+                rfUnitConfig.getMODULE_LOCATION(),
+                lrUnitConfig.getMODULE_LOCATION(),
+                rrUnitConfig.getMODULE_LOCATION());
+
+        swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
+                swerveDriveKinematics, Robot.gyro.getRotation2d(),
+                new SwerveModulePosition[]{
+                        leftFrontUnit.getSwerveModulePosition(),
+                        rightFrontUnit.getSwerveModulePosition(),
+                        leftRearUnit.getSwerveModulePosition(),
+                        rightRearUnit.getSwerveModulePosition()
+                }, new Pose2d(new Translation2d(Robot.limelight.getBOTPOSE()[0], Robot.limelight.getBOTPOSE()[1]), new Rotation2d(Robot.limelight.getBOTPOSE()[5]))
+        );
 
     }
 
@@ -155,6 +192,20 @@ public class SwerveDrive implements RobotProperties {
         rightFrontUnit.disable();
         rightRearUnit.disable();
     }
+    public void stopDriveMotors(){
+        leftRearUnit.setDriveSpeed(0);
+        leftFrontUnit.setDriveSpeed(0);
+        rightFrontUnit.setDriveSpeed(0);
+        rightRearUnit.setDriveSpeed(0);
+    }
+
+    public double getLeftFrontDriveSpeed(){
+        return leftFrontUnit.getDriveSpeed();
+    }
+
+    public double getAverageDriveSpeed(){
+        return (leftFrontUnit.getIntegratedEncoderVelocity() + rightFrontUnit.getIntegratedEncoderVelocity() + leftRearUnit.getIntegratedEncoderVelocity() + rightRearUnit.getIntegratedEncoderVelocity())/4;
+    }
 
     public void zero() {
         if (PINWHEEL_ZERO_ORIENTATION) {
@@ -252,4 +303,108 @@ public class SwerveDrive implements RobotProperties {
         SmartDashboard.putString("Right Rear Slew Angle", String.format("%.2f | %.2f", rightRearUnit.getSlewAngle(), rightRearUnit.getSlewTargetAngle()));
     }
 
+    public SwerveDrivePoseEstimator getSwerveDrivePoseEstimator(){
+        return swerveDrivePoseEstimator;
+    }
+
+    public void updatePose(){
+        //Update with encoders
+        swerveDrivePoseEstimator.update(Robot.gyro.getRotation2d(), new SwerveModulePosition[]{
+                leftFrontUnit.getSwerveModulePosition(),
+                rightFrontUnit.getSwerveModulePosition(),
+                leftRearUnit.getSwerveModulePosition(),
+                rightRearUnit.getSwerveModulePosition()
+        });
+
+        /*
+        //update with vision
+        swerveDrivePoseEstimator.addVisionMeasurement(
+                new Pose2d(Robot.limelight.getBOTPOSE()[0], Robot.limelight.getBOTPOSE()[1], new Rotation2d(Robot.limelight.getBOTPOSE()[4])),
+                Robot.limelight.getBOTPOSE()[6]
+                );
+
+         */
+
+    }
+
+    public Pose2d getLLPose(){
+        return new Pose2d(
+                Robot.limelight.getBOTPOSE_WPIRED()[0],
+                Robot.limelight.getBOTPOSE_WPIRED()[1],
+                new Rotation2d(Robot.limelight.getBOTPOSE_WPIRED()[5])
+        );
+    }
+
+    public ChassisSpeeds getRobotRelativeSpeeds(){
+        return swerveDriveKinematics.toChassisSpeeds(
+                leftFrontUnit.getState(),
+                rightFrontUnit.getState(),
+                leftRearUnit.getState(),
+                rightRearUnit.getState());
+    }
+
+    public SwerveModuleState[] getModuleState(){
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        states[0] = leftFrontUnit.getState();
+        states[1] = rightFrontUnit.getState();
+        states[2] = leftRearUnit.getState();
+        states[3] = rightRearUnit.getState();
+        return states;
+    }
+
+    public void driveRobotRelative(ChassisSpeeds chassisSpeeds){
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(getRobotRelativeSpeeds(), 0.02);
+
+        SwerveModuleState[] targetStates = swerveDriveKinematics.toSwerveModuleStates(targetSpeeds);
+        setStates(targetStates);
+    }
+
+    public void setStates(SwerveModuleState[] targetStates){
+        SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, 0.35);
+        leftFrontUnit.setTargetState(targetStates[0]);
+        rightFrontUnit.setTargetState(targetStates[1]);
+        leftRearUnit.setTargetState(targetStates[2]);
+        rightRearUnit.setTargetState(targetStates[3]);
+    }
+
+
+    public Command followPathCommand(Pose2d targetPose){
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1, 1, Rotation2d.fromDegrees(0)),
+                new Pose2d(3, 1, Rotation2d.fromDegrees(0)),
+                new Pose2d(5, 3, Rotation2d.fromDegrees(90)),
+                targetPose
+        );
+
+        PathPlannerPath path = new PathPlannerPath(
+                bezierPoints,
+                new PathConstraints(3, 3, 2 * Math.PI, 4 * Math.PI),
+                new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
+        );
+
+        return new FollowPathHolonomic(
+                path,
+                this::getLLPose, // Robot pose supplier
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                }// Reference to this subsystem to set requirements
+        );
+    }
 }
