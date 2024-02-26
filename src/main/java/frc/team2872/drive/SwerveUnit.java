@@ -348,7 +348,7 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
                 ((TalonFX) driveMotor).disable();
                 break;
             default:
-                ((CANSparkFlex) driveMotor).disable();
+                ((CANSparkMax) driveMotor).disable();
                 break;
         }
         switch (slewMotorType) {
