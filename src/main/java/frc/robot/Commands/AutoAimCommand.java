@@ -1,14 +1,8 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
-import frc.robot.RobotProperties;
-import frc.robot.Subsystems.LeadScrew;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.Subsystems.LimeLight;
-
 
 
 public class AutoAimCommand extends Command {

@@ -3,7 +3,6 @@ package frc.team2872.drive;
 // Java Imports
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -20,11 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Subsystems.LimeLight;
 import frc.team2872.sensors.UDPClient;
 
 import java.io.*;
-import java.sql.Driver;
 import java.util.LinkedList;
 import java.util.List;
 

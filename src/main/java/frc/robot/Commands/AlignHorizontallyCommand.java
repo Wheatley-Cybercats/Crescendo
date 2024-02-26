@@ -6,12 +6,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
-import frc.robot.RobotProperties;
-import frc.robot.Subsystems.LimeLight;
-import static frc.robot.Robot.gyroPIDController;
-import static frc.robot.Robot.limelight;
+
+import static frc.robot.Robot.*;
 import static frc.robot.RobotProperties.blueSpeakerPose;
 import static frc.robot.RobotProperties.redSpeakerPose;
 import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
@@ -48,7 +45,7 @@ public class AlignHorizontallyCommand extends Command {
                 Rotation2d.fromDegrees(Robot.limelight.getBOTPOSE_WPIBLUE()[5])
         );
 
-        SmartDashboard.putNumber("limgeis", limelight.getBOTPOSE_WPIBLUE()[0]);
+        SmartDashboard.putNumber("botpose_wpiblue", limelight.getBOTPOSE_WPIBLUE()[0]);
 
     }
 
@@ -58,13 +55,13 @@ public class AlignHorizontallyCommand extends Command {
         //TODO: when on red alliance, gyro and limelight WPIBLUE are negative inverses.
         // when on blue alliance, gyro and limelight WPIBLUE are 180 opposite
 
-
+        SmartDashboard.putString("DS alliance", String.valueOf(DriverStation.getAlliance()));
         SmartDashboard.putNumber("speakerPoseX" , speakerPose.getX());
         SmartDashboard.putNumber("speakerPoseY" , speakerPose.getY());
         SmartDashboard.putNumber("currPoseX" , currentPose.getX());
         SmartDashboard.putNumber("currPoseY" , currentPose.getY());
 
-
+        /*
         difference = speakerPose.minus(currentPose);
         //difference = new Transform2d(currentPose, speakerPose); //speakerPose is nonexistent because it was not defined in init
         double xdistance = speakerPose.getX() - currentPose.getX();
@@ -76,17 +73,19 @@ public class AlignHorizontallyCommand extends Command {
         SmartDashboard.putNumber("angleFromPerpendicular", angleFromPerpendicular);
 
         if (allianceIsRed) adjustedAngle = -angleFromPerpendicular;
-        if (allianceIsBlue) adjustedAngle = Normalize_Gryo_Value(angleFromPerpendicular + 180); //TODO: but inversed 180
+        if (allianceIsBlue) adjustedAngle = Normalize_Gryo_Value(angleFromPerpendicular + 180); //angleFromPerpendicular but rotated by 180
 
-        if (Robot.limelight.getBOTPOSE_WPIBLUE()[0] != 0) {
+        if (Robot.limelight.getBOTPOSE_WPIBLUE()[0] != 0 && (Math.abs(gyro.getAngle() - angleFromPerpendicular) > 4)){
             gyroPIDController.updateSensorLockValue(adjustedAngle);
             Robot.quickTurning = true;
             Robot.swerveDrive.drive(0, 0, gyroPIDController.getPIDValue(), false);
         }
 
+         */
 
 
-        /*
+
+        /* no longer used
         Pose2d currentPose = new Pose2d(
                 Math.round(Robot.limelight.getBOTPOSE_WPIRED()[0]),
                 Math.round(Robot.limelight.getBOTPOSE_WPIRED()[1]),

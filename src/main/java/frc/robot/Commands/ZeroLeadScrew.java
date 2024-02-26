@@ -1,20 +1,17 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
-import frc.robot.RobotProperties;
-import frc.robot.Indexer;
-import frc.robot.Intake;
+import frc.robot.LeadScrew;
 
 
-public class OuttakeCommand extends Command {
-    private final Intake intake = Robot.intake;
-    private final Indexer indexer = Robot.indexer;
+public class ZeroLeadScrew extends Command {
+    private final LeadScrew leadScrew;
 
-    public OuttakeCommand(Intake intake, Indexer indexer) {
+    public ZeroLeadScrew(LeadScrew leadScrew) {
+        this.leadScrew = leadScrew;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.intake, this.indexer);
+        addRequirements(this.leadScrew);
     }
 
     @Override
@@ -24,8 +21,7 @@ public class OuttakeCommand extends Command {
 
     @Override
     public void execute() {
-        intake.setSpeed(-RobotProperties.IntakeProperties.intakeIntakingSpeed);
-        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed);
+
     }
 
     @Override
@@ -36,7 +32,6 @@ public class OuttakeCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        indexer.stop();
-        intake.stop();
+
     }
 }

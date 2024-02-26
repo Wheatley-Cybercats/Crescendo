@@ -4,9 +4,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Subsystems.Flywheel;
-import frc.robot.Subsystems.Indexer;
-import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Flywheel;
+import frc.robot.Indexer;
 
 public class IntakeFromShooterCommand extends Command {
     private final Flywheel flywheel = Robot.flywheel;
@@ -35,7 +34,7 @@ public class IntakeFromShooterCommand extends Command {
         } else{
             set current color
          */
-        Robot.blinkin.rainbow_rainbow();
+        //Robot.blinkin.rainbow_rainbow();
     }
 
     @Override
@@ -49,7 +48,7 @@ public class IntakeFromShooterCommand extends Command {
     public void end(boolean interrupted) {
         flywheel.stop();
         indexer.stop();
-        Robot.blinkin.set(0);
+        //Robot.blinkin.set(0);
         flywheel.resetPID();
     }
 }

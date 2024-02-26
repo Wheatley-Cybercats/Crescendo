@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.*;
-import frc.robot.Subsystems.*;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.sensors.Pigeon2Wrapper;
 import frc.team2872.sensors.ThreadedPIDController;
@@ -78,7 +77,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
-  public static final Climber climber = new Climber();
+  public static final Climbers climbers = new Climbers();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
@@ -263,6 +262,10 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putNumber("Top Flywheel Absolute", flywheel.getTopAFlywheel());
 
     //SmartDashboard.putNumberArray("Botpose LL", limelight.getBOTPOSE());
+
+    SmartDashboard.putNumber("right Climb", climbers.getPosition("right"));
+    SmartDashboard.putNumber("left Climb", climbers.getPosition("left"));
+    SmartDashboard.putNumber("leadScrew Position", leadscrew.getPosition());
   }
 
   @Override
@@ -367,9 +370,7 @@ public class Robot extends TimedRobot implements RobotProperties {
     if(driveController.getRawButton(X)){
       CommandScheduler.getInstance().schedule(swerveDrive.followPathCommand(new Pose2d(5, 1, new Rotation2d(0))));
     }
-
      */
-
   }
 
   @Override
@@ -503,6 +504,36 @@ public class Robot extends TimedRobot implements RobotProperties {
       CommandScheduler.getInstance().cancel(IC);
     }
 
+    /**move lead screw manually**/
+    if (operatorController.getPOV() == 0){
+      leadscrew.moveShooterUp(-0.3);
+    } else if(operatorController.getPOV() == 180){
+      leadscrew.moveShooterDown(0.4);
+    } else {
+      leadscrew.stop();
+    }
+
+    /**move climbers manually**/
+    // LEFT CLIMBER
+    if (operatorController.getRawAxis(1) < -0.04){ // left joystick up
+      climbers.raiseLeftClimber();
+    } else if (operatorController.getRawAxis(1) > 0.04){ // left joystick down
+      climbers.lowerLeftClimber();
+    } else {
+      climbers.stopLeftClimber();
+    }
+
+    // RIGHT CLIMBER
+    if (operatorController.getRawAxis(5) < -0.04){ // right joystick up
+      climbers.raiseRightClimber();
+    } else if (operatorController.getRawAxis(5) > 0.04){ // right joystick down
+      climbers.lowerRightClimber();
+    } else {
+      climbers.stopRightClimber();
+    }
+
+
+
 
     //reset gyro to 0
     if (driveController.getRawButton(3)){
@@ -510,7 +541,5 @@ public class Robot extends TimedRobot implements RobotProperties {
       gyro.reset();
       gyroPIDController.enablePID();
     }
-
   }
-
 }

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -347,7 +348,7 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
                 ((TalonFX) driveMotor).disable();
                 break;
             default:
-                ((CANSparkMax) driveMotor).disable();
+                ((CANSparkFlex) driveMotor).disable();
                 break;
         }
         switch (slewMotorType) {

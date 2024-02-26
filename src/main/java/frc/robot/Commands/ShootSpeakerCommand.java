@@ -3,8 +3,8 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Subsystems.Flywheel;
-import frc.robot.Subsystems.Indexer;
+import frc.robot.Flywheel;
+import frc.robot.Indexer;
 
 
 public class ShootSpeakerCommand extends Command {
@@ -31,7 +31,7 @@ public class ShootSpeakerCommand extends Command {
         else{
             indexer.stop();
         }
-        Robot.blinkin.rainbow_party();
+        //Robot.blinkin.rainbow_party();
 
     }
 
@@ -45,6 +45,6 @@ public class ShootSpeakerCommand extends Command {
         flywheel.stop();
         indexer.stop();
         flywheel.resetPID();
-        Robot.blinkin.set(0);
+        //Robot.blinkin.set(0);
     }
 }

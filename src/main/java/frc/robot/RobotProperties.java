@@ -54,7 +54,7 @@ public interface RobotProperties {
         /** FLYWHEEL Constants **/
         public static final class FlywheelProperties {
                 public static final int TOP_FLYWHEEL_MOTOR_ID = 39;
-                public static final int BOT_FLYWHEEL_MOTOR_ID = 43;
+                public static final int BOT_FLYWHEEL_MOTOR_ID = 40;
                 public static final int topFlywheelKp = 0;
                 public static final int topFlywheelKi = 0;
                 public static final int topFlywheelKd = 0;
@@ -75,7 +75,7 @@ public interface RobotProperties {
         }
 
         /** Lead Screw Constants **/
-        public static final int LEAD_SCREW_MOTOR_ID = 4;
+        public static final int LEAD_SCREW_MOTOR_ID = 10;
 
         /** Intake Constants **/
         public static final class IntakeProperties {
@@ -87,8 +87,8 @@ public interface RobotProperties {
         public static final class Climber {
                 public static final int LEFT_CLIMB_MOTOR_ID = 20;
                 public static final int RIGHT_CLIMB_MOTOR_ID = 21;
-                public static final double upSpeed = .1;
-                public static final double downSpeed = .2;
+                public static final double upSpeed = -.3;
+                public static final double downSpeed = .35;
 
         }
         /** AprilTag/Limelight constants **/
