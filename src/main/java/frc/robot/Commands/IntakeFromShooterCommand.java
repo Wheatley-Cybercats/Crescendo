@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Flywheel;
-import frc.robot.Indexer;
+import frc.robot.Subsystems.Flywheel;
+import frc.robot.Subsystems.Indexer;
 
 public class IntakeFromShooterCommand extends Command {
     private final Flywheel flywheel = Robot.flywheel;

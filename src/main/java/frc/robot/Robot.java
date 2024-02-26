@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.*;
+import frc.robot.Subsystems.*;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.sensors.Pigeon2Wrapper;
 import frc.team2872.sensors.ThreadedPIDController;
@@ -77,7 +78,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
-  public static final Climbers climbers = new Climbers();
+  public static final frc.robot.Climbers climbers = new frc.robot.Climbers();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);

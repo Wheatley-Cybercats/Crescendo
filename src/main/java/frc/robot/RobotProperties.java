@@ -84,7 +84,7 @@ public interface RobotProperties {
                 public static final double intakeIntakingSpeed = .6;
         }
         /** Climb Constants **/
-        public static final class Climber {
+        public static final class ClimberProperties {
                 public static final int LEFT_CLIMB_MOTOR_ID = 20;
                 public static final int RIGHT_CLIMB_MOTOR_ID = 21;
                 public static final double upSpeed = -.3;

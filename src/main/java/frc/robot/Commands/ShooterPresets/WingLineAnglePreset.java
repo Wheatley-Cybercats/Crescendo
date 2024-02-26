@@ -1,7 +1,7 @@
 package frc.robot.Commands.ShooterPresets;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.LeadScrew;
+import frc.robot.Subsystems.LeadScrew;
 
 
 public class WingLineAnglePreset extends Command {

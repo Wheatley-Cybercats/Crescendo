@@ -3,8 +3,8 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
-import frc.robot.Indexer;
-import frc.robot.Intake;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.Intake;
 
 
 public class OuttakeCommand extends Command {

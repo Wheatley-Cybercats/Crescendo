@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotProperties;
 
 public class Climbers extends SubsystemBase {
-    TalonFX leftClimbMotor = new TalonFX(RobotProperties.Climber.LEFT_CLIMB_MOTOR_ID);
-    TalonFX rightClimbMotor = new TalonFX(RobotProperties.Climber.RIGHT_CLIMB_MOTOR_ID);
+    TalonFX leftClimbMotor = new TalonFX(RobotProperties.ClimberProperties.LEFT_CLIMB_MOTOR_ID);
+    TalonFX rightClimbMotor = new TalonFX(RobotProperties.ClimberProperties.RIGHT_CLIMB_MOTOR_ID);
 
     public Climbers() {
         leftClimbMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -17,14 +17,14 @@ public class Climbers extends SubsystemBase {
         rightClimbMotor.setPosition(0);
     }
     public void raiseBothClimbers(){
-        leftClimbMotor.set(RobotProperties.Climber.upSpeed);
-        rightClimbMotor.set(RobotProperties.Climber.upSpeed);
+        leftClimbMotor.set(RobotProperties.ClimberProperties.upSpeed);
+        rightClimbMotor.set(RobotProperties.ClimberProperties.upSpeed);
     }
     public void raiseLeftClimber(){
-        leftClimbMotor.set(RobotProperties.Climber.upSpeed);
+        leftClimbMotor.set(RobotProperties.ClimberProperties.upSpeed);
     }
     public void raiseRightClimber(){
-        rightClimbMotor.set(RobotProperties.Climber.upSpeed);
+        rightClimbMotor.set(RobotProperties.ClimberProperties.upSpeed);
     }
     public double getPosition(String climberSide){
         if (climberSide.equals("left")) {
@@ -33,15 +33,15 @@ public class Climbers extends SubsystemBase {
         return rightClimbMotor.getPosition().getValueAsDouble(); //"right"
     }
     public void lowerLeftClimber(){
-        leftClimbMotor.set(RobotProperties.Climber.downSpeed);
+        leftClimbMotor.set(RobotProperties.ClimberProperties.downSpeed);
 
     }
     public void lowerRightClimber(){
-        rightClimbMotor.set(RobotProperties.Climber.downSpeed);
+        rightClimbMotor.set(RobotProperties.ClimberProperties.downSpeed);
     }
     public void lowerBothClimbers() {
-        leftClimbMotor.set(RobotProperties.Climber.downSpeed);
-        rightClimbMotor.set(RobotProperties.Climber.downSpeed);
+        leftClimbMotor.set(RobotProperties.ClimberProperties.downSpeed);
+        rightClimbMotor.set(RobotProperties.ClimberProperties.downSpeed);
     }
     public void stopLeftClimber(){
         leftClimbMotor.stopMotor();
