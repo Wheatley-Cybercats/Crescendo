@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.Subsystems;
 
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotProperties;
 
 public class Climbers extends SubsystemBase {
-    TalonFX leftClimbMotor = new TalonFX(RobotProperties.ClimberProperties.LEFT_CLIMB_MOTOR_ID);
-    TalonFX rightClimbMotor = new TalonFX(RobotProperties.ClimberProperties.RIGHT_CLIMB_MOTOR_ID);
+    TalonFX leftClimbMotor = new TalonFX(RobotProperties.ClimberProperties.LEFT_CLIMB_MOTOR_ID, "The CANivore");
+    TalonFX rightClimbMotor = new TalonFX(RobotProperties.ClimberProperties.RIGHT_CLIMB_MOTOR_ID, "The CANivore");
 
     public Climbers() {
         leftClimbMotor.setNeutralMode(NeutralModeValue.Brake);

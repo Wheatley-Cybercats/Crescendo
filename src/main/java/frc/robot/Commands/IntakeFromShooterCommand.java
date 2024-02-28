@@ -11,7 +11,7 @@ public class IntakeFromShooterCommand extends Command {
     private final Flywheel flywheel = Robot.flywheel;
     private final Indexer indexer = Robot.indexer;
 
-    private final DigitalInput beamBreak = new DigitalInput(0);
+    //private final DigitalInput beamBreak = new DigitalInput(0);
 
     public IntakeFromShooterCommand(Flywheel flywheel, Indexer indexer) {
         // each subsystem used by the command must be passed into the

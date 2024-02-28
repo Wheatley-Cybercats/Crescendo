@@ -12,7 +12,7 @@ import frc.robot.RobotProperties;
 
 public class LeadScrew extends SubsystemBase {
 
-    TalonFX leadScrewMotor = new TalonFX(RobotProperties.LEAD_SCREW_MOTOR_ID);
+    TalonFX leadScrewMotor = new TalonFX(RobotProperties.LEAD_SCREW_MOTOR_ID, "The CANivore");
     double positionInRotations = leadScrewMotor.getPosition().getValueAsDouble();
 
     public LeadScrew() {

@@ -78,7 +78,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
-  public static final frc.robot.Climbers climbers = new frc.robot.Climbers();
+  public static final Climbers climbers = new Climbers();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
@@ -267,6 +267,8 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putNumber("right Climb", climbers.getPosition("right"));
     SmartDashboard.putNumber("left Climb", climbers.getPosition("left"));
     SmartDashboard.putNumber("leadScrew Position", leadscrew.getPosition());
+
+    SmartDashboard.putBoolean("BB", indexer.getBeamBreakState());
   }
 
   @Override

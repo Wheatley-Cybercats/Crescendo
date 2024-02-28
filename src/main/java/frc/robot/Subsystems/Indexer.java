@@ -10,7 +10,7 @@ import frc.robot.RobotProperties;
 public class Indexer extends SubsystemBase {
 
     CANSparkMax indexerMotor = new CANSparkMax(RobotProperties.IndexerProperties.INDEXER_MOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
-    //DigitalInput beamBreak = new DigitalInput(0);
+    DigitalInput beamBreak = new DigitalInput(0);
 
     public Indexer() {
         indexerMotor.setIdleMode(CANSparkFlex.IdleMode.kBrake);
@@ -21,10 +21,10 @@ public class Indexer extends SubsystemBase {
     public void stop(){
         indexerMotor.set(0);
     }
-    /*
+
     public boolean getBeamBreakState(){
-        return beamBreak.get();
+        return !beamBreak.get();
     }
 
-     */
+
 }
