@@ -57,10 +57,10 @@ public class AutoAngleCommand extends Command {
         double ydistance = speakerPose.getY() - currentPose.getY(); //x and y on the ground
 
         distanceFromSpeaker = Math.sqrt(xdistance*xdistance + ydistance*ydistance);
-        shooterAngle = Math.atan2(speakerHeight, distanceFromSpeaker);
+        //shooterAngle = Math.atan2(speakerHeight, distanceFromSpeaker);
 
-        //TODO: find the equation or ratio of the relationship between calculated shooterAngle and leadScrew encoder value
-        //TODO: sets angle of shooter based on angleOfShooter
+        leadscrew.setPosition(regression(distanceFromSpeaker));
+
 
     }
 
@@ -74,6 +74,11 @@ public class AutoAngleCommand extends Command {
 
     }
 
+    private double regression(double x){
+        double a = 197.523;
+        double b = 0.578254;
+        return Math.pow(b, x) * a;
+    }
 
 
 

@@ -98,8 +98,6 @@ public class Robot extends TimedRobot implements RobotProperties {
   private final OuttakeCommand OC = new OuttakeCommand();
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
   private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
-
-  private final CallibrateAt83 CAAA = new CallibrateAt83(leadscrew);
   private final AmpAnglePreset AAP = new AmpAnglePreset(leadscrew);
   private final PodiumAnglePreset PAP = new PodiumAnglePreset(leadscrew);
   private final SubwooferAnglePreset SAP = new SubwooferAnglePreset(leadscrew);
@@ -218,7 +216,6 @@ public class Robot extends TimedRobot implements RobotProperties {
     BooleanSupplier POVis270 = () -> operatorController.getPOV() == 270;
     Trigger wingLineAngle = new Trigger(POVis270);
     wingLineAngle.toggleOnTrue(WLP);
-    alter.and(wingLineAngle).whileTrue(CAAA);
 
     //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
