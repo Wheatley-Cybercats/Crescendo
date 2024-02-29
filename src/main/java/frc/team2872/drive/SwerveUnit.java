@@ -405,7 +405,7 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
     }
 
     public SwerveModuleState getState(){
-        return new SwerveModuleState(RPMToMPS(getIntegratedEncoderVelocity()), new Rotation2d(getSlewAngle()));
+        return new SwerveModuleState(MotorRPMToWheelMPS(getIntegratedEncoderVelocity()), new Rotation2d(getSlewAngle()));
     }
 
     public void setTargetState(SwerveModuleState targetState){

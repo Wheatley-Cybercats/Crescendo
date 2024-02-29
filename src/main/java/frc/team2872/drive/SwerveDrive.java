@@ -1,14 +1,9 @@
 package frc.team2872.drive;
 
+
+
 // Java Imports
 
-import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
+import frc.team2872.sensors.Pigeon2Wrapper;
 import frc.team2872.sensors.UDPClient;
 
 import java.io.*;
@@ -31,7 +27,7 @@ import static frc.team2872.HelperFunctions.*;
  * @author Mark Ebert
  */
 public class SwerveDrive implements RobotProperties {
-
+    
     // Swerve Drive Units
     private SwerveUnit leftRearUnit, leftFrontUnit, rightFrontUnit, rightRearUnit;
 
@@ -40,18 +36,20 @@ public class SwerveDrive implements RobotProperties {
 
     // PID Data Logger
     private List<UDPClient> udpClients;
-    private SwerveDriveKinematics swerveDriveKinematics;
+    public SwerveDriveKinematics swerveDriveKinematics;
+    private Pigeon2Wrapper pigeon;
 
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-
+    private SwerveDriveOdometry swerveDriveOdometry;
     public SwerveDrive(final SwerveUnitConfig lrUnitConfig, final SwerveUnitConfig lfUnitConfig, final SwerveUnitConfig rfUnitConfig,
             final SwerveUnitConfig rrUnitConfig) {
+        // Init Pigeon        
+        pigeon = new Pigeon2Wrapper(GYRO_CAN_ID);
         // Init Swerve Units
         this.leftRearUnit = new SwerveUnit(lrUnitConfig);
         this.leftFrontUnit = new SwerveUnit(lfUnitConfig);
         this.rightFrontUnit = new SwerveUnit(rfUnitConfig);
         this.rightRearUnit = new SwerveUnit(rrUnitConfig);
-
         // Setup PID logging, if enabled in swerve unit config
         try {
             udpClients = new LinkedList<UDPClient>();
@@ -79,7 +77,7 @@ public class SwerveDrive implements RobotProperties {
                 rrUnitConfig.getMODULE_LOCATION());
 
         swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
-                swerveDriveKinematics, Robot.gyro.getRotation2d(),
+                swerveDriveKinematics, pigeon.getRotation2d(),
                 new SwerveModulePosition[]{
                         leftFrontUnit.getSwerveModulePosition(),
                         rightFrontUnit.getSwerveModulePosition(),
@@ -87,9 +85,20 @@ public class SwerveDrive implements RobotProperties {
                         rightRearUnit.getSwerveModulePosition()
                 }, new Pose2d(new Translation2d(Robot.limelight.getBOTPOSE()[0], Robot.limelight.getBOTPOSE()[1]), new Rotation2d(Robot.limelight.getBOTPOSE()[5]))
         );
-
+        
+        SwerveDriveOdometry swerveDriveOdometery = new SwerveDriveOdometry(swerveDriveKinematics, pigeon.getRotation2d(), new SwerveModulePosition[]{
+            leftFrontUnit.getSwerveModulePosition(),
+            rightFrontUnit.getSwerveModulePosition(),
+            leftRearUnit.getSwerveModulePosition(),
+            rightRearUnit.getSwerveModulePosition()
+        });
     }
-
+    SwerveUnit[] modules = new SwerveUnit[]{
+            leftFrontUnit,
+            rightFrontUnit,
+            leftRearUnit,
+            rightRearUnit
+    };
     public void driveInit() {
         leftRearAngle = 0;
         leftFrontAngle = 0;
@@ -303,10 +312,11 @@ public class SwerveDrive implements RobotProperties {
     public SwerveDrivePoseEstimator getSwerveDrivePoseEstimator(){
         return swerveDrivePoseEstimator;
     }
+    
 
     public void updatePose(){
         //Update with encoders
-        swerveDrivePoseEstimator.update(Robot.gyro.getRotation2d(), new SwerveModulePosition[]{
+        swerveDrivePoseEstimator.update(pigeon.getRotation2d(), new SwerveModulePosition[]{
                 leftFrontUnit.getSwerveModulePosition(),
                 rightFrontUnit.getSwerveModulePosition(),
                 leftRearUnit.getSwerveModulePosition(),
@@ -323,7 +333,9 @@ public class SwerveDrive implements RobotProperties {
          */
 
     }
-
+    public Pose2d getPose(){
+        return swerveDriveOdometry.getPoseMeters();
+    }
     public Pose2d getLLPose(){
         return new Pose2d(
                 Robot.limelight.getBOTPOSE_WPIRED()[0],
@@ -331,7 +343,16 @@ public class SwerveDrive implements RobotProperties {
                 new Rotation2d(Robot.limelight.getBOTPOSE_WPIRED()[5])
         );
     }
-
+    public void resetPose(Pose2d pose) {
+        swerveDriveOdometry.resetPosition(pigeon.getRotation2d(), getPositions(), pose);
+    }
+    public SwerveModulePosition[] getPositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+          positions[i] = modules[i].getSwerveModulePosition();
+        }
+        return positions;
+    } 
     public ChassisSpeeds getRobotRelativeSpeeds(){
         return swerveDriveKinematics.toChassisSpeeds(
                 leftFrontUnit.getState(),
@@ -348,6 +369,7 @@ public class SwerveDrive implements RobotProperties {
         states[3] = rightRearUnit.getState();
         return states;
     }
+    
 
     public void driveRobotRelative(ChassisSpeeds chassisSpeeds){
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(getRobotRelativeSpeeds(), 0.02);
@@ -363,9 +385,9 @@ public class SwerveDrive implements RobotProperties {
         leftRearUnit.setTargetState(targetStates[2]);
         rightRearUnit.setTargetState(targetStates[3]);
     }
+}
 
-
-    public Command followPathCommand(Pose2d targetPose){
+    /**  public Command followPathCommand(Pose2d targetPose){
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(1, 1, Rotation2d.fromDegrees(0)),
                 new Pose2d(3, 1, Rotation2d.fromDegrees(0)),
@@ -378,10 +400,10 @@ public class SwerveDrive implements RobotProperties {
                 new PathConstraints(3, 3, 2 * Math.PI, 4 * Math.PI),
                 new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
         );
-
-        return new FollowPathHolonomic(
+        
+         return new FollowPathHolonomic(
                 path,
-                this::getLLPose, // Robot pose supplier
+                swerveDrivePoseEstimator::getEstimatedPosition(), // Robot pose supplier
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -402,6 +424,77 @@ public class SwerveDrive implements RobotProperties {
                     }
                     return false;
                 }// Reference to this subsystem to set requirements
-        );
-    }
-}
+        );   
+            }
+    class SimSwerveModule {
+        private SwerveModulePosition currentPosition = new SwerveModulePosition();
+        private SwerveModuleState currentState = new SwerveModuleState();
+    
+        public SwerveModulePosition getPosition() {
+          return currentPosition;
+        }
+    
+        public SwerveModuleState getState() {
+          return currentState;
+        }
+    
+        public void setTargetState(SwerveModuleState targetState) {
+          // Optimize the state
+          currentState = SwerveModuleState.optimize(targetState, currentState.angle);
+    
+          currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
+        }
+      }
+    
+
+    class SimGyro {
+            private Rotation2d currentRotation = new Rotation2d();
+        
+            public Rotation2d getRotation2d() {
+              return currentRotation;
+            }
+        
+            public void updateRotation(double angularVelRps){
+              currentRotation = currentRotation.plus(new Rotation2d(angularVelRps * 0.02));
+            }
+        /*
+        public Command followPathCommand(Pose2d targetPose){
+            List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1, 1, Rotation2d.fromDegrees(0)),
+                new Pose2d(3, 1, Rotation2d.fromDegrees(0)),
+                new Pose2d(5, 3, Rotation2d.fromDegrees(90)),
+                targetPose
+            );
+
+            PathPlannerPath path = new PathPlannerPath(
+                bezierPoints,
+                new PathConstraints(3, 3, 2 * Math.PI, 4 * Math.PI),
+                new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
+            );
+
+            return new FollowPathHolonomic(
+                path,
+                swerveDrivePoseEstimator::getEstimatedPosition(), // Robot pose supplier
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    4.5, // Max module speed, in m/s
+                    0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                    new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+                }// Reference to this subsystem to set requirements
+            );
+        }
+        */

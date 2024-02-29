@@ -221,10 +221,10 @@ public class HelperFunctions {
 		return Units.inchesToMeters(metersTraveled);
 	}
 
-	public static double RPMToMPS(double rpm){
-		double rps = rpm/60;
-		double wheelRps = rps / 6.75;
-		double wheelCircumferenceM = Math.PI * 0.1016;
-		return wheelRps * wheelCircumferenceM;
+	public static double MotorRPMToWheelMPS(double rpm){
+		double rps = rpm/60; // convert from rotations per minute to rotations per second
+		double wheelRps = rps / 6.12; // gear ratio calculated from the gearbox
+		double wheelCircumferenceM = Math.PI * 0.1016; // 4 inches in meters
+		return wheelRps * wheelCircumferenceM; // returns the wheel speed in meters per second
 	}
 }

@@ -6,14 +6,22 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 // Java Imports
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 // FRC Imports
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.Command;
 // Team 3171 Imports
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -33,8 +41,9 @@ import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
  * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
  * project, you must also update the build.gradle file in the project.
  */
-public class Robot extends TimedRobot implements RobotProperties {
-
+public class Robot extends LoggedRobot implements RobotProperties {
+  private RobotContainer m_robotContainer;
+  private Command m_autonomousCommand;
   public static double driveAngle = 0;
   public static double driveMag = 0;
   public static double rotMag = 0;
@@ -78,7 +87,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
-  public static final frc.robot.Climbers climbers = new frc.robot.Climbers();
+  public static final Climbers climbers = new Climbers();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
@@ -90,6 +99,9 @@ public class Robot extends TimedRobot implements RobotProperties {
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
   private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
   //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
+  /**Log setup */
+  StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+  .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
   /** Button Numbers **/
   int A = 1;
@@ -139,7 +151,8 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putData("Auto Type: Recorded/PathPlanner", autonTypeChooser);
 
     //PathPlanner Auto Chooser
-    PPPath = new SendableChooser<>();
+    
+    
 
     // Field Orientation Chooser
     fieldOrientationChooser = new SendableChooser<>();
@@ -157,6 +170,7 @@ public class Robot extends TimedRobot implements RobotProperties {
       autonModeChooser.addOption(autonMode, autonMode);
     }
     SmartDashboard.putData("Auto Routines", autonModeChooser);
+    
 
     // Global Variable Init
     fieldOrientationChosen = false;
@@ -183,8 +197,8 @@ public class Robot extends TimedRobot implements RobotProperties {
     //autoaim.whileTrue(AAC);
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
     //alignSpeaker.whileTrue(AWS);
+    m_robotContainer = new RobotContainer();
   }
-
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
@@ -244,6 +258,10 @@ public class Robot extends TimedRobot implements RobotProperties {
       SmartDashboard.putString("Field Adjusted Angle", String.format("%.2f\u00B0", fieldCorrectedAngle));
       swerveDrive.SmartDashboard();
     }
+    SwerveModuleState[] states = swerveDrive.getModuleState();
+    publisher.set(states);
+    Logger.recordOutput("MyStates", states);
+
 
     // Calibrate Swerve Drive
     final boolean zeroTrigger = driveController.getBackButton() && driveController.getStartButton() && isDisabled();
@@ -293,7 +311,12 @@ public class Robot extends TimedRobot implements RobotProperties {
     else { //pathplanner
       SmartDashboard.putData("PathPlanner Auto", PPPath);
       //TODO: Do pathplanner things
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    // schedule the autonomous command (example)
+      if (m_autonomousCommand != null) {
+        m_autonomousCommand.schedule();
+      }
     }
     // Update the autonStartTime
     autonStartTime = Timer.getFPGATimestamp();
@@ -326,6 +349,8 @@ public class Robot extends TimedRobot implements RobotProperties {
         break;
     }
   }
+  
+
 
   @Override
   public void teleopInit() {
@@ -366,6 +391,7 @@ public class Robot extends TimedRobot implements RobotProperties {
           break;
       }
     }
+    
 
     /*
     if(driveController.getRawButton(X)){
