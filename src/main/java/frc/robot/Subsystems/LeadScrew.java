@@ -31,12 +31,14 @@ public class LeadScrew extends SubsystemBase {
         }
         return false;
     }
+
     public double getPosition(){
         return leadScrewMotor.getPosition().getValueAsDouble();
     }
     public void stop() {
         leadScrewMotor.stopMotor();
     }
+
 
 
 }

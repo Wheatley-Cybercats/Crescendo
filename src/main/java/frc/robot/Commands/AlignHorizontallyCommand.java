@@ -1,9 +1,11 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -19,6 +21,7 @@ public class AlignHorizontallyCommand extends Command {
     boolean alliancePresent = DriverStation.getAlliance().isPresent();
     boolean allianceIsRed = String.valueOf(DriverStation.getAlliance()).equals("Optional[Red]");
     boolean allianceIsBlue = String.valueOf(DriverStation.getAlliance()).equals("Optional[Blue]");
+    boolean isRedAlliance = false;
     Transform2d difference;
     double adjustedAngle;
 
@@ -31,21 +34,18 @@ public class AlignHorizontallyCommand extends Command {
     @Override
     public void initialize() {
 
-
-        if (allianceIsRed) {
+        if (DriverStationJNI.getAllianceStation() == AllianceStationID.Red1 || DriverStationJNI.getAllianceStation() == AllianceStationID.Red2 || DriverStationJNI.getAllianceStation() == AllianceStationID.Red3) {
+            isRedAlliance = true;
             speakerPose = redSpeakerPose;
         }
-        else if (allianceIsBlue){
-            speakerPose = blueSpeakerPose;
+        else if (DriverStationJNI.getAllianceStation() == AllianceStationID.Blue1 || DriverStationJNI.getAllianceStation() == AllianceStationID.Blue2 || DriverStationJNI.getAllianceStation() == AllianceStationID.Blue3){
+            isRedAlliance = false;
+            speakerPose= blueSpeakerPose;
         }
 
-        currentPose = new Pose2d(
-                Robot.limelight.getBOTPOSE_WPIBLUE()[0],
-                Robot.limelight.getBOTPOSE_WPIBLUE()[1],
-                Rotation2d.fromDegrees(Robot.limelight.getBOTPOSE_WPIBLUE()[5])
-        );
+        currentPose = vision.getPose();
 
-        SmartDashboard.putNumber("botpose_wpiblue", limelight.getBOTPOSE_WPIBLUE()[0]);
+        SmartDashboard.putNumber("limgeis", limelight.getBOTPOSE_WPIBLUE()[0]);
 
     }
 
@@ -61,7 +61,7 @@ public class AlignHorizontallyCommand extends Command {
         SmartDashboard.putNumber("currPoseX" , currentPose.getX());
         SmartDashboard.putNumber("currPoseY" , currentPose.getY());
 
-        /*
+
         difference = speakerPose.minus(currentPose);
         //difference = new Transform2d(currentPose, speakerPose); //speakerPose is nonexistent because it was not defined in init
         double xdistance = speakerPose.getX() - currentPose.getX();
@@ -72,16 +72,15 @@ public class AlignHorizontallyCommand extends Command {
         double angleFromPerpendicular = Math.toDegrees(Math.atan2(ydistance, xdistance));
         SmartDashboard.putNumber("angleFromPerpendicular", angleFromPerpendicular);
 
-        if (allianceIsRed) adjustedAngle = -angleFromPerpendicular;
-        if (allianceIsBlue) adjustedAngle = Normalize_Gryo_Value(angleFromPerpendicular + 180); //angleFromPerpendicular but rotated by 180
+        if (isRedAlliance) adjustedAngle = -angleFromPerpendicular;
+        if (!isRedAlliance) adjustedAngle = Normalize_Gryo_Value(angleFromPerpendicular + 180); //angleFromPerpendicular but rotated by 180
 
-        if (Robot.limelight.getBOTPOSE_WPIBLUE()[0] != 0 && (Math.abs(gyro.getAngle() - angleFromPerpendicular) > 4)){
+        if (vision.getPose().getX() != 0 && (Math.abs(gyro.getAngle() - angleFromPerpendicular) > 4)){
             gyroPIDController.updateSensorLockValue(adjustedAngle);
             Robot.quickTurning = true;
             Robot.swerveDrive.drive(0, 0, gyroPIDController.getPIDValue(), false);
         }
 
-         */
 
 
 

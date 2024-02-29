@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
+import frc.robot.Robot;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -46,12 +47,10 @@ public class Photonvision {
             FTC2 = result2.getMultiTagResult().estimatedPose.best;
         }
 
-        return new Pose2d(
-                (FTC1.getX()+FTC2.getX())/2,
-                (FTC1.getY()+FTC2.getY())/2,
-                new Rotation2d(
-                        (FTC1.getRotation().toRotation2d().getDegrees() + FTC1.getRotation().toRotation2d().getDegrees())/2
-                ));
+        return (Vision.filterAndAveragePoses(
+                Vision.transform3dToPose2d(FTC1),
+                Vision.transform3dToPose2d(FTC2))
+        );
     }
 
 }

@@ -11,7 +11,7 @@ public class IntakeFromGroundCommand extends Command {
     private final Indexer indexer = Robot.indexer;
     //private final DigitalInput beamBreak = Robot.beamBreak;
 
-    public IntakeFromGroundCommand(Intake intake, Indexer indexer) {
+    public IntakeFromGroundCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.intake, this.indexer);
@@ -31,8 +31,7 @@ public class IntakeFromGroundCommand extends Command {
     @Override
     public boolean isFinished() {
         //when beam break detects note, this will return true & call end()
-        //if (indexer.getBeamBreakState()) return true;
-        return false;
+        return indexer.getBeamBreakState();
     }
 
     @Override
