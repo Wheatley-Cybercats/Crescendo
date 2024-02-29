@@ -11,7 +11,7 @@ public class ShootAmpCommand extends Command {
     private final Flywheel flywheel = Robot.flywheel;
     private final Indexer indexer = Robot.indexer;
 
-    public ShootAmpCommand(Flywheel flywheel, Indexer indexer) {
+    public ShootAmpCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.flywheel, this.indexer);

@@ -7,10 +7,9 @@ import frc.robot.Subsystems.LeadScrew;
 
 
 public class ZeroLeadScrew extends Command {
-    private final LeadScrew leadScrew;
+    private final LeadScrew leadScrew = Robot.leadscrew;
 
-    public ZeroLeadScrew(LeadScrew leadScrew) {
-        this.leadScrew = leadScrew;
+    public ZeroLeadScrew() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.leadScrew);

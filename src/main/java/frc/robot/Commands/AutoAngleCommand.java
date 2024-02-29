@@ -24,7 +24,7 @@ public class AutoAngleCommand extends Command {
     private final LeadScrew leadscrew = Robot.leadscrew;
 
 
-    public AutoAngleCommand(LeadScrew leadscrew) {
+    public AutoAngleCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.leadscrew);

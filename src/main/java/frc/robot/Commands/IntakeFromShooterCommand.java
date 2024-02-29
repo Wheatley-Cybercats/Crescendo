@@ -13,7 +13,7 @@ public class IntakeFromShooterCommand extends Command {
 
     //private final DigitalInput beamBreak = new DigitalInput(0);
 
-    public IntakeFromShooterCommand(Flywheel flywheel, Indexer indexer) {
+    public IntakeFromShooterCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.flywheel, this.indexer);
