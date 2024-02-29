@@ -1,8 +1,5 @@
 package frc.robot.Subsystems;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -115,13 +112,5 @@ public class LimeLight {
 
     public double[] getCAMERAPOSE_ROBOTSPACE(){
         return tableEntry.getEntry("camerapose_robotspace").getDoubleArray(new double[6]);
-    }
-    public Pose3d getPose(){
-        return new Pose3d(
-                getBOTPOSE_WPIRED()[0],
-                getBOTPOSE_WPIRED()[1],
-                getBOTPOSE_WPIRED()[2],
-                new Rotation3d(getBOTPOSE()[3], getBOTPOSE()[4], getBOTPOSE()[5])
-        );
     }
 }
