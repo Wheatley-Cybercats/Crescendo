@@ -20,6 +20,7 @@ public class AutoAngleCommand extends Command {
     Pose2d speakerPose;
     Transform2d difference;
     boolean isRedAlliance = false;
+    double desired;
 
     private final LeadScrew leadscrew = Robot.leadscrew;
 
@@ -52,26 +53,26 @@ public class AutoAngleCommand extends Command {
     @Override
     public void execute() {
 
-        difference = speakerPose.minus(currentPose);
+        //difference = speakerPose.minus(currentPose);
         double xdistance = speakerPose.getX() - currentPose.getX();
         double ydistance = speakerPose.getY() - currentPose.getY(); //x and y on the ground
 
         distanceFromSpeaker = Math.sqrt(xdistance*xdistance + ydistance*ydistance);
         //shooterAngle = Math.atan2(speakerHeight, distanceFromSpeaker);
-
-        leadscrew.setPosition(regression(distanceFromSpeaker));
+        desired = regression(distanceFromSpeaker);
+        leadscrew.moveToPosition(regression(desired));
 
 
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return leadscrew.atPosition(desired);
     }
 
     @Override
     public void end(boolean interrupted) {
-
+        leadscrew.stop();
     }
 
     private double regression(double x){
