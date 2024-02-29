@@ -79,15 +79,13 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
   public static final Climbers climbers = new Climbers();
-  public static final Photonvision photon = new Photonvision();
-  public static final Vision vision = new Vision();
 
   /** Shooter Commands **/
-  private final ShootSpeakerCommand SSC = new ShootSpeakerCommand();
+  private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
   private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand(flywheel, indexer);
   private final ShootAmpCommand SAC = new ShootAmpCommand(flywheel, indexer);
-  private final ShootTrapCommand STC = new ShootTrapCommand();
-  private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand();
+  private final ShootTrapCommand STC = new ShootTrapCommand(flywheel, indexer);
+  private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand(intake, indexer);
   private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
   private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
