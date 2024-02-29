@@ -33,8 +33,8 @@ public class Flywheel extends SubsystemBase {
         botFlywheelEncoder = botFlywheelMotor.getEncoder();
         botFlywheelEncoder.setPosition(0);
 
-        topFlywheelMotor.setInverted(true);
-        botFlywheelMotor.setInverted(true);
+        topFlywheelMotor.setInverted(false);
+        botFlywheelMotor.setInverted(false);
     }
 
     public void setTopFlywheelMotorVolt(double topWheelVolt) {
@@ -67,11 +67,11 @@ public class Flywheel extends SubsystemBase {
     }
     public boolean topflywheelAtSpeed(){
         //return (topFlywheelPIDController.atSetpoint());
-        return topFlywheelMotor.getEncoder().getVelocity() > 4200;
+        return topFlywheelMotor.getEncoder().getVelocity() > 4100;
     }
     public boolean botflywheelAtSpeed(){
         //return(botFlywheelPIDController.atSetpoint());
-        return botFlywheelMotor.getEncoder().getVelocity() < -4200;
+        return botFlywheelMotor.getEncoder().getVelocity() < -4100;
     }
     public boolean topflywheelAtAmpSpeed(){
         //return (topFlywheelPIDController.atSetpoint());

@@ -14,9 +14,9 @@ public class LED extends SubsystemBase {
      * 0 corresponds to 1500us
      * 1 corresponds to 2000us
      */
-    private static Spark blinkin = new Spark(1);;
+    private static Spark blinkin = new Spark(0);
     public LED(){
-        solid_green();
+        solid_dark_red();
     }
     public void set (double num){
         if ((num >= -1.0) && (num <= 1.0)){
@@ -47,14 +47,20 @@ public class LED extends SubsystemBase {
     public void solid_green(){
         set(0.77);
     }
+    public void heartbeat_color1(){ set(0.05);}
+    public void shot_color1(){ set(0.13);}
+    public void strobe_gold(){ set(-0.07);}
+
     public void allianceColor(){
         boolean isRed = NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true);
         if (isRed){
-            Robot.blinkin.set(-0.01);
+            Robot.blinkin.set(0.01);
         } else {
-            Robot.blinkin.set(0.19);
+            Robot.blinkin.set(0.21);
         }
     }
+
+
 
 }
 

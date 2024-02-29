@@ -26,6 +26,7 @@ public class OuttakeCommand extends Command {
     public void execute() {
         intake.setSpeed(-RobotProperties.IntakeProperties.intakeIntakingSpeed);
         indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed);
+        Robot.blinkin.strobe_gold();
     }
 
     @Override

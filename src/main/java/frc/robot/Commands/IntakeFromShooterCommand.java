@@ -28,13 +28,13 @@ public class IntakeFromShooterCommand extends Command {
     @Override
     public void execute() {
         flywheel.setTopFlywheelMotorVolt(.3);
-        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed*1.2);
+        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed*1.5);
         /*if (beamBreak.get()) {
             //set LED color
         } else{
             set current color
          */
-        //Robot.blinkin.rainbow_rainbow();
+        Robot.blinkin.solid_green();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class IntakeFromShooterCommand extends Command {
     public void end(boolean interrupted) {
         flywheel.stop();
         indexer.stop();
-        //Robot.blinkin.set(0);
+        Robot.blinkin.set(0);
         flywheel.resetPID();
     }
 }

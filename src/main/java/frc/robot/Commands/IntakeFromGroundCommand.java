@@ -26,6 +26,7 @@ public class IntakeFromGroundCommand extends Command {
     public void execute() {
         intake.setSpeed(RobotProperties.IntakeProperties.intakeIntakingSpeed);
         indexer.setSpeed(-RobotProperties.IndexerProperties.indexerIntakingSpeed);
+        Robot.blinkin.wave_forest();
     }
 
     @Override
@@ -39,5 +40,6 @@ public class IntakeFromGroundCommand extends Command {
     public void end(boolean interrupted) {
         indexer.stop();
         intake.stop();
+        Robot.blinkin.rainbow_party();
     }
 }

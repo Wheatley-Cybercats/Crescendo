@@ -37,7 +37,7 @@ public interface RobotProperties {
                 MOTOR_TYPE.REV, 51, false, ENCODER_TYPE.CTRE, 12, false, "The CANivore", false,
                 new Translation2d(-0.318, -0.318));
         public static final SwerveUnitConfig leftFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 62, true,
-                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false,"The CANivore", false,
+                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false, "The CANivore", false,
                 new Translation2d(-0.318, 0.318));
         public static final SwerveUnitConfig rightFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 50, true,
                 MOTOR_TYPE.REV, 49, false, ENCODER_TYPE.CTRE, 11, false,"The CANivore", false,
@@ -50,6 +50,7 @@ public interface RobotProperties {
 
         /** CAN ID Properties **/
         public static final int GYRO_CAN_ID = 0;
+
 
         /** FLYWHEEL Constants **/
         public static final class FlywheelProperties {
@@ -71,24 +72,33 @@ public interface RobotProperties {
         public static final class IndexerProperties {
                 public static final int INDEXER_MOTOR_ID = 9;
                 public static final double shootingSpeed = -.17;
-                public static final double indexerIntakingSpeed = .1;
+                public static final double indexerIntakingSpeed = .15;
+                public static final int BEAM_BREAK_DIO_PORT = 0;
+
         }
 
         /** Lead Screw Constants **/
         public static final int LEAD_SCREW_MOTOR_ID = 10;
+        public static final double AMP_ANGLE = 91.5;
+        public static final double PODIUM_ANGLE = 36;
+        public static final double WING_ANGLE = 21; //17; //when front of bumpers are lined up with outer edge of stage
+        public static final double SUBWOOFER_ANGLE = 115;
+        public static final double THRU_BORE_ENCODER_PORT = 4;
+
+        // y = 250\left(0.993624\right)^{x}
 
         /** Intake Constants **/
         public static final class IntakeProperties {
                 public static final int TOP_INTAKE_MOTOR_ID = 5;
                 public static final int BOT_INTAKE_MOTOR_ID = 4;
-                public static final double intakeIntakingSpeed = .6;
+                public static final double intakeIntakingSpeed = .6; //.6;
         }
         /** Climb Constants **/
-        public static final class ClimberProperties {
+        public static final class Climber {
                 public static final int LEFT_CLIMB_MOTOR_ID = 20;
                 public static final int RIGHT_CLIMB_MOTOR_ID = 21;
-                public static final double upSpeed = -.3;
-                public static final double downSpeed = .35;
+                public static final double upSpeed = -.75;
+                public static final double downSpeed = .6;
 
         }
         /** AprilTag/Limelight constants **/
@@ -98,8 +108,8 @@ public interface RobotProperties {
 
         //-0.00005, 0, 0
         //.013, 0.00075, 0.00075
-        public static final double GYRO_KP = 0.01, GYRO_KI = 0.0005, GYRO_KD = 0.0006, GYRO_MIN = -0.5, GYRO_MAX = 0.5;//-0.5, 0.000008
-        public static final double SLEW_KP = -0.0065, SLEW_KI = -0.004, SLEW_KD = 0.0005, SLEW_KF = 0, SLEW_PID_MIN = -.7, SLEW_PID_MAX = .5;
+        public static final double GYRO_KP = 0.007, GYRO_KI = 0, GYRO_KD = -0.02, GYRO_MIN = -0.5, GYRO_MAX = 0.5;//-0.5, 0.000008
+        public static final double SLEW_KP = -0.0072, SLEW_KI = -0, SLEW_KD = 0, SLEW_KF = 0, SLEW_PID_MIN = -.7, SLEW_PID_MAX = .5;
 
         /** Auton Mode Constants **/
         public static final String DEFAULT_AUTON = "Disabled";

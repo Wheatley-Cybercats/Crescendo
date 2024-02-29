@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -23,9 +23,9 @@ public class LimeLight {
 //        this.tv = table.getEntry("tv");
 //        this.botpose = getBOTPOSE();
     }
-   /* public double[] readValues(){
-        return new double[]{getTX(), getTY(), getTA(), getTV()};
-    }*/
+    /* public double[] readValues(){
+         return new double[]{getTX(), getTY(), getTA(), getTV()};
+     }*/
     public double getTV(){
         return tableEntry.getEntry("tv").getDouble(0);
     }
