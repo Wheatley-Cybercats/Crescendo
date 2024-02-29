@@ -86,7 +86,7 @@ public class SwerveDrive implements RobotProperties {
                 }, new Pose2d(new Translation2d(Robot.limelight.getBOTPOSE()[0], Robot.limelight.getBOTPOSE()[1]), new Rotation2d(Robot.limelight.getBOTPOSE()[5]))
         );
         
-        SwerveDriveOdometry swerveDriveOdometery = new SwerveDriveOdometry(swerveDriveKinematics, pigeon.getRotation2d(), new SwerveModulePosition[]{
+        swerveDriveOdometry = new SwerveDriveOdometry(swerveDriveKinematics, pigeon.getRotation2d(), new SwerveModulePosition[]{
             leftFrontUnit.getSwerveModulePosition(),
             rightFrontUnit.getSwerveModulePosition(),
             leftRearUnit.getSwerveModulePosition(),
@@ -347,12 +347,15 @@ public class SwerveDrive implements RobotProperties {
         swerveDriveOdometry.resetPosition(pigeon.getRotation2d(), getPositions(), pose);
     }
     public SwerveModulePosition[] getPositions() {
-        SwerveModulePosition[] positions = new SwerveModulePosition[modules.length];
-        for (int i = 0; i < modules.length; i++) {
-          positions[i] = modules[i].getSwerveModulePosition();
-        }
+        SwerveModulePosition[] positions = new SwerveModulePosition[]{
+            leftFrontUnit.getSwerveModulePosition(),
+            rightFrontUnit.getSwerveModulePosition(),
+            leftRearUnit.getSwerveModulePosition(),
+            rightRearUnit.getSwerveModulePosition()
+        };
         return positions;
-    } 
+    }
+
     public ChassisSpeeds getRobotRelativeSpeeds(){
         return swerveDriveKinematics.toChassisSpeeds(
                 leftFrontUnit.getState(),

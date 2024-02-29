@@ -94,6 +94,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
   public static final LimeLight limelight = new LimeLight();
   public static final LED blinkin = new LED();
   public static final Climbers climbers = new Climbers();
+  public static final Photonvision photon = new Photonvision();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
