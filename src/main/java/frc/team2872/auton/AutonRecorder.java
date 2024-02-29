@@ -29,7 +29,7 @@ public class AutonRecorder {
     }
 
     /**
-     * 
+     *
      */
     public void addNewData(final AutonRecorderData newData) {
         if (newData != null) {
@@ -52,7 +52,7 @@ public class AutonRecorder {
     /**
      * Saves the current data collected by the auton recorder to the specified file
      * path and clears the AutonRecorder.
-     * 
+     *
      * @param autonFileName
      *            The path to the file to save the auton data to.
      */
@@ -91,7 +91,7 @@ public class AutonRecorder {
     }
 
     /**
-     * 
+     *
      * @param autonFileName
      * @return
      */

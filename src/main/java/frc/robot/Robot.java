@@ -5,6 +5,7 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 
 // Java Imports
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -25,7 +26,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 // Team 3171 Imports
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.*;
+import frc.robot.Commands.ShooterPresets.AmpAnglePreset;
+import frc.robot.Commands.ShooterPresets.PodiumAnglePreset;
+import frc.robot.Commands.ShooterPresets.SubwooferAnglePreset;
+import frc.robot.Commands.ShooterPresets.WingLineAnglePreset;
 import frc.robot.Subsystems.*;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.sensors.Pigeon2Wrapper;
@@ -98,10 +104,20 @@ public class Robot extends LoggedRobot implements RobotProperties {
   private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
   private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
+
   //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
   /**Log setup */
   StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
   .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+
+  //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
+  private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
+  private final AmpAnglePreset AAP = new AmpAnglePreset(leadscrew);
+  private final PodiumAnglePreset PAP = new PodiumAnglePreset(leadscrew);
+  private final CallibrateAt83 CAAA = new CallibrateAt83(leadscrew);
+  private final SubwooferAnglePreset SAP = new SubwooferAnglePreset(leadscrew);
+
+  private final ZeroLeadScrew ZLS = new ZeroLeadScrew(leadscrew);
 
   /** Button Numbers **/
   int A = 1;
@@ -125,7 +141,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
     operatorController = new XboxController(1);
 
     // Sensors
-    gyro = new Pigeon2Wrapper(GYRO_CAN_ID);
+    gyro = new Pigeon2Wrapper(GYRO_CAN_ID, "The CANivore");
     gyro.reset();
 
     // PID Controllers
@@ -178,26 +194,54 @@ public class Robot extends LoggedRobot implements RobotProperties {
     // Edge Trigger Init
     zeroEdgeTrigger = false;
 
-    JoystickButton shootSpeaker = new JoystickButton(operatorController, B);
+    //DRIVER
+    JoystickButton shootSpeaker = new JoystickButton(driveController, B);
     shootSpeaker.whileTrue(SSC);
+    JoystickButton alignHoriz = new JoystickButton(driveController, rightTop);
+    alignHoriz.whileTrue(AHC);
+
+    //OPERATOR
+    JoystickButton alter = new JoystickButton(operatorController, leftMid);
     JoystickButton intakeFromShooter = new JoystickButton(operatorController, X);
     intakeFromShooter.whileTrue(IFS);
     JoystickButton shootAmp = new JoystickButton(operatorController, A);
     shootAmp.whileTrue(SAC);
-    JoystickButton shootTrap = new JoystickButton(operatorController, Y);
-    shootTrap.whileTrue(STC);
     JoystickButton intake = new JoystickButton(operatorController, leftTop);
     intake.whileTrue(IC);
-    JoystickButton alignHoriz = new JoystickButton(driveController, rightTop);
-    alignHoriz.whileTrue(AHC);
+    //JoystickButton shootTrap = new JoystickButton(operatorController, Y);
+    //shootTrap.whileTrue(STC);
+    JoystickButton subwoofer = new JoystickButton(operatorController, Y);
+    subwoofer.toggleOnTrue(SAP);
     JoystickButton outtake = new JoystickButton(operatorController, rightTop);
     outtake.whileTrue(OC);
 
+    JoystickButton ampAngle = new JoystickButton(operatorController, rightMid);
+    ampAngle.toggleOnTrue(AAP);
+    alter.and(shootAmp).whileTrue(STC);
+    /*
+    JoystickButton podiumAngle = new JoystickButton(operatorController, leftJoystickPressed);
+    podiumAngle.toggleOnTrue(PAP);
+    JoystickButton wingLine = new JoystickButton(operatorController, Y);
+    wingLine.toggleOnTrue(WLP);
+    JoystickButton zeroLead = new JoystickButton(operatorController, rightJoystickPressed);
+    zeroLead.whileTrue(ZLS);
+     */
+    BooleanSupplier POVis90 = () -> operatorController.getPOV() == 90;
+    Trigger podiumAngle = new Trigger(POVis90);
+    podiumAngle.toggleOnTrue(PAP);
+    alter.and(podiumAngle).whileTrue(ZLS);
+    BooleanSupplier POVis270 = () -> operatorController.getPOV() == 270;
+    Trigger wingLineAngle = new Trigger(POVis270);
+    wingLineAngle.toggleOnTrue(WLP);
+    alter.and(wingLineAngle).whileTrue(CAAA);
+
     //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
+
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
     //alignSpeaker.whileTrue(AWS);
     m_robotContainer = new RobotContainer();
+
   }
   @Override
   public void robotPeriodic() {
@@ -533,34 +577,31 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
     /**move lead screw manually**/
     if (operatorController.getPOV() == 0){
-      leadscrew.moveShooterUp(-0.3);
+      leadscrew.moveShooterUp(-0.5);
     } else if(operatorController.getPOV() == 180){
-      leadscrew.moveShooterDown(0.4);
+      leadscrew.moveShooterDown(0.6);
     } else {
       leadscrew.stop();
     }
 
     /**move climbers manually**/
     // LEFT CLIMBER
-    if (operatorController.getRawAxis(1) < -0.04){ // left joystick up
+    if (operatorController.getRawAxis(1) < -0.15){ // left joystick up
       climbers.raiseLeftClimber();
-    } else if (operatorController.getRawAxis(1) > 0.04){ // left joystick down
+    } else if (operatorController.getRawAxis(1) > 0.15){ // left joystick down
       climbers.lowerLeftClimber();
     } else {
       climbers.stopLeftClimber();
     }
 
     // RIGHT CLIMBER
-    if (operatorController.getRawAxis(5) < -0.04){ // right joystick up
+    if (operatorController.getRawAxis(5) < -0.1){ // right joystick up
       climbers.raiseRightClimber();
-    } else if (operatorController.getRawAxis(5) > 0.04){ // right joystick down
+    } else if (operatorController.getRawAxis(5) > 0.1){ // right joystick down
       climbers.lowerRightClimber();
     } else {
       climbers.stopRightClimber();
     }
-
-
-
 
     //reset gyro to 0
     if (driveController.getRawButton(3)){

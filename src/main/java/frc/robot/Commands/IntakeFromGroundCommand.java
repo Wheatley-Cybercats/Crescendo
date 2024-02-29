@@ -26,18 +26,19 @@ public class IntakeFromGroundCommand extends Command {
     public void execute() {
         intake.setSpeed(RobotProperties.IntakeProperties.intakeIntakingSpeed);
         indexer.setSpeed(-RobotProperties.IndexerProperties.indexerIntakingSpeed);
+        Robot.blinkin.wave_forest();
     }
 
     @Override
     public boolean isFinished() {
         //when beam break detects note, this will return true & call end()
-        //if (indexer.getBeamBreakState()) return true;
-        return false;
+        return indexer.getBeamBreakState();
     }
 
     @Override
     public void end(boolean interrupted) {
         indexer.stop();
         intake.stop();
+        Robot.blinkin.rainbow_party();
     }
 }

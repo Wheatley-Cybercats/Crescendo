@@ -11,7 +11,7 @@ public class IntakeFromShooterCommand extends Command {
     private final Flywheel flywheel = Robot.flywheel;
     private final Indexer indexer = Robot.indexer;
 
-    private final DigitalInput beamBreak = new DigitalInput(0);
+    //private final DigitalInput beamBreak = new DigitalInput(0);
 
     public IntakeFromShooterCommand(Flywheel flywheel, Indexer indexer) {
         // each subsystem used by the command must be passed into the
@@ -28,27 +28,26 @@ public class IntakeFromShooterCommand extends Command {
     @Override
     public void execute() {
         flywheel.setTopFlywheelMotorVolt(.3);
-        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed*1.2);
+        indexer.setSpeed(RobotProperties.IndexerProperties.indexerIntakingSpeed*1.5);
         /*if (beamBreak.get()) {
             //set LED color
         } else{
             set current color
          */
-        //Robot.blinkin.rainbow_rainbow();
+        Robot.blinkin.solid_green();
     }
 
     @Override
     public boolean isFinished() {
         // TODO: Make this return true when this Command no longer needs to run execute()
-
-        return false;
+        return indexer.getBeamBreakState();
     }
 
     @Override
     public void end(boolean interrupted) {
         flywheel.stop();
         indexer.stop();
-        //Robot.blinkin.set(0);
+        Robot.blinkin.set(0);
         flywheel.resetPID();
     }
 }
