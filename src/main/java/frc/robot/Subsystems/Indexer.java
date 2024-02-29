@@ -25,6 +25,6 @@ public class Indexer extends SubsystemBase {
         indexerMotor.set(0);
     }
     public boolean getBeamBreakState(){
-        return beamBreak.get();
+        return !beamBreak.get();
     }
 }

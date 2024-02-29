@@ -32,8 +32,7 @@ public class IntakeFromGroundCommand extends Command {
     @Override
     public boolean isFinished() {
         //when beam break detects note, this will return true & call end()
-        //if (indexer.getBeamBreakState()) return true;
-        return false;
+        return indexer.getBeamBreakState();
     }
 
     @Override
