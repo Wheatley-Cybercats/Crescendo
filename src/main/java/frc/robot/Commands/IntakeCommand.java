@@ -11,7 +11,7 @@ public class IntakeCommand extends Command {
     private final Intake intake = Robot.intake;
     private final Indexer indexer = Robot.indexer;
 
-    public IntakeCommand(Intake intake, Indexer indexer) {
+    public IntakeCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.intake, this.indexer);

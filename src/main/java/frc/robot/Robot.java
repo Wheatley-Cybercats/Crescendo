@@ -83,26 +83,28 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final Intake intake = new Intake();
   public static final LeadScrew leadscrew = new LeadScrew();
   public static final LimeLight limelight = new LimeLight();
+  public static final Photonvision photon = new Photonvision();
   public static final LED blinkin = new LED();
   public static final Climbers climbers = new Climbers();
 
   /** Shooter Commands **/
-  private final ShootSpeakerCommand SSC = new ShootSpeakerCommand(flywheel, indexer);
-  private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand(flywheel, indexer);
-  private final ShootAmpCommand SAC = new ShootAmpCommand(flywheel, indexer);
-  private final ShootTrapCommand STC = new ShootTrapCommand(flywheel, indexer);
-  private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand(intake, indexer);
+  private final ShootSpeakerCommand SSC = new ShootSpeakerCommand();
+  private final IntakeFromShooterCommand IFS = new IntakeFromShooterCommand();
+  private final ShootAmpCommand SAC = new ShootAmpCommand();
+  private final ShootTrapCommand STC = new ShootTrapCommand();
+  private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand();
   private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
-  private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
+  private final OuttakeCommand OC = new OuttakeCommand();
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
   private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
+
+  private final CallibrateAt83 CAAA = new CallibrateAt83(leadscrew);
   private final AmpAnglePreset AAP = new AmpAnglePreset(leadscrew);
   private final PodiumAnglePreset PAP = new PodiumAnglePreset(leadscrew);
-  private final CallibrateAt83 CAAA = new CallibrateAt83(leadscrew);
   private final SubwooferAnglePreset SAP = new SubwooferAnglePreset(leadscrew);
 
-  private final ZeroLeadScrew ZLS = new ZeroLeadScrew(leadscrew);
+  private final ZeroLeadScrew ZLS = new ZeroLeadScrew();
 
   /** Button Numbers **/
   int A = 1;
