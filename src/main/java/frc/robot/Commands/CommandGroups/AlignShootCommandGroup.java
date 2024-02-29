@@ -8,6 +8,6 @@ import frc.robot.Commands.ShootSpeakerCommand;
 
 public class AlignShootCommandGroup extends SequentialCommandGroup {
     public AlignShootCommandGroup() {
-        super(new AlignHorizontallyCommand(), new ShootSpeakerCommand(null, null));
+        super(new AlignHorizontallyCommand(), new ShootSpeakerCommand());
     }
 }
