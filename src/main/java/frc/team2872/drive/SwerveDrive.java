@@ -6,6 +6,7 @@ package frc.team2872.drive;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotProperties;
+import frc.robot.Subsystems.LimeLight;
 import frc.team2872.sensors.Pigeon2Wrapper;
 import frc.team2872.sensors.UDPClient;
 
@@ -38,13 +40,14 @@ public class SwerveDrive implements RobotProperties {
     private List<UDPClient> udpClients;
     public SwerveDriveKinematics swerveDriveKinematics;
     private Pigeon2Wrapper pigeon;
-
+    private LimeLight limeLight;
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     private SwerveDriveOdometry swerveDriveOdometry;
     public SwerveDrive(final SwerveUnitConfig lrUnitConfig, final SwerveUnitConfig lfUnitConfig, final SwerveUnitConfig rfUnitConfig,
             final SwerveUnitConfig rrUnitConfig) {
         // Init Pigeon        
         pigeon = new Pigeon2Wrapper(GYRO_CAN_ID);
+        limeLight = new LimeLight();
         // Init Swerve Units
         this.leftRearUnit = new SwerveUnit(lrUnitConfig);
         this.leftFrontUnit = new SwerveUnit(lfUnitConfig);
@@ -333,15 +336,14 @@ public class SwerveDrive implements RobotProperties {
          */
 
     }
+    public Pose3d getPose3D(){
+        return new Pose3d(swerveDriveOdometry.getPoseMeters());
+    }
     public Pose2d getPose(){
         return swerveDriveOdometry.getPoseMeters();
     }
-    public Pose2d getLLPose(){
-        return new Pose2d(
-                Robot.limelight.getBOTPOSE_WPIRED()[0],
-                Robot.limelight.getBOTPOSE_WPIRED()[1],
-                new Rotation2d(Robot.limelight.getBOTPOSE_WPIRED()[5])
-        );
+    public Pose3d getLLPose(){
+        return limeLight.getPose();
     }
     public void resetPose(Pose2d pose) {
         swerveDriveOdometry.resetPosition(pigeon.getRotation2d(), getPositions(), pose);
@@ -389,115 +391,3 @@ public class SwerveDrive implements RobotProperties {
         rightRearUnit.setTargetState(targetStates[3]);
     }
 }
-
-    /**  public Command followPathCommand(Pose2d targetPose){
-        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(1, 1, Rotation2d.fromDegrees(0)),
-                new Pose2d(3, 1, Rotation2d.fromDegrees(0)),
-                new Pose2d(5, 3, Rotation2d.fromDegrees(90)),
-                targetPose
-        );
-
-        PathPlannerPath path = new PathPlannerPath(
-                bezierPoints,
-                new PathConstraints(3, 3, 2 * Math.PI, 4 * Math.PI),
-                new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
-        );
-        
-         return new FollowPathHolonomic(
-                path,
-                swerveDrivePoseEstimator::getEstimatedPosition(), // Robot pose supplier
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                }// Reference to this subsystem to set requirements
-        );   
-            }
-    class SimSwerveModule {
-        private SwerveModulePosition currentPosition = new SwerveModulePosition();
-        private SwerveModuleState currentState = new SwerveModuleState();
-    
-        public SwerveModulePosition getPosition() {
-          return currentPosition;
-        }
-    
-        public SwerveModuleState getState() {
-          return currentState;
-        }
-    
-        public void setTargetState(SwerveModuleState targetState) {
-          // Optimize the state
-          currentState = SwerveModuleState.optimize(targetState, currentState.angle);
-    
-          currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
-        }
-      }
-    
-
-    class SimGyro {
-            private Rotation2d currentRotation = new Rotation2d();
-        
-            public Rotation2d getRotation2d() {
-              return currentRotation;
-            }
-        
-            public void updateRotation(double angularVelRps){
-              currentRotation = currentRotation.plus(new Rotation2d(angularVelRps * 0.02));
-            }
-        /*
-        public Command followPathCommand(Pose2d targetPose){
-            List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(1, 1, Rotation2d.fromDegrees(0)),
-                new Pose2d(3, 1, Rotation2d.fromDegrees(0)),
-                new Pose2d(5, 3, Rotation2d.fromDegrees(90)),
-                targetPose
-            );
-
-            PathPlannerPath path = new PathPlannerPath(
-                bezierPoints,
-                new PathConstraints(3, 3, 2 * Math.PI, 4 * Math.PI),
-                new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
-            );
-
-            return new FollowPathHolonomic(
-                path,
-                swerveDrivePoseEstimator::getEstimatedPosition(), // Robot pose supplier
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                    4.5, // Max module speed, in m/s
-                    0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-                }// Reference to this subsystem to set requirements
-            );
-        }
-        */

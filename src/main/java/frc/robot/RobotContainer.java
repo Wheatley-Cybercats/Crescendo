@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.List;
 
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -17,21 +18,25 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Subsystems.Flywheel;
 import frc.robot.Subsystems.SwerveDriveAccesor;
 
 /** Add your docs here. */
 public class RobotContainer {
+  
     private SwerveDriveAccesor driveAccesor = new SwerveDriveAccesor();
     private final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+    
     // Register named commands
         NamedCommands.registerCommand("marker1", Commands.print("Passed marker 1"));
         NamedCommands.registerCommand("marker2", Commands.print("Passed marker 2"));
@@ -55,7 +60,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Add a button to run the example auto to SmartDashboard, this will also be in the auto chooser built above
-    SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+    //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
 
     // Add a button to run pathfinding commands to SmartDashboard
     /** SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(

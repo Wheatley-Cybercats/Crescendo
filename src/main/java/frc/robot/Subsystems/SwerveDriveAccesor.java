@@ -9,6 +9,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.google.flatbuffers.Constants;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -32,29 +36,21 @@ import frc.robot.RobotProperties;
 import frc.team2872.drive.SwerveDrive;
 import frc.team2872.drive.SwerveUnit;
 import frc.team2872.drive.SwerveUnitConfig;
+import frc.team2872.sensors.Pigeon2Wrapper;
  
 
 public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties {
   /** Creates a new SwerveDriveAccesor. */ 
-  private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-
-  private SimGyro gyro;
+  private Pigeon2Wrapper gyro = Robot.gyro;
   public static SwerveDrive drive = Robot.swerveDrive;
   private Field2d field = new Field2d();
   
   public SwerveDriveAccesor() {
-    gyro = new SimGyro();
-    modules = new SimSwerveModule[]{
-      new SimSwerveModule(),
-      new SimSwerveModule(),
-      new SimSwerveModule(),
-      new SimSwerveModule()
-    };
     kinematics = drive.swerveDriveKinematics;
     odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
-
+    
     // Configure AutoBuilder
     AutoBuilder.configureHolonomic(
       drive::getPose, 
@@ -82,6 +78,16 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
       this
     );
     drive.driveInit();
+    PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
+
 
     // Set up custom logging to add the current path to a field 2d widget
     PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
@@ -92,8 +98,6 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   @Override
   public void periodic() {
     // Update the simulated gyro, not needed in a real project
-    gyro.updateRotation(getSpeeds().omegaRadiansPerSecond);
-
     odometry.update(gyro.getRotation2d(), getPositions());
 
     field.setRobotPose(getPose());
@@ -109,11 +113,11 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
     drive.SmartDashboard();
 }
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return drive.getPose();
   }
 
   public void resetPose(Pose2d pose) {
-    odometry.resetPosition(gyro.getRotation2d(), getPositions(), pose);
+    drive.resetPose(pose);
   }
 
   public ChassisSpeeds getSpeeds() {
@@ -124,7 +128,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   }
 
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-    driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
+    drive.driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
   }
 
   public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
@@ -135,26 +139,16 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   }
 
   public void setStates(SwerveModuleState[] targetStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, 4);
-
-    for (int i = 0; i < modules.length; i++) {
-      modules[i].setTargetState(targetStates[i]);
-    }
+    drive.setStates(targetStates);
   }
 
   public SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[modules.length];
-    for (int i = 0; i < modules.length; i++) {
-      states[i] = modules[i].getState();
-    }
+    SwerveModuleState[] states = drive.getModuleState();
     return states;
   }
 
   public SwerveModulePosition[] getPositions() {
-    SwerveModulePosition[] positions = new SwerveModulePosition[modules.length];
-    for (int i = 0; i < modules.length; i++) {
-      positions[i] = modules[i].getPosition();
-    }
+    SwerveModulePosition[] positions = drive.getPositions();
     return positions;
   }
   public void zero() {
@@ -177,41 +171,4 @@ public synchronized void saveSlewCalibration(final String slewOffsets) {
             e.printStackTrace();
         }
     }
-  /**
-   * Basic simulation of a swerve module, will just hold its current state and not use any hardware
-   */
-  class SimSwerveModule {
-    private SwerveModulePosition currentPosition = new SwerveModulePosition();
-    private SwerveModuleState currentState = new SwerveModuleState();
-
-    public SwerveModulePosition getPosition() {
-      return currentPosition;
-    }
-
-    public SwerveModuleState getState() {
-      return currentState;
-    }
-
-    public void setTargetState(SwerveModuleState targetState) {
-      // Optimize the state
-      currentState = SwerveModuleState.optimize(targetState, currentState.angle);
-
-      currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
-    }
-  }
-
-  /**
-   * Basic simulation of a gyro, will just hold its current state and not use any hardware
-   */
-  class SimGyro {
-    private Rotation2d currentRotation = new Rotation2d();
-
-    public Rotation2d getRotation2d() {
-      return currentRotation;
-    }
-
-    public void updateRotation(double angularVelRps){
-      currentRotation = currentRotation.plus(new Rotation2d(angularVelRps * 0.02));
-    }
-  }
 }

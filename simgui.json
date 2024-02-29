@@ -43,6 +43,9 @@
         "open": true
       },
       "SmartDashboard": {
+        "Auto Mode": {
+          "open": true
+        },
         "Example Auto": {
           "open": true
         },

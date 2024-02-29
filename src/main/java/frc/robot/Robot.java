@@ -7,19 +7,25 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 // FRC Imports
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -108,8 +114,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
   //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
   /**Log setup */
-  StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
-  .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+
 
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
   private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
@@ -137,6 +142,23 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
   @Override
   public void robotInit() {
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+    }
+  Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    // ...
+    
+  Logger.start();
     // Controllers Init
     driveController = new XboxController(0);
     operatorController = new XboxController(1);
@@ -242,10 +264,14 @@ public class Robot extends LoggedRobot implements RobotProperties {
     //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
     //alignSpeaker.whileTrue(AWS);
     m_robotContainer = new RobotContainer();
+    
+
 
   }
   @Override
   public void robotPeriodic() {
+    SwerveModuleState[] states = swerveDrive.getModuleState();
+    Logger.recordOutput("MyStates", states);
     CommandScheduler.getInstance().run();
 
     // Gyro Value
@@ -303,9 +329,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
       SmartDashboard.putString("Field Adjusted Angle", String.format("%.2f\u00B0", fieldCorrectedAngle));
       swerveDrive.SmartDashboard();
     }
-    SwerveModuleState[] states = swerveDrive.getModuleState();
-    publisher.set(states);
-    Logger.recordOutput("MyStates", states);
+    
 
 
     // Calibrate Swerve Drive
@@ -319,8 +343,11 @@ public class Robot extends LoggedRobot implements RobotProperties {
     zeroEdgeTrigger = zeroTrigger;
 
     //swerveDrive.updatePose();
-
-
+    Pose3d poseA = swerveDrive.getPose3D();
+    Pose3d poseB = swerveDrive.getLLPose();
+    Logger.recordOutput("MyPose", poseA);
+    Logger.recordOutput("MyPoseArray", poseA, poseB);
+    Logger.recordOutput("MyPoseArray", new Pose3d[] {poseA, poseB});
     SmartDashboard.putNumber("Top Flywheel Speed", flywheel.getTopRPM());
     SmartDashboard.putNumber("Bottom Flywheel Speed", flywheel.getBotRPM());
     SmartDashboard.putNumber("Top Flywheel Absolute", flywheel.getTopAFlywheel());
@@ -353,18 +380,21 @@ public class Robot extends LoggedRobot implements RobotProperties {
           break;
       }
     }
-    else { //pathplanner
-      SmartDashboard.putData("PathPlanner Auto", PPPath);
-      //TODO: Do pathplanner things
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    
+    else { 
+       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
       if (m_autonomousCommand != null) {
         m_autonomousCommand.schedule();
       }
     }
+    //pathplanner
+      
+    //SmartDashboard.putData("PathPlanner Auto", PPPath);
+      //TODO: Do pathplanner things
+   
     // Update the autonStartTime
-    autonStartTime = Timer.getFPGATimestamp();
+    //autonStartTime = Timer.getFPGATimestamp();
   }
 
   @Override
@@ -399,12 +429,12 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
   @Override
   public void teleopInit() {
-    // Update Auton Selected Mode and reset the data recorder
+    //  Update Auton Selected Mode and reset the data recorder
     selectedAutonType = autonTypeChooser.getSelected();
     selectedAutonMode = autonModeChooser.getSelected();
     autonRecorder.clear();
     saveNewAuton = selectedAutonType.equals("Record");
-
+    
     // Reset the robot controls
     robotControlsInit();
 

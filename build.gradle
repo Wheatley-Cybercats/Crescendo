@@ -3,6 +3,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.3.1"
     id "idea"
+    id "com.peterabeles.gversion" version "1.10"
 }
 
 def javaVersion = JavaVersion.VERSION_17
@@ -123,6 +124,16 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     // Configure string concat to always inline compile
     options.compilerArgs.add '-XDstringConcat=inline'
+}
+// Create version file
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/New_York"
+    indent       = "  "
 }
 
 idea {
