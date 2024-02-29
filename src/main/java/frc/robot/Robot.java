@@ -7,14 +7,28 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 // FRC Imports
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.Command;
 // Team 3171 Imports
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -39,8 +53,9 @@ import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
  * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
  * project, you must also update the build.gradle file in the project.
  */
-public class Robot extends TimedRobot implements RobotProperties {
-
+public class Robot extends LoggedRobot implements RobotProperties {
+  private RobotContainer m_robotContainer;
+  private Command m_autonomousCommand;
   public static double driveAngle = 0;
   public static double driveMag = 0;
   public static double rotMag = 0;
@@ -86,6 +101,7 @@ public class Robot extends TimedRobot implements RobotProperties {
   public static final Photonvision photon = new Photonvision();
   public static final LED blinkin = new LED();
   public static final Climbers climbers = new Climbers();
+  public static final Photonvision photon = new Photonvision();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand();
@@ -95,7 +111,15 @@ public class Robot extends TimedRobot implements RobotProperties {
   private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand();
   private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
+
+  private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
+
+  //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
+  /**Log setup */
+
+
   private final OuttakeCommand OC = new OuttakeCommand();
+
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
   private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
 
@@ -123,6 +147,23 @@ public class Robot extends TimedRobot implements RobotProperties {
 
   @Override
   public void robotInit() {
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+    }
+  Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    // ...
+    
+  Logger.start();
     // Controllers Init
     driveController = new XboxController(0);
     operatorController = new XboxController(1);
@@ -154,7 +195,8 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putData("Auto Type: Recorded/PathPlanner", autonTypeChooser);
 
     //PathPlanner Auto Chooser
-    PPPath = new SendableChooser<>();
+    
+    
 
     // Field Orientation Chooser
     fieldOrientationChooser = new SendableChooser<>();
@@ -172,6 +214,7 @@ public class Robot extends TimedRobot implements RobotProperties {
       autonModeChooser.addOption(autonMode, autonMode);
     }
     SmartDashboard.putData("Auto Routines", autonModeChooser);
+    
 
     // Global Variable Init
     fieldOrientationChosen = false;
@@ -222,10 +265,18 @@ public class Robot extends TimedRobot implements RobotProperties {
 
     //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
-  }
 
+    //JoystickButton alignSpeaker = new JoystickButton(operatorController, leftTrig);
+    //alignSpeaker.whileTrue(AWS);
+    m_robotContainer = new RobotContainer();
+    
+
+
+  }
   @Override
   public void robotPeriodic() {
+    SwerveModuleState[] states = swerveDrive.getModuleState();
+    Logger.recordOutput("MyStates", states);
     CommandScheduler.getInstance().run();
 
     // Gyro Value
@@ -283,6 +334,8 @@ public class Robot extends TimedRobot implements RobotProperties {
       SmartDashboard.putString("Field Adjusted Angle", String.format("%.2f\u00B0", fieldCorrectedAngle));
       swerveDrive.SmartDashboard();
     }
+    
+
 
     // Calibrate Swerve Drive
     final boolean zeroTrigger = driveController.getBackButton() && driveController.getStartButton() && isDisabled();
@@ -295,8 +348,11 @@ public class Robot extends TimedRobot implements RobotProperties {
     zeroEdgeTrigger = zeroTrigger;
 
     //swerveDrive.updatePose();
-
-
+    Pose3d poseA = swerveDrive.getPose3D();
+    Pose3d poseB = swerveDrive.getLLPose();
+    Logger.recordOutput("MyPose", poseA);
+    Logger.recordOutput("MyPoseArray", poseA, poseB);
+    Logger.recordOutput("MyPoseArray", new Pose3d[] {poseA, poseB});
     SmartDashboard.putNumber("Top Flywheel Speed", flywheel.getTopRPM());
     SmartDashboard.putNumber("Bottom Flywheel Speed", flywheel.getBotRPM());
     SmartDashboard.putNumber("Top Flywheel Absolute", flywheel.getTopAFlywheel());
@@ -329,13 +385,21 @@ public class Robot extends TimedRobot implements RobotProperties {
           break;
       }
     }
-    else { //pathplanner
-      SmartDashboard.putData("PathPlanner Auto", PPPath);
-      //TODO: Do pathplanner things
-
+    
+    else { 
+       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // schedule the autonomous command (example)
+      if (m_autonomousCommand != null) {
+        m_autonomousCommand.schedule();
+      }
     }
+    //pathplanner
+      
+    //SmartDashboard.putData("PathPlanner Auto", PPPath);
+      //TODO: Do pathplanner things
+   
     // Update the autonStartTime
-    autonStartTime = Timer.getFPGATimestamp();
+    //autonStartTime = Timer.getFPGATimestamp();
   }
 
   @Override
@@ -365,15 +429,17 @@ public class Robot extends TimedRobot implements RobotProperties {
         break;
     }
   }
+  
+
 
   @Override
   public void teleopInit() {
-    // Update Auton Selected Mode and reset the data recorder
+    //  Update Auton Selected Mode and reset the data recorder
     selectedAutonType = autonTypeChooser.getSelected();
     selectedAutonMode = autonModeChooser.getSelected();
     autonRecorder.clear();
     saveNewAuton = selectedAutonType.equals("Record");
-
+    
     // Reset the robot controls
     robotControlsInit();
 
@@ -405,6 +471,7 @@ public class Robot extends TimedRobot implements RobotProperties {
           break;
       }
     }
+    
 
     /*
     if(driveController.getRawButton(X)){
