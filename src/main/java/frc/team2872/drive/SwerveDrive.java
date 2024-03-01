@@ -340,9 +340,14 @@ public class SwerveDrive implements RobotProperties {
         return new Pose3d(swerveDriveOdometry.getPoseMeters());
     }
     public Pose2d getPose(){
-        return swerveDriveOdometry.getPoseMeters();
+        return swerveDrivePoseEstimator.getEstimatedPosition();
     }
     public Pose3d getLLPose(){
+        Pose2d pose = new Pose2d(
+                limeLight.getBOTPOSE()[0],
+                limeLight.getBOTPOSE()[1],
+                new Rotation2d(limeLight.getBOTPOSE()[5])
+        );
         return limeLight.getPose();
     }
     public void resetPose(Pose2d pose) {

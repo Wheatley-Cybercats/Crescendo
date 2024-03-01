@@ -12,7 +12,7 @@ public class TrapShootCommandGroup extends SequentialCommandGroup {
                 new DriveToPointCommand(
                         new Pose2d() //TODO: Trap coords
                 ),
-                new ShootTrapCommand(null, null)
+                new ShootTrapCommand()
         );
     }
 }

@@ -101,7 +101,6 @@ public class Robot extends LoggedRobot implements RobotProperties {
   public static final Photonvision photon = new Photonvision();
   public static final LED blinkin = new LED();
   public static final Climbers climbers = new Climbers();
-  public static final Photonvision photon = new Photonvision();
 
   /** Shooter Commands **/
   private final ShootSpeakerCommand SSC = new ShootSpeakerCommand();
@@ -111,13 +110,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
   private final IntakeFromGroundCommand IC = new IntakeFromGroundCommand();
   private final DriveToPointCommand DPC = new DriveToPointCommand(new Pose2d(new Translation2d(2.5, 2.5), Rotation2d.fromDegrees(-160)));
   private final AlignHorizontallyCommand AHC = new AlignHorizontallyCommand();
-
-  private final OuttakeCommand OC = new OuttakeCommand(intake, indexer);
-
   //private final AutoAimCommand AAC = new AutoAimCommand(leadscrew);
   /**Log setup */
-
-
   private final OuttakeCommand OC = new OuttakeCommand();
 
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
