@@ -253,7 +253,7 @@ public class ThreadedPIDController {
      * @return The current PID Value
      */
     public double getPIDValue() {
-        return pidValue;
+        return Double.isNaN(pidValue) ? 0 : pidValue;
     }
 
     /**
