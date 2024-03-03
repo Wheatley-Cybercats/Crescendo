@@ -31,7 +31,10 @@
       "/SmartDashboard/Auto Type: Recorded/PathPlanner": "String Chooser",
       "/SmartDashboard/Example Auto": "Command",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Field Orientation Chooser": "String Chooser"
+      "/SmartDashboard/Field Orientation Chooser": "String Chooser",
+      "/SmartDashboard/On-the-fly path": "Command",
+      "/SmartDashboard/Pathfind to Pickup Pos": "Command",
+      "/SmartDashboard/Pathfind to Scoring Pos": "Command"
     }
   },
   "NetworkTables": {
@@ -40,6 +43,9 @@
     },
     "transitory": {
       "PathPlanner": {
+        "open": true
+      },
+      "Shuffleboard": {
         "open": true
       },
       "SmartDashboard": {
@@ -59,6 +65,12 @@
     }
   },
   "NetworkTables Info": {
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "open": true
+    },
     "visible": true
   }
 }

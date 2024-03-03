@@ -53,15 +53,15 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
     
     // Configure AutoBuilder
     AutoBuilder.configureHolonomic(
-      drive::getPose, 
-      drive::resetPose, 
-      drive::getRobotRelativeSpeeds, 
-      drive::driveRobotRelative, 
+      this::getPose, 
+      this::resetPose, 
+      this::getRobotRelativeSpeeds, 
+      this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-      new PIDConstants(5.0, 0, 0), // Translation constants 
-      new PIDConstants(5.0, 0, 0), // Rotation constants 
+      new PIDConstants(5, 0, 0), // Translation constants 
+      new PIDConstants(5, 0, 0), // Rotation constants 
       4, 
-      .4, // Drive base radius (distance from center to furthest module) 
+      .49, // Drive base radius (distance from center to furthest module) 
       new ReplanningConfig()
     ),
       () -> {
@@ -77,7 +77,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
       },
       this
     );
-    drive.driveInit();
+    //drive.driveInit();
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -98,13 +98,15 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   @Override
   public void periodic() {
     // Update the simulated gyro, not needed in a real project
+    
     odometry.update(gyro.getRotation2d(), getPositions());
 
     field.setRobotPose(getPose());
+
+    Robot.swerveDrive.updatePose();
+    
   }
-  public void drive(final double driveAngle, final double driveMagnitude, final double rotationalMagnitude, final boolean precisionMode) {
-    drive.drive(driveAngle, driveMagnitude, rotationalMagnitude, precisionMode);
-  }
+  
   public void disable() {
     drive.disable();
   }
@@ -114,6 +116,9 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
 }
   public Pose2d getPose() {
     return drive.getPose();
+  }
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return drive.getRobotRelativeSpeeds();
   }
 
   public void resetPose(Pose2d pose) {
@@ -135,7 +140,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
     ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
 
     SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds);
-    setStates(targetStates);
+    drive.setStates(targetStates);
   }
 
   public void setStates(SwerveModuleState[] targetStates) {
@@ -153,22 +158,9 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   }
   public void zero() {
    drive.zero();
-}
-public synchronized void saveSlewCalibration(final String slewOffsets) {
-        try {
-            File calibrationFile = new File(String.format("/home/lvuser/%s.txt", "slewcalibration"));
-            if (calibrationFile.exists()) {
-                calibrationFile.delete();
-            }
-            calibrationFile.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(calibrationFile));
-            writer.write(slewOffsets);
-            // Flush the data to the file
-            writer.flush();
-            writer.close();
-            System.out.println("Calibration Successfully Saved!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+  }
+  public synchronized void saveSlewCalibration(final String slewOffsets) {
+       drive.saveSlewCalibration(slewOffsets);
+  }
+  
 }

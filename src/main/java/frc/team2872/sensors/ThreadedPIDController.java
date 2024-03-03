@@ -136,6 +136,7 @@ public class ThreadedPIDController {
                                 pidValue = calculatePID(Get_Gyro_Displacement(sensorValue, sensorLockValue));
                             } else {
                                 pidValue = calculatePID(sensorLockValue - sensorValue);
+                                
                             }
                         } finally {
                             PID_LOCK.unlock();
@@ -187,24 +188,40 @@ public class ThreadedPIDController {
      * @return The PID Value
      */
     private final double calculatePID(final double displacement) {
+        System.out.println("Calc PID updated sum: " + sum);
+        System.out.println("Calc PID updated this.sum: " + this.sum);
         double pid = 0, sum = this.sum;
+        
         currentTime = Timer.getFPGATimestamp();
+        System.out.println("displacement: " + displacement);
         rate = (displacement / ((currentTime - lastTime) * 1000));
+         // creates nan when used in a subsytem
+        //System.out.println("lastTime: " + lastTime);
+        //System.out.println("currentTime: " + currentTime);
+        System.out.println("Rate: " + rate);
+        System.out.println("sum plus rate: " + (sum + rate));
         sum += rate;
+        
         proportionalTemp = (kP * displacement);
         sumTemp = (kI * sum);
         rateTemp = (kD * rate);
         pid = proportionalTemp + sumTemp + rateTemp;
+        System.out.println("proportionalTemp: "+proportionalTemp + " sumTemp: " + sumTemp + " rateTemp: " + rateTemp + " " );
         lastTime = currentTime;
         // Don't let the PID value increase past PID_MAX or below PID_MIN and
         // prevent accumulation of the sum
+        
         if (pid >= PID_MAX) {
             pid = PID_MAX;
         } else if (pid <= PID_MIN) {
             pid = PID_MIN;
         } else {
             this.sum = sum;
+            System.out.println("updated this.sum: " + this.sum);
+            System.out.println("updated sum: " + sum);
         }
+        System.out.println("sum: " + sum);
+        System.out.println("pid: " + pid);
         return pid;
     }
 
@@ -213,6 +230,11 @@ public class ThreadedPIDController {
      * current sensor value.
      */
     public void updateSensorLockValue() {
+        /*if (sensorValue == -0){
+            updateSensorLockValue(0);
+        } else {
+            updateSensorLockValue(sensorValue);
+        }*/
         updateSensorLockValue(sensorValue);
     }
 
@@ -272,6 +294,7 @@ public class ThreadedPIDController {
      * @return The current sensor lock value.
      */
     public double getSensorLockValue() {
+        System.out.println("Sensor Lock Value: " + sensorLockValue);
         return sensorLockValue;
     }
 

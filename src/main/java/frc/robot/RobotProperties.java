@@ -17,7 +17,7 @@ public interface RobotProperties {
          * Debug Info
          **/
         public static final boolean DEBUG = true;
-        public static final String PID_LOG_ADDRESS = "10.31.71.201";
+        public static final String PID_LOG_ADDRESS = "10.28.72.201";
 
         /**
          * Drive Variables
@@ -34,16 +34,16 @@ public interface RobotProperties {
 
         /** Swerve Unit Configuration **/
         public static final SwerveUnitConfig leftRear_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 52, true,
-                MOTOR_TYPE.REV, 51, false, ENCODER_TYPE.CTRE, 12, false, "The CANivore", false,
+                MOTOR_TYPE.REV, 51, false, ENCODER_TYPE.CTRE, 12, false, "The CANivore", true,
                 new Translation2d(-0.318, -0.318));
         public static final SwerveUnitConfig leftFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 62, true,
-                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false, "The CANivore", false,
+                MOTOR_TYPE.REV, 61, false, ENCODER_TYPE.CTRE, 10, false, "The CANivore", true,
                 new Translation2d(-0.318, 0.318));
         public static final SwerveUnitConfig rightFront_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 50, true,
-                MOTOR_TYPE.REV, 49, false, ENCODER_TYPE.CTRE, 11, false,"The CANivore", false,
+                MOTOR_TYPE.REV, 49, false, ENCODER_TYPE.CTRE, 11, false,"The CANivore", true,
                 new Translation2d(0.318, 0.318));
         public static final SwerveUnitConfig rightRear_Unit_Config = new SwerveUnitConfig(MOTOR_TYPE.REV, 55, true,
-                MOTOR_TYPE.REV, 56, false, ENCODER_TYPE.CTRE, 13, false,"The CANivore", false,
+                MOTOR_TYPE.REV, 56, false, ENCODER_TYPE.CTRE, 13, false,"The CANivore", true,
                 new Translation2d(0.318, -0.318));
 
 

@@ -167,6 +167,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
     gyro.reset();
 
     // PID Controllers
+
     gyroPIDController = new ThreadedPIDController(gyro.asSupplier(), GYRO_KP, GYRO_KI, GYRO_KD, GYRO_MIN, GYRO_MAX, true);
     gyroPIDController.start();
 
@@ -269,14 +270,14 @@ public class Robot extends LoggedRobot implements RobotProperties {
   }
   @Override
   public void robotPeriodic() {
+    
+    CommandScheduler.getInstance().run();
+   // Gyro Value
+    final double gyroValue = gyroPIDController.getSensorValue();
+    // log states
     SwerveModuleState[] states = swerveDrive.getModuleState();
     Logger.recordOutput("MyStates", states);
-    CommandScheduler.getInstance().run();
-
-    // Gyro Value
-    final double gyroValue = gyroPIDController.getSensorValue();
-
-    // Field Orientation Chooser
+   // Field Orientation Chooser
     final Boolean fieldOrientationBoolean = fieldOrientationChooser.getSelected();
     // Until a valid option is choosen leave the gyro orientation alone
     if (fieldOrientationBoolean != null && !fieldOrientationChosen) {
@@ -476,6 +477,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
   @Override
   public void disabledInit() {
+    SwerveModuleState[] states = swerveDrive.getModuleState();
+    Logger.recordOutput("MyStates", states);
     // Disable all controllers
     swerveDrive.disable();
     gyroPIDController.disablePID();
@@ -535,6 +538,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
     // Calculate the field corrected drive angle
     final double fieldCorrectedAngle = FIELD_ORIENTED_SWERVE ? Normalize_Gryo_Value(leftStickAngle - gyroValue) : leftStickAngle;
+    System.out.println("");
 
     // Drive Controls
     final boolean precisionMode = driveControllerState.getLeftBumper();
@@ -545,7 +549,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
       quickTurning = false;
 
       gyroPIDController.disablePID();
-      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, rightStickX, precisionMode);
+      swerveDrive.drive(fieldCorrectedAngle, 0, rightStickX, precisionMode);
       SmartDashboard.putNumber("angularVelocityZ", Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()));
 
 
@@ -589,8 +593,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
       SmartDashboard.putNumber("gyroSensorLockValue", gyroPIDController.getSensorLockValue());
       SmartDashboard.putNumber("gyroPIDValue", gyroPIDController.getPIDValue());
-      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ?  gyroPIDController.getPIDValue() : 0, precisionMode);
-
+      swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ?  gyroPIDController.getPIDValue():0 , precisionMode);
+      SmartDashboard.putNumber("leftStickMag", leftStickMagnitude);
     }
     // Operator Controls
     if (operatorControllerState.getBButton()) {

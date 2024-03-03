@@ -60,10 +60,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Add a button to run the example auto to SmartDashboard, this will also be in the auto chooser built above
-    //SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
+    SmartDashboard.putData("Example Auto", new PathPlannerAuto("Example Auto"));
 
     // Add a button to run pathfinding commands to SmartDashboard
-    /** SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
+     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
       new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
       new PathConstraints(
         4.0, 4.0, 
@@ -85,7 +85,7 @@ public class RobotContainer {
     // Add a button to SmartDashboard that will create and follow an on-the-fly path
     // This example will simply move the robot 2m in the +X field direction
     SmartDashboard.putData("On-the-fly path", Commands.runOnce(() -> {
-      Pose2d currentPose = drive.getPose();
+      Pose2d currentPose = driveAccesor.getPose();
       
       // The rotation component in these poses represents the direction of travel
       Pose2d startPos = new Pose2d(currentPose.getTranslation(), new Rotation2d());
@@ -103,10 +103,10 @@ public class RobotContainer {
 
       // Prevent this path from being flipped on the red alliance, since the given positions are already correct
       path.preventFlipping = true;
-    *
+    
       AutoBuilder.followPath(path).schedule();
     }));
-    */
+    
   }
 
   /**

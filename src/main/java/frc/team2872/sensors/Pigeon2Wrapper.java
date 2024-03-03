@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 // CTRE Imports
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.sim.Pigeon2SimState;
 
 // Team 3171 Imports
 import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;

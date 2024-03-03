@@ -141,7 +141,7 @@ public class SwerveDrive implements RobotProperties {
                     rightRearResultantVector);
 
             // Update the magnitudes, if the largest vector exceeds 1.0 then scale all others relative to it
-            leftFrontMagnitude = Map(leftFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
+            leftFrontMagnitude =  Map(leftFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
             leftRearMagnitude = Map(leftRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
             rightFrontMagnitude = Map(rightFrontResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode ?  0.2 : MAX_DRIVE_SPEED);
             rightRearMagnitude = Map(rightRearResultantVector[1], 0, largestVector[1] > 1 ? largestVector[1] : 1, 0, precisionMode  ?  0.2 : MAX_DRIVE_SPEED);
@@ -179,6 +179,7 @@ public class SwerveDrive implements RobotProperties {
         }
 
         // Updates the slew motor angles
+        SmartDashboard.putNumber("rigthRearAngle", rightRearAngle);
         leftFrontUnit.updateSlewAngle(leftFrontAngle);
         leftRearUnit.updateSlewAngle(leftRearAngle);
         rightFrontUnit.updateSlewAngle(rightFrontAngle);
@@ -234,6 +235,9 @@ public class SwerveDrive implements RobotProperties {
         final double rightRearSlewOffset = rightRearUnit.getSlewOffset();
         saveSlewCalibration(String.format("%.4f,%.4f,%.4f,%.4f;\n", leftRearSlewOffset, leftFrontSlewOffset, rightFrontSlewOffset, rightRearSlewOffset));
     }
+    /*public double getPID(){
+       return leftFrontUnit.getSlewTargetAngle();
+    }*/
 
     /**
      * Saves the current data collected by the auton recorder to the specified file
@@ -324,23 +328,24 @@ public class SwerveDrive implements RobotProperties {
                 rightFrontUnit.getSwerveModulePosition(),
                 leftRearUnit.getSwerveModulePosition(),
                 rightRearUnit.getSwerveModulePosition()
-        });
+            });
 
-        /*
+        
         //update with vision
-        swerveDrivePoseEstimator.addVisionMeasurement(
+        if(Robot.limelight.getTV() == 1 && Robot.limelight.getTA() > 3.5){
+                swerveDrivePoseEstimator.addVisionMeasurement(
                 new Pose2d(Robot.limelight.getBOTPOSE()[0], Robot.limelight.getBOTPOSE()[1], new Rotation2d(Robot.limelight.getBOTPOSE()[4])),
                 Robot.limelight.getBOTPOSE()[6]
                 );
 
-         */
-
+        }
     }
     public Pose3d getPose3D(){
         return new Pose3d(swerveDriveOdometry.getPoseMeters());
     }
     public Pose2d getPose(){
-        return swerveDrivePoseEstimator.getEstimatedPosition();
+        return swerveDriveOdometry.getPoseMeters();
+        //swerveDrivePoseEstimator.getEstimatedPosition();
     }
     public Pose3d getLLPose(){
         Pose2d pose = new Pose2d(
@@ -352,6 +357,7 @@ public class SwerveDrive implements RobotProperties {
     }
     public void resetPose(Pose2d pose) {
         swerveDriveOdometry.resetPosition(pigeon.getRotation2d(), getPositions(), pose);
+        //swerveDrivePoseEstimator.resetPosition(pigeon.getRotation2d(), getPositions(), pose);;
     }
     public SwerveModulePosition[] getPositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[]{
@@ -382,7 +388,7 @@ public class SwerveDrive implements RobotProperties {
     
 
     public void driveRobotRelative(ChassisSpeeds chassisSpeeds){
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(getRobotRelativeSpeeds(), 0.02);
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
 
         SwerveModuleState[] targetStates = swerveDriveKinematics.toSwerveModuleStates(targetSpeeds);
         setStates(targetStates);
