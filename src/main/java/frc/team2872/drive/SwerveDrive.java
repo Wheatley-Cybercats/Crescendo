@@ -61,6 +61,7 @@ public class SwerveDrive implements RobotProperties {
             udpClients.add(new UDPClient(rightRearUnit.getSlewPIDData(), PID_LOG_ADDRESS, 5804));
 
             udpClients.forEach(client -> {
+                System.out.println("Started UDP Client");
                 client.start();
             });
         } catch (IOException ex) {
