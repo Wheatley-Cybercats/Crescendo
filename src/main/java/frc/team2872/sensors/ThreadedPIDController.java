@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 // FRC Imports
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Team 3171 Imports
 import static frc.team2872.HelperFunctions.Get_Gyro_Displacement;
@@ -253,7 +254,11 @@ public class ThreadedPIDController {
      * @return The current PID Value
      */
     public double getPIDValue() {
-        return Double.isNaN(pidValue) ? 0 : pidValue;
+        if(Double.isNaN(pidValue)){
+            SmartDashboard.putBoolean("Forced Robot Centric", true);
+            return 0;
+        }
+        return pidValue;
     }
 
     /**
