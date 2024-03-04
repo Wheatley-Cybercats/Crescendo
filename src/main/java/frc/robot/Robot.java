@@ -323,6 +323,11 @@ public class Robot extends TimedRobot implements RobotProperties {
           AutonRecorder.loadFromFile(autonPlaybackQueue, selectedAutonMode);
           playbackData = autonPlaybackQueue.poll();
           robotControlsInit();
+          CommandScheduler.getInstance().onCommandInterrupt((command -> {
+            if(command == IC){
+              WLP.execute();
+            }
+          }));
           break;
       }
     }
