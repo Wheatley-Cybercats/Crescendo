@@ -203,9 +203,9 @@ public class ThreadedPIDController {
         sum += rate;
         
         proportionalTemp = (kP * displacement);
-        sumTemp = (kI * sum);
+        //sumTemp = (kI * sum);
         rateTemp = (kD * rate);
-        pid = proportionalTemp + sumTemp + rateTemp;
+        pid = proportionalTemp +  rateTemp;
         System.out.println("proportionalTemp: "+proportionalTemp + " sumTemp: " + sumTemp + " rateTemp: " + rateTemp + " " );
         lastTime = currentTime;
         // Don't let the PID value increase past PID_MAX or below PID_MIN and
@@ -275,6 +275,10 @@ public class ThreadedPIDController {
      * @return The current PID Value
      */
     public double getPIDValue() {
+        /*if(Double.isNaN(pidValue)){
+            System.out.println("NaNd");
+            return 0;
+        }*/
         return pidValue;
     }
 

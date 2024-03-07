@@ -6,6 +6,7 @@ package frc.robot;// Copyright (c) FIRST and other WPILib contributors.
 // Java Imports
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -165,11 +166,13 @@ public class Robot extends LoggedRobot implements RobotProperties {
     // Sensors
     gyro = new Pigeon2Wrapper(GYRO_CAN_ID, "The CANivore");
     gyro.reset();
+    
 
     // PID Controllers
 
     gyroPIDController = new ThreadedPIDController(gyro.asSupplier(), GYRO_KP, GYRO_KI, GYRO_KD, GYRO_MIN, GYRO_MAX, true);
     gyroPIDController.start();
+    System.out.println("Gyro PID Controller is " + gyroPIDController.isDisabled());
 
     // Swerve Drivetrain Init
     swerveDrive = new SwerveDrive(leftRear_Unit_Config, leftFront_Unit_Config, rightFront_Unit_Config, rightRear_Unit_Config);
@@ -274,6 +277,7 @@ public class Robot extends LoggedRobot implements RobotProperties {
     CommandScheduler.getInstance().run();
    // Gyro Value
     final double gyroValue = gyroPIDController.getSensorValue();
+    SmartDashboard.putNumber("Gyro", gyroValue);
     // log states
     SwerveModuleState[] states = swerveDrive.getModuleState();
     Logger.recordOutput("MyStates", states);
@@ -377,6 +381,11 @@ public class Robot extends LoggedRobot implements RobotProperties {
           AutonRecorder.loadFromFile(autonPlaybackQueue, selectedAutonMode);
           playbackData = autonPlaybackQueue.poll();
           robotControlsInit();
+          CommandScheduler.getInstance().onCommandInterrupt((command) -> {
+            if(command == IC){
+              WLP.execute();
+            }
+          });
           break;
       }
     }
@@ -482,6 +491,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
     // Disable all controllers
     swerveDrive.disable();
     gyroPIDController.disablePID();
+        System.out.println("Gyro PID Controller has been " + gyroPIDController.isDisabled());
+
 
     // Once auton recording is done, save the data to a file, if there is any
     if (saveNewAuton) {
@@ -516,6 +527,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
     // Reset the drive controller
     swerveDrive.driveInit();
     gyroPIDController.enablePID();
+    System.out.println("Gyro PID Controller is Enabled: " + gyroPIDController.isEnabled());
+
     gyroPIDController.updateSensorLockValue();
   }
 
@@ -538,7 +551,6 @@ public class Robot extends LoggedRobot implements RobotProperties {
 
     // Calculate the field corrected drive angle
     final double fieldCorrectedAngle = FIELD_ORIENTED_SWERVE ? Normalize_Gryo_Value(leftStickAngle - gyroValue) : leftStickAngle;
-    System.out.println("");
 
     // Drive Controls
     final boolean precisionMode = driveControllerState.getLeftBumper();
@@ -549,6 +561,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
       quickTurning = false;
 
       gyroPIDController.disablePID();
+      System.out.println("Gyro PID Controller has been Disabled: " + gyroPIDController.isDisabled());
+
       swerveDrive.drive(fieldCorrectedAngle, 0, rightStickX, precisionMode);
       SmartDashboard.putNumber("angularVelocityZ", Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()));
 
@@ -569,6 +583,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
       }
       else{
         gyroPIDController.enablePID();
+        System.out.println("Gyro PID Controller is Enabled: " + gyroPIDController.isEnabled());
+
       }
       /*
       if(swerveDrive.getAverageDriveSpeed() > 0){
@@ -576,6 +592,8 @@ public class Robot extends LoggedRobot implements RobotProperties {
       }
        */
       gyroPIDController.enablePID();
+      System.out.println("Gyro PID Controller is Enabled: " + gyroPIDController.isEnabled());
+      
 
       // Quick Turning
       if (driveControllerState.getPOV() != -1) {
@@ -640,8 +658,10 @@ public class Robot extends LoggedRobot implements RobotProperties {
     //reset gyro to 0
     if (driveController.getRawButton(3)){
       gyroPIDController.disablePID();
+      System.out.println("Gyro PID Controller is Disabled: " + gyroPIDController.isDisabled());
       gyro.reset();
       gyroPIDController.enablePID();
+      System.out.println("Gyro PID Controller is Enabled: " + gyroPIDController.isEnabled());
     }
   }
 }
