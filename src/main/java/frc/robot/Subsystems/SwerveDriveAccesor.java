@@ -43,13 +43,12 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   /** Creates a new SwerveDriveAccesor. */ 
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-  private Pigeon2Wrapper gyro = Robot.gyro;
   public static SwerveDrive drive = Robot.swerveDrive;
   private Field2d field = new Field2d();
   
   public SwerveDriveAccesor() {
     kinematics = drive.swerveDriveKinematics;
-    odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
+    odometry = new SwerveDriveOdometry(kinematics, Robot.gyro.getRotation2d(), drive.getPositions());
     
     // Configure AutoBuilder
     AutoBuilder.configureHolonomic(
@@ -77,7 +76,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
       },
       this
     );
-    //drive.driveInit();
+    drive.driveInit();
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -99,7 +98,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   public void periodic() {
     // Update the simulated gyro, not needed in a real project
     
-    odometry.update(gyro.getRotation2d(), getPositions());
+    odometry.update(Robot.gyro.getRotation2d(), drive.getPositions());
 
     field.setRobotPose(getPose());
 
@@ -124,43 +123,7 @@ public class SwerveDriveAccesor extends SubsystemBase implements RobotProperties
   public void resetPose(Pose2d pose) {
     drive.resetPose(pose);
   }
-
-  public ChassisSpeeds getSpeeds() {
-    return kinematics.toChassisSpeeds(getModuleStates());
-  }
-  public double getAverageDriveSpeed(){
-    return drive.getAverageDriveSpeed();
-  }
-
-  public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-    drive.driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
-  }
-
   public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
-    ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
-
-    SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds);
-    drive.setStates(targetStates);
+    drive.driveRobotRelative(robotRelativeSpeeds);
   }
-
-  public void setStates(SwerveModuleState[] targetStates) {
-    drive.setStates(targetStates);
-  }
-
-  public SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = drive.getModuleState();
-    return states;
-  }
-
-  public SwerveModulePosition[] getPositions() {
-    SwerveModulePosition[] positions = drive.getPositions();
-    return positions;
-  }
-  public void zero() {
-   drive.zero();
-  }
-  public synchronized void saveSlewCalibration(final String slewOffsets) {
-       drive.saveSlewCalibration(slewOffsets);
-  }
-  
 }

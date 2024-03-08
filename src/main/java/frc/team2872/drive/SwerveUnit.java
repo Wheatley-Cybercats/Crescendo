@@ -200,7 +200,6 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
     public void updateSlewAngle(final double angle) {
         // Update the target angle of slew motor PID controller
         slewPIDController.updateSensorLockValueWithoutReset(angle);
-        System.out.println("UpdatedSlewAngle");
 
         // Update Slew Motor Speed
         switch (slewMotorType) {
@@ -410,7 +409,7 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
     }
 
     public void setTargetState(SwerveModuleState targetState){
-        setDriveSpeed(targetState.speedMetersPerSecond/10);//TODO: maybe
+        setDriveSpeed(targetState.speedMetersPerSecond);//TODO: maybe
         updateSlewAngle(targetState.angle.getDegrees());
     }
 
