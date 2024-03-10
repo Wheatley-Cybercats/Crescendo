@@ -11,13 +11,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.flywheel;
+package frc.robot.Subsystems.leadscrew;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FlywheelIO {
+public interface LeadscrewIO {
   @AutoLog
-  public static class FlywheelIOInputs {
+  public static class LeadscrewIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
@@ -25,13 +25,17 @@ public interface FlywheelIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(LeadscrewIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+
+  /**Set position of the leadscrew. */
+
+  public default void runSetpoint(double setpointRads, double feedforward){}
 
   /** Stop in open loop. */
   public default void stop() {}

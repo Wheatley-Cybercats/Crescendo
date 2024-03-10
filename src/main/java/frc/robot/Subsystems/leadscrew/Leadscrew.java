@@ -11,9 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.flywheel;
-
-import static edu.wpi.first.units.Units.*;
+package frc.robot.Subsystems.leadscrew;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
@@ -21,17 +19,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Subsystems.flywheel.FlywheelIOInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Flywheel extends SubsystemBase {
-  private final FlywheelIO io;
-  private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+import static edu.wpi.first.units.Units.Volts;
+
+public class Leadscrew extends SubsystemBase {
+  private final LeadscrewIO io;
+  private final LeadscrewIOInputsAutoLogged inputs = new LeadscrewIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
   /** Creates a new Flywheel. */
-  public Flywheel(FlywheelIO io) {
+  public Leadscrew(LeadscrewIO io) {
     this.io = io;
 
     // Switch constants based on mode (the physics simulator is treated as a
@@ -80,6 +81,11 @@ public class Flywheel extends SubsystemBase {
 
     // Log flywheel setpoint
     Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
+  }
+
+  public void runSetpoint(double setpointRads, double feedforward) {
+    io.runSetpoint(setpointRads, feedforward);
+    Logger.recordOutput("Leadscrew/Setpoint", setpointRads);
   }
 
   /** Stops the flywheel. */
