@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Subsystems.flywheel.FlywheelIOInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -31,7 +30,7 @@ public class Leadscrew extends SubsystemBase {
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
-  /** Creates a new Flywheel. */
+  /** Creates a new Leadscrew. */
   public Leadscrew(LeadscrewIO io) {
     this.io = io;
 
@@ -59,14 +58,14 @@ public class Leadscrew extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
+                (state) -> Logger.recordOutput("Leadscrew/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Flywheel", inputs);
+    Logger.processInputs("Leadscrew", inputs);
   }
 
   /** Run open loop at the specified voltage. */
@@ -79,16 +78,24 @@ public class Leadscrew extends SubsystemBase {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
-    // Log flywheel setpoint
-    Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
+    // Log Leadscrew setpoint
+    Logger.recordOutput("Leadscrew/SetpointRPM", velocityRPM);
   }
 
-  public void runSetpoint(double setpointRads, double feedforward) {
-    io.runSetpoint(setpointRads, feedforward);
-    Logger.recordOutput("Leadscrew/Setpoint", setpointRads);
+  public void runSetpoint(double setPointEncoderTicks) {
+    io.runSetpoint(setPointEncoderTicks);
+    Logger.recordOutput("Leadscrew/Setpoint", setPointEncoderTicks);
   }
 
-  /** Stops the flywheel. */
+  public boolean atPosition(double position){
+    return io.atPosition(position);
+  }
+
+  public void moveShooter(double speed){
+    io.moveShooter(-speed);
+  }
+
+  /** Stops the Leadscrew. */
   public void stop() {
     io.stop();
   }

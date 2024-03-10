@@ -16,10 +16,12 @@ package frc.robot.Subsystems.leadscrew;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class LeadscrewIOSim implements LeadscrewIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+  /*
+  private DCMotor sim = DCMotor.getFalcon500(1);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
@@ -65,4 +67,6 @@ public class LeadscrewIOSim implements LeadscrewIO {
   public void configurePID(double kP, double kI, double kD) {
     pid.setPID(kP, kI, kD);
   }
+
+   */
 }

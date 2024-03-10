@@ -29,10 +29,10 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
 
   private final TalonFX motor = new TalonFX(10);
 
-  private final StatusSignal<Double> leaderPosition = motor.getPosition();
-  private final StatusSignal<Double> leaderVelocity = motor.getVelocity();
-  private final StatusSignal<Double> leaderAppliedVolts = motor.getMotorVoltage();
-  private final StatusSignal<Double> leaderCurrent = motor.getSupplyCurrent();
+  private final StatusSignal<Double> motorPosition = motor.getPosition();
+  private final StatusSignal<Double> motorVelocity = motor.getVelocity();
+  private final StatusSignal<Double> motorAppliedVolts = motor.getMotorVoltage();
+  private final StatusSignal<Double> motorCurrent = motor.getSupplyCurrent();
   private final PositionTorqueCurrentFOC positionControl =
           new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
@@ -44,20 +44,20 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     motor.getConfigurator().apply(config);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
+        50.0, motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
     motor.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(LeadscrewIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
-    inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / GEAR_RATIO;
+        motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
+    inputs.positionRad = Units.rotationsToRadians(motorPosition.getValueAsDouble()) / GEAR_RATIO;
     inputs.velocityRadPerSec =
-        Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / GEAR_RATIO;
-    inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
+        Units.rotationsToRadians(motorVelocity.getValueAsDouble()) / GEAR_RATIO;
+    inputs.appliedVolts = motorAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
-        new double[] {leaderCurrent.getValueAsDouble()};
+        new double[] {motorCurrent.getValueAsDouble()};
   }
 
   @Override
@@ -80,11 +80,27 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   }
 
   @Override
-  public void runSetpoint(double setpointRads, double feedforward) {
-    motor.setControl(
-            positionControl
-                    .withPosition(Units.radiansToRotations(setpointRads))
-                    .withFeedForward(feedforward));
+  public void runSetpoint(double setPointEncoderTicks) {
+    if (motorPosition.getValueAsDouble() > setPointEncoderTicks){ //less negative: current position is higher than desired position
+      moveShooter(Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks))/1.5);
+    } else if (motorPosition.getValueAsDouble() < setPointEncoderTicks){ //current position is lower than desired
+      moveShooter(-Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks))/4.5);
+    } else if (atPosition(setPointEncoderTicks)){
+      stop();
+    } else{
+      stop();
+    }
+  }
+@Override
+  public boolean atPosition(double position){
+    //the motor should stop whenever it is at a specific position
+    return motorPosition.getValueAsDouble() - position < 1.2 && motorPosition.getValueAsDouble() - position > -1.2;
+}
+
+@Override
+  public void moveShooter(double speed){
+    motor.set(-speed);
+    //thruBoreEncoder.getAbsolutePosition();
   }
 
   @Override

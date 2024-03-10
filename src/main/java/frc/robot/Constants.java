@@ -34,4 +34,29 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  //Create enum and assign values to each preset
+  public static enum Preset {
+    AMP(AMP_ANGLE),
+    PODIUM(PODIUM_ANGLE),
+    WING(WING_ANGLE),
+    SUBWOOFER(SUBWOOFER_ANGLE);
+
+    private final double angle;
+
+    Preset(double angle) {
+      this.angle = angle;
+    }
+
+    public double getAngle() {
+      return angle;
+    }
+
+  }
+
+  public static final double AMP_ANGLE = 91.5;
+  public static final double PODIUM_ANGLE = 36;
+  public static final double WING_ANGLE = 21; //17; //when front of bumpers are lined up with outer edge of stage
+  public static final double SUBWOOFER_ANGLE = 115;
+
 }
