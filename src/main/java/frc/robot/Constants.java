@@ -58,4 +58,5 @@ public final class Constants {
   public static final double WING_ANGLE =
       21; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
+  public static final boolean tuningMode = false;
 }

@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
+import frc.robot.Commands.PresetCommand;
 import frc.robot.Subsystems.drive.Drive;
 import frc.robot.Subsystems.drive.GyroIO;
 import frc.robot.Subsystems.drive.GyroIOPigeon2;
@@ -183,6 +184,8 @@ public class RobotContainer {
                 () -> leadscrew.runVolts(-operatorController.getLeftY()),
                 leadscrew::stop,
                 leadscrew));
+
+    operatorController.b().onTrue(new PresetCommand(leadscrew, Constants.Preset.AMP));
   }
 
   /**

@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Leadscrew extends SubsystemBase {
@@ -82,9 +81,9 @@ public class Leadscrew extends SubsystemBase {
     Logger.recordOutput("Leadscrew/SetpointRPM", velocityRPM);
   }
 
-  public void runSetpoint(double setPointEncoderTicks) {
-    io.runSetpoint(setPointEncoderTicks);
-    Logger.recordOutput("Leadscrew/Setpoint", setPointEncoderTicks);
+  public void runSetpoint(double setEncoderRotations) {
+    io.runSetpoint(setEncoderRotations);
+    Logger.recordOutput("Leadscrew/SetpointRotations", setEncoderRotations);
   }
 
   public boolean atPosition(double position) {
@@ -111,13 +110,14 @@ public class Leadscrew extends SubsystemBase {
   }
 
   /** Returns the current velocity in RPM. */
-  @AutoLogOutput
+  /*@AutoLogOutput
   public double getVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
-  }
+  }*/
 
   /** Returns the current velocity in radians per second. */
+  /*
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
-  }
+  }*/
 }

@@ -11,24 +11,25 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.indexer;
+package frc.robot.Subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class Indexer extends SubsystemBase {
-  private final IndexerIO io;
-  private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+public class Intake extends SubsystemBase {
+  private final IntakeIO io;
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  /** Creates a new Indexer. */
-  public Indexer(IndexerIO io) {
+  /** Creates a new Intake. */
+  public Intake(IntakeIO io) {
     this.io = io;
+    // Configure SysId
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Indexer", inputs);
+    Logger.processInputs("Intake", inputs);
   }
 
   /** Run open loop at the specified voltage. */
@@ -41,10 +42,23 @@ public class Indexer extends SubsystemBase {
     io.setSpeed(speed);
   }
 
-  /** Stops the Indexer. */
+  /** Stops the Intake. */
   public void stop() {
     io.stop();
   }
 
-  /** Returns a command to run a quasistatic test in the specified direction. */
+  /**
+   * Returns a command to run a quasistatic test in the specified direction. *
+   *
+   * <p>/** Returns a command to run a dynamic test in the specified direction.
+   */
+
+  /** Returns the current velocity in RPM. */
+  /*
+  @AutoLogOutput
+  public double getVelocityRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  }*/
+
+  /** Returns the current velocity in radians per second. */
 }

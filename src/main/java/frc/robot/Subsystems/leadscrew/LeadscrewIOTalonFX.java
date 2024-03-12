@@ -78,16 +78,16 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   }
 
   @Override
-  public void runSetpoint(double setPointEncoderTicks) {
+  public void runSetpoint(double setEncoderRotations) {
     if (motorPosition.getValueAsDouble()
-        > setPointEncoderTicks) { // less negative: current position is higher than desired position
+        > setEncoderRotations) { // less negative: current position is higher than desired position
       moveShooter(
-          Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks)) / 1.5);
+          Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setEncoderRotations)) / 1.5);
     } else if (motorPosition.getValueAsDouble()
-        < setPointEncoderTicks) { // current position is lower than desired
+        < setEncoderRotations) { // current position is lower than desired
       moveShooter(
-          -Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks)) / 4.5);
-    } else if (atPosition(setPointEncoderTicks)) {
+          -Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setEncoderRotations)) / 4.5);
+    } else if (atPosition(setEncoderRotations)) {
       stop();
     } else {
       stop();

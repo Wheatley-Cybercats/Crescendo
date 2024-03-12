@@ -21,7 +21,9 @@ public class PresetCommand extends Command {
 
   @Override
   public void execute() {
-    leadscrew.runSetpoint(position);
+    if (position == Preset.AMP.getAngle()) {
+      leadscrew.runSetpoint(position);
+    }
   }
 
   @Override

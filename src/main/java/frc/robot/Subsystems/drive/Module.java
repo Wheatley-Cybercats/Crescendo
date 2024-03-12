@@ -13,6 +13,8 @@
 
 package frc.robot.Subsystems.drive;
 
+import static frc.robot.Subsystems.drive.DriveConstants.moduleConstants;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -36,6 +39,18 @@ public class Module {
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
+  private static final LoggedTunableNumber drivekP =
+      new LoggedTunableNumber("Drive/Module/DrivekP", moduleConstants.drivekP());
+  private static final LoggedTunableNumber drivekD =
+      new LoggedTunableNumber("Drive/Module/DrivekD", moduleConstants.drivekD());
+  private static final LoggedTunableNumber drivekS =
+      new LoggedTunableNumber("Drive/Module/DrivekS", moduleConstants.ffkS());
+  private static final LoggedTunableNumber drivekV =
+      new LoggedTunableNumber("Drive/Module/DrivekV", moduleConstants.ffkV());
+  private static final LoggedTunableNumber turnkP =
+      new LoggedTunableNumber("Drive/Module/TurnkP", moduleConstants.turnkP());
+  private static final LoggedTunableNumber turnkD =
+      new LoggedTunableNumber("Drive/Module/TurnkD", moduleConstants.turnkD());
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   public Module(ModuleIO io, int index) {

@@ -20,6 +20,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
@@ -27,10 +28,10 @@ import edu.wpi.first.math.util.Units;
  */
 public class IndexerIOSparkMax implements IndexerIO {
   private static final double GEAR_RATIO = 1;
-
   private final CANSparkFlex indexer = new CANSparkFlex(9, MotorType.kBrushless);
   private final RelativeEncoder encoder = indexer.getEncoder();
   private final SparkPIDController pid = indexer.getPIDController();
+  private final DigitalInput dio = new DigitalInput(0);
 
   public IndexerIOSparkMax() {
     indexer.restoreFactoryDefaults();
@@ -49,6 +50,7 @@ public class IndexerIOSparkMax implements IndexerIO {
         Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
     inputs.appliedVolts = indexer.getAppliedOutput() * indexer.getBusVoltage();
     inputs.currentAmps = new double[] {indexer.getOutputCurrent()};
+    inputs.hasNote = dio.get();
   }
 
   @Override

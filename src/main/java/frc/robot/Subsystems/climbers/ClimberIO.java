@@ -11,30 +11,39 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.indexer;
+package frc.robot.Subsystems.climbers;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IndexerIO {
+public interface ClimberIO {
   @AutoLog
-  public static class IndexerIOInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double[] currentAmps = new double[] {};
-    public boolean hasNote = false;
+  public static class ClimberIOInputs {
+    public double positionRadLeft = 0.0;
+    public double positionRadRight = 0.0;
+    public double velocityRadPerLeft = 0.0;
+    public double velocityRadPerRight = 0.0;
+    public double appliedVoltsLeft = 0.0;
+    public double appliedVoltsRight = 0.0;
+    public double[] currentAmpsLeft = new double[] {};
+    public double[] currentAmpsRight = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(IndexerIOInputs inputs) {}
+  public default void updateInputs(ClimberIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  // public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 
   public default void setSpeed(double speed) {}
+
+  public default void setSpeedLeft(double speed) {}
+  ;
+
+  public default void setSpeedRight(double speed) {}
+  ;
 
   /** Stop in open loop. */
   public default void stop() {}
