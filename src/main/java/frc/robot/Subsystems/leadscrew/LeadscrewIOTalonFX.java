@@ -27,7 +27,7 @@ import edu.wpi.first.math.util.Units;
 public class LeadscrewIOTalonFX implements LeadscrewIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final TalonFX motor = new TalonFX(10);
+  private final TalonFX motor = new TalonFX(10, "The CANivore");
 
   private final StatusSignal<Double> motorPosition = motor.getPosition();
   private final StatusSignal<Double> motorVelocity = motor.getVelocity();
