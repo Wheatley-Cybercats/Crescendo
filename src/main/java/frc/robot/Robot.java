@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BooleanSupplier;
 
 // FRC Imports
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,6 +41,7 @@ import static frc.team2872.HelperFunctions.Normalize_Gryo_Value;
  * project, you must also update the build.gradle file in the project.
  */
 public class Robot extends TimedRobot implements RobotProperties {
+
 
   public static double driveAngle = 0;
   public static double driveMag = 0;
@@ -98,8 +100,6 @@ public class Robot extends TimedRobot implements RobotProperties {
   private final OuttakeCommand OC = new OuttakeCommand();
   //private final AutoAngleCommand AAC = new AutoAngleCommand(leadscrew);
   private final WingLineAnglePreset WLP = new WingLineAnglePreset(leadscrew);
-
-  private final CallibrateAt83 CAAA = new CallibrateAt83(leadscrew);
   private final AmpAnglePreset AAP = new AmpAnglePreset(leadscrew);
   private final PodiumAnglePreset PAP = new PodiumAnglePreset(leadscrew);
   private final SubwooferAnglePreset SAP = new SubwooferAnglePreset(leadscrew);
@@ -121,11 +121,20 @@ public class Robot extends TimedRobot implements RobotProperties {
   int rightTriggerAxis = 3;
 
 
+  public static boolean FIELD_ORIENTED_SWERVE = true;
+
+
   @Override
   public void robotInit() {
+
+    //CameraServer.startAutomaticCapture();
+
     // Controllers Init
     driveController = new XboxController(0);
     operatorController = new XboxController(1);
+
+    //leadscrew preset calibration
+    leadscrew.setPosition(115);
 
     // Sensors
     gyro = new Pigeon2Wrapper(GYRO_CAN_ID, "The CANivore");
@@ -211,14 +220,15 @@ public class Robot extends TimedRobot implements RobotProperties {
     JoystickButton zeroLead = new JoystickButton(operatorController, rightJoystickPressed);
     zeroLead.whileTrue(ZLS);
      */
+
+
     BooleanSupplier POVis90 = () -> operatorController.getPOV() == 90;
     Trigger podiumAngle = new Trigger(POVis90);
     podiumAngle.toggleOnTrue(PAP);
-    alter.and(podiumAngle).whileTrue(ZLS);
+    alter.and(intakeFromShooter).whileTrue(ZLS);
     BooleanSupplier POVis270 = () -> operatorController.getPOV() == 270;
     Trigger wingLineAngle = new Trigger(POVis270);
     wingLineAngle.toggleOnTrue(WLP);
-    alter.and(wingLineAngle).whileTrue(CAAA);
 
     //JoystickButton autoaim = new JoystickButton(operatorController, rightTrig);
     //autoaim.whileTrue(AAC);
@@ -306,6 +316,8 @@ public class Robot extends TimedRobot implements RobotProperties {
     SmartDashboard.putNumber("right Climb", climbers.getPosition("right"));
     SmartDashboard.putNumber("left Climb", climbers.getPosition("left"));
     SmartDashboard.putNumber("leadScrew Position", leadscrew.getPosition());
+
+    SmartDashboard.putBoolean("Beambreak", indexer.getBeamBreakState());
   }
 
   @Override
@@ -406,6 +418,10 @@ public class Robot extends TimedRobot implements RobotProperties {
       }
     }
 
+    if (indexer.getBeamBreakState()){
+      blinkin.solid_orange();
+    }
+
     /*
     if(driveController.getRawButton(X)){
       CommandScheduler.getInstance().schedule(swerveDrive.followPathCommand(new Pose2d(5, 1, new Rotation2d(0))));
@@ -453,6 +469,9 @@ public class Robot extends TimedRobot implements RobotProperties {
     swerveDrive.driveInit();
     gyroPIDController.enablePID();
     gyroPIDController.updateSensorLockValue();
+
+    //edge trigger reset
+    //operYButtonEdgeTrigger = false;
   }
 
   private void robotControlsPeriodic(final XboxControllerState driveControllerState, final XboxControllerState operatorControllerState) {
@@ -531,6 +550,7 @@ public class Robot extends TimedRobot implements RobotProperties {
       swerveDrive.drive(fieldCorrectedAngle, leftStickMagnitude, FIELD_ORIENTED_SWERVE ?  gyroPIDController.getPIDValue() : 0, precisionMode);
 
     }
+
     // Operator Controls
     if (operatorControllerState.getBButton()) {
       SSC.schedule();
@@ -544,16 +564,47 @@ public class Robot extends TimedRobot implements RobotProperties {
       CommandScheduler.getInstance().cancel(IC);
     }
 
-    /**move lead screw manually**/
-    if (operatorController.getPOV() == 0){
-      leadscrew.moveShooterUp(-0.5);
-    } else if(operatorController.getPOV() == 180){
-      leadscrew.moveShooterDown(0.6);
+    /** changes march 4 11:52 am before practice matches**/
+    /*
+    final boolean operYButton = operatorControllerState.getYButton();
+    if (operYButton && !operYButtonEdgeTrigger){
+      //On push
+      SAP.schedule();
+    } else if (operYButton){
+      //While held
+      //Keep the command running
+    } else{
+      //when released
+      CommandScheduler.getInstance().cancel(SAP);
+    }
+    operYButtonEdgeTrigger = operYButton;
+     */
+
+
+/*
+    if (operatorControllerState.getPOV() == 90) {
+      PAP.schedule();
+    }else{
+      CommandScheduler.getInstance().cancel(PAP);
+    }
+
+
+    if (operatorControllerState.getYButton()) {
+      SAP.schedule();
+    }else{
+      CommandScheduler.getInstance().cancel(SAP);
+    }
+
+     */
+
+    if (operatorControllerState.getPOV() == 0){
+      leadscrew.moveShooterUp(-0.7);
+    } else if(operatorControllerState.getPOV() == 180){
+      leadscrew.moveShooterDown(0.8);
     } else {
       leadscrew.stop();
     }
 
-    /**move climbers manually**/
     // LEFT CLIMBER
     if (operatorController.getRawAxis(1) < -0.15){ // left joystick up
       climbers.raiseLeftClimber();
@@ -572,11 +623,24 @@ public class Robot extends TimedRobot implements RobotProperties {
       climbers.stopRightClimber();
     }
 
+
+
     //reset gyro to 0
     if (driveController.getRawButton(3)){
       gyroPIDController.disablePID();
       gyro.reset();
       gyroPIDController.enablePID();
+      gyroPIDController.updateSensorLockValue(0);
     }
+
+
+    if (driveController.getYButton()){
+      FIELD_ORIENTED_SWERVE = false;
+    }
+    if (driveController.getAButton()){
+      FIELD_ORIENTED_SWERVE = true;
+    }
+
+
   }
 }

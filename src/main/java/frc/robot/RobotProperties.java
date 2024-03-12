@@ -22,12 +22,11 @@ public interface RobotProperties {
         /**
          * Drive Variables
          **/
-        public static final boolean FIELD_ORIENTED_SWERVE = true;
         public static final double JOYSTICK_DEADZONE = .08;
         public static final double MAX_DRIVE_SPEED = 1, MAX_ROTATION_SPEED = .9;
         public static final boolean PINWHEEL_ZERO_ORIENTATION = false;
 
-        public static final boolean SWERVE_UNIT_ORIENTATION_OPTIMIZATION = true;
+        public static final boolean SWERVE_UNIT_ORIENTATION_OPTIMIZATION = true ;
         public static final boolean USE_ODOMETRY_DRIVE_TO_POINT = true;
         public static final Pose2d redSpeakerPose = new Pose2d(16.178, 5.45, Rotation2d.fromDegrees(180));
         public static final Pose2d blueSpeakerPose = new Pose2d(0, 1, Rotation2d.fromDegrees(0));;
@@ -73,13 +72,13 @@ public interface RobotProperties {
                 public static final int INDEXER_MOTOR_ID = 9;
                 public static final double shootingSpeed = -.17;
                 public static final double indexerIntakingSpeed = .15;
-                public static final int BEAM_BREAK_DIO_PORT = 0;
+                public static final int BEAM_BREAK_DIO_PORT = 1;
 
         }
 
         /** Lead Screw Constants **/
         public static final int LEAD_SCREW_MOTOR_ID = 10;
-        public static final double AMP_ANGLE = 91.5;
+        public static final double AMP_ANGLE = 90.5;
         public static final double PODIUM_ANGLE = 36;
         public static final double WING_ANGLE = 21; //17; //when front of bumpers are lined up with outer edge of stage
         public static final double SUBWOOFER_ANGLE = 115;
@@ -115,5 +114,6 @@ public interface RobotProperties {
         public static final String DEFAULT_AUTON = "Disabled";
 
         /** Auton Modes **/
-        public static final String[] AUTON_OPTIONS = {"4 Note (3 In-Wing)", "4 Note (2 In-Wing 1 Midline)", "Test 3"};
+        public static final String[] AUTON_OPTIONS = {"3N MID", "4N MID", "2N Red MD", "1N Red RT", "4N MID v2", "2N Red RT", "2N Red LF", "1N Blue RT", "1N Blue LF"};
+        //rio_name = real_name: 3N MID, 4N MID = 3.5N MID v1, 2N Red MD = 2N Red MID, _____ = 1N Red RT, 2N Red RT = 3N Red MD Left and Right notes, 1N Blue RT = "4N" Red MID, 1N Blue LF = 1N Red LF (w/SoKno 4N auto)
 }

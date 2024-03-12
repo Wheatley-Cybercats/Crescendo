@@ -11,6 +11,8 @@ import java.util.function.Supplier;
 
 // FRC Imports
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 
 // Team 3171 Imports
 import static frc.team2872.HelperFunctions.Get_Gyro_Displacement;
@@ -187,14 +189,16 @@ public class ThreadedPIDController {
      * @return The PID Value
      */
     private final double calculatePID(final double displacement) {
-        double pid = 0, sum = this.sum;
+        double pid = 0, sum = Double.NEGATIVE_INFINITY;
         currentTime = Timer.getFPGATimestamp();
         rate = (displacement / ((currentTime - lastTime) * 1000));
         sum += rate;
         proportionalTemp = (kP * displacement);
-        sumTemp = (kI * sum);
+        //sumTemp = (kI * sum);
         rateTemp = (kD * rate);
-        pid = proportionalTemp + sumTemp + rateTemp;
+        pid = proportionalTemp +
+                //sumTemp +
+                rateTemp;
         lastTime = currentTime;
         // Don't let the PID value increase past PID_MAX or below PID_MIN and
         // prevent accumulation of the sum
@@ -253,6 +257,10 @@ public class ThreadedPIDController {
      * @return The current PID Value
      */
     public double getPIDValue() {
+        if(Double.isNaN(pidValue)){
+            System.out.println("--------- NAN OCCURRED ----------");
+            return 0;
+        }
         return pidValue;
     }
 

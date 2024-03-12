@@ -41,6 +41,9 @@ public class LED extends SubsystemBase {
     public void solid_dark_red(){
         set(0.59);
     }
+    public void solid_orange(){
+        set(0.65);
+    }
     public void solid_red(){
         set(0.61);
     }

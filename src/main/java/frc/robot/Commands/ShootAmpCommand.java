@@ -33,6 +33,7 @@ public class ShootAmpCommand extends Command {
         else{
             indexer.stop();
         }
+        Robot.blinkin.rainbow_rainbow();
     }
 
     @Override
@@ -46,5 +47,6 @@ public class ShootAmpCommand extends Command {
         flywheel.stop();
         indexer.stop();
         flywheel.resetPID();
+        Robot.blinkin.set(0);
     }
 }

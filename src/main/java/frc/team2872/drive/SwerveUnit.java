@@ -68,6 +68,8 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
                 driveMotor = new CANSparkMax(swerveUnitConfig.getDRIVE_MOTOR_CAN_ID(), MotorType.kBrushless);
                 ((CANSparkMax) driveMotor).setInverted(swerveUnitConfig.isDRIVE_MOTOR_INVERTED());
                 ((CANSparkMax) driveMotor).setIdleMode(IdleMode.kBrake);
+                ((CANSparkMax) driveMotor).setSmartCurrentLimit(70);
+                ((CANSparkMax) driveMotor).burnFlash();
                 break;
         }
 
@@ -83,6 +85,8 @@ public class SwerveUnit implements DoubleSupplier, RobotProperties {
                 slewMotor = new CANSparkMax(swerveUnitConfig.getSLEW_MOTOR_CAN_ID(), MotorType.kBrushless);
                 ((CANSparkMax) slewMotor).setInverted(swerveUnitConfig.isSLEW_MOTOR_INVERTED());
                 ((CANSparkMax) slewMotor).setIdleMode(IdleMode.kBrake);
+                ((CANSparkMax) slewMotor).setSmartCurrentLimit(70);
+                ((CANSparkMax) slewMotor).burnFlash();
                 break;
         }
 
