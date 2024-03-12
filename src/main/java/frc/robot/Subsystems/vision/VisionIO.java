@@ -4,38 +4,23 @@
 
 package frc.robot.Subsystems.vision;
 
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
+import edu.wpi.first.math.geometry.Pose2d;
 
 /** Add your docs here. */
 public interface VisionIO {
-  public static class VisionIOInputs implements LoggableInputs {
-    public double captureTimestamp = 0.0;
-    public double[] cornerX = new double[] {};
-    public double[] cornerY = new double[] {};
-    public boolean simpleValid = false;
-    public double simpleAngle = 0.0;
+  public default void setPipeline(int pipeline) {}
 
-    public void toLog(LogTable table) {
-      table.put("Capture Timestamp", captureTimestamp);
-      table.put("Corner X", cornerX);
-      table.put("Corner Y", cornerY);
-      table.put("Simple Valid", simpleValid);
-      table.put("Simple Angle", simpleAngle);
-    }
+  public default void setCamMode(int mode) {}
 
-    public void fromLog(LogTable table) {
-      captureTimestamp = table.get("Capture Timestamp", captureTimestamp);
-      cornerX = table.get("Corner X", cornerX);
-      cornerY = table.get("Corner Y", cornerY);
-      simpleValid = table.get("Simple Valid", simpleValid);
-      simpleAngle = table.get("Simple Angle", simpleAngle);
-    }
+  public default Pose2d getBotPose() {
+    return new Pose2d();
   }
 
-  public default void updateInputs(VisionIOInputs inputs) {}
+  public default Pose2d getBotPose_WPIRED() {
+    return new Pose2d();
+  }
 
-  public default void setLeds(boolean on) {}
-
-  public default void setPipeline(int pipeline) {}
+  public default Pose2d getBotPose_WPIBLUE() {
+    return new Pose2d();
+  }
 }

@@ -34,7 +34,7 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   private final StatusSignal<Double> motorAppliedVolts = motor.getMotorVoltage();
   private final StatusSignal<Double> motorCurrent = motor.getSupplyCurrent();
   private final PositionTorqueCurrentFOC positionControl =
-          new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
+      new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
   public LeadscrewIOTalonFX() {
     var config = new TalonFXConfiguration();
@@ -50,14 +50,12 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
 
   @Override
   public void updateInputs(LeadscrewIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
+    BaseStatusSignal.refreshAll(motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
     inputs.positionRad = Units.rotationsToRadians(motorPosition.getValueAsDouble()) / GEAR_RATIO;
     inputs.velocityRadPerSec =
         Units.rotationsToRadians(motorVelocity.getValueAsDouble()) / GEAR_RATIO;
     inputs.appliedVolts = motorAppliedVolts.getValueAsDouble();
-    inputs.currentAmps =
-        new double[] {motorCurrent.getValueAsDouble()};
+    inputs.currentAmps = new double[] {motorCurrent.getValueAsDouble()};
   }
 
   @Override
@@ -81,26 +79,32 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
 
   @Override
   public void runSetpoint(double setPointEncoderTicks) {
-    if (motorPosition.getValueAsDouble() > setPointEncoderTicks){ //less negative: current position is higher than desired position
-      moveShooter(Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks))/1.5);
-    } else if (motorPosition.getValueAsDouble() < setPointEncoderTicks){ //current position is lower than desired
-      moveShooter(-Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks))/4.5);
-    } else if (atPosition(setPointEncoderTicks)){
+    if (motorPosition.getValueAsDouble()
+        > setPointEncoderTicks) { // less negative: current position is higher than desired position
+      moveShooter(
+          Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks)) / 1.5);
+    } else if (motorPosition.getValueAsDouble()
+        < setPointEncoderTicks) { // current position is lower than desired
+      moveShooter(
+          -Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setPointEncoderTicks)) / 4.5);
+    } else if (atPosition(setPointEncoderTicks)) {
       stop();
-    } else{
+    } else {
       stop();
     }
   }
-@Override
-  public boolean atPosition(double position){
-    //the motor should stop whenever it is at a specific position
-    return motorPosition.getValueAsDouble() - position < 1.2 && motorPosition.getValueAsDouble() - position > -1.2;
-}
 
-@Override
-  public void moveShooter(double speed){
+  @Override
+  public boolean atPosition(double position) {
+    // the motor should stop whenever it is at a specific position
+    return motorPosition.getValueAsDouble() - position < 1.2
+        && motorPosition.getValueAsDouble() - position > -1.2;
+  }
+
+  @Override
+  public void moveShooter(double speed) {
     motor.set(-speed);
-    //thruBoreEncoder.getAbsolutePosition();
+    // thruBoreEncoder.getAbsolutePosition();
   }
 
   @Override

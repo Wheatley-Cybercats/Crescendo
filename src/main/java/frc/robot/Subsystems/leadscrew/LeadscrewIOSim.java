@@ -13,12 +13,6 @@
 
 package frc.robot.Subsystems.leadscrew;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-
 public class LeadscrewIOSim implements LeadscrewIO {
   /*
   private DCMotor sim = DCMotor.getFalcon500(1);

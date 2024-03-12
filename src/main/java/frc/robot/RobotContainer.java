@@ -36,6 +36,8 @@ import frc.robot.Subsystems.flywheel.Flywheel;
 import frc.robot.Subsystems.flywheel.FlywheelIO;
 import frc.robot.Subsystems.flywheel.FlywheelIOSim;
 import frc.robot.Subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.Subsystems.indexer.Indexer;
+import frc.robot.Subsystems.indexer.IndexerIOSparkMax;
 import frc.robot.Subsystems.leadscrew.Leadscrew;
 import frc.robot.Subsystems.leadscrew.LeadscrewIO;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOSim;
@@ -54,7 +56,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Leadscrew leadscrew;
-
+  private final Indexer indexer;
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(0);
@@ -78,6 +80,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         leadscrew = new Leadscrew(new LeadscrewIOTalonFX());
+        indexer = new Indexer(new IndexerIOSparkMax());
         break;
 
       case SIM:
@@ -91,6 +94,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         leadscrew = new Leadscrew(new LeadscrewIOSim());
+        indexer = new Indexer(new IndexerIOSparkMax()); // HMMHMMMHMHMHM SUS
         break;
 
       default:
@@ -104,6 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         leadscrew = new Leadscrew(new LeadscrewIO() {});
+        indexer = new Indexer(new IndexerIOSparkMax());
         break;
     }
 
@@ -143,9 +148,8 @@ public class RobotContainer {
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * Joystick} or {@link XboxController}), and then passing it to a {@link
-   * JoystickButton}.
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
+   * XboxController}), and then passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
     drive.setDefaultCommand(
@@ -173,12 +177,12 @@ public class RobotContainer {
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
     operatorController
-            .leftStick()
-            .whileTrue(
-                Commands.startEnd(
-                    () -> leadscrew.runVolts(-operatorController.getLeftY()),
-                    leadscrew::stop,
-                    leadscrew));
+        .leftStick()
+        .whileTrue(
+            Commands.startEnd(
+                () -> leadscrew.runVolts(-operatorController.getLeftY()),
+                leadscrew::stop,
+                leadscrew));
   }
 
   /**

@@ -11,13 +11,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.leadscrew;
+package frc.robot.Subsystems.indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface LeadscrewIO {
+public interface IndexerIO {
   @AutoLog
-  public static class LeadscrewIOInputs {
+  public static class IndexerIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
@@ -25,7 +25,7 @@ public interface LeadscrewIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(LeadscrewIOInputs inputs) {}
+  public default void updateInputs(IndexerIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
@@ -33,20 +33,8 @@ public interface LeadscrewIO {
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 
-  /** Set position of the leadscrew. */
-  public default void runSetpoint(double setPointEncoderTicks) {}
-
-  /** Check if at position given a deadband of 1.2 ticks. */
-  public default boolean atPosition(double setPointEncoderTicks) {
-    return false;
-  }
-
-  /** Move motor up */
-  public default void moveShooter(double speed) {}
+  public default void setSpeed(double speed) {}
 
   /** Stop in open loop. */
   public default void stop() {}
-
-  /** Set velocity PID constants. */
-  public default void configurePID(double kP, double kI, double kD) {}
 }

@@ -11,45 +11,25 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.Subsystems.leadscrew;
+package frc.robot.Subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Leadscrew extends SubsystemBase {
-  private final LeadscrewIO io;
-  private final LeadscrewIOInputsAutoLogged inputs = new LeadscrewIOInputsAutoLogged();
-  private final SimpleMotorFeedforward ffModel;
+public class Indexer extends SubsystemBase {
+  private final IndexerIO io;
+  private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
   private final SysIdRoutine sysId;
 
-  /** Creates a new Leadscrew. */
-  public Leadscrew(LeadscrewIO io) {
+  /** Creates a new Indexer. */
+  public Indexer(IndexerIO io) {
     this.io = io;
-
-    // Switch constants based on mode (the physics simulator is treated as a
-    // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-        io.configurePID(1.0, 0.0, 0.0);
-        break;
-      case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
-        break;
-      default:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
-        break;
-    }
 
     // Configure SysId
     sysId =
@@ -58,14 +38,14 @@ public class Leadscrew extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Leadscrew/SysIdState", state.toString())),
+                (state) -> Logger.recordOutput("Indexer/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Leadscrew", inputs);
+    Logger.processInputs("Indexer", inputs);
   }
 
   /** Run open loop at the specified voltage. */
@@ -74,28 +54,11 @@ public class Leadscrew extends SubsystemBase {
   }
 
   /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
-
-    // Log Leadscrew setpoint
-    Logger.recordOutput("Leadscrew/SetpointRPM", velocityRPM);
+  public void setSpeed(double speed) {
+    io.setSpeed(speed);
   }
 
-  public void runSetpoint(double setPointEncoderTicks) {
-    io.runSetpoint(setPointEncoderTicks);
-    Logger.recordOutput("Leadscrew/Setpoint", setPointEncoderTicks);
-  }
-
-  public boolean atPosition(double position) {
-    return io.atPosition(position);
-  }
-
-  public void moveShooter(double speed) {
-    io.moveShooter(-speed);
-  }
-
-  /** Stops the Leadscrew. */
+  /** Stops the Indexer. */
   public void stop() {
     io.stop();
   }
