@@ -60,29 +60,29 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   public ModuleIOSparkMax(int index) {
     switch (index) {
-      case 0: // LR
-        driveSparkMax = new CANSparkFlex(51, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(52, MotorType.kBrushless);
-        cancoder = new CANcoder(12, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.288); // MUST BE CALIBRATED
-        break;
-      case 1: // LF
+      case 0: // FL
         driveSparkMax = new CANSparkFlex(61, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(62, MotorType.kBrushless);
         cancoder = new CANcoder(10, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.1455); // MUST BE CALIBRATED
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.1455); // MUST BE CALIBRATED 0.1455
         break;
-      case 2: // RF
+      case 1: // FR
         driveSparkMax = new CANSparkFlex(49, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(50, MotorType.kBrushless);
         cancoder = new CANcoder(11, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.453); // MUST BE CALIBRATED
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.453); // MUST BE CALIBRATED -0.453
         break;
-      case 3: // RR
+      case 2: // BL
+        driveSparkMax = new CANSparkFlex(51, MotorType.kBrushless);
+        turnSparkMax = new CANSparkMax(52, MotorType.kBrushless);
+        cancoder = new CANcoder(12, "The CANivore");
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.288); // MUST BE CALIBRATED -0.288
+        break;
+      case 3: // BR
         driveSparkMax = new CANSparkFlex(56, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(55, MotorType.kBrushless);
         cancoder = new CANcoder(13, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.112); // MUST BE CALIBRATED
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.112); // MUST BE CALIBRATED -0.112
         break;
       default:
         throw new RuntimeException("Invalid module index");
