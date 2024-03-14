@@ -36,7 +36,7 @@ public class IntakeIOSparkMax implements IntakeIO {
     IntakeBot.follow(IntakeTop, true);
 
     IntakeTop.enableVoltageCompensation(12.0);
-    IntakeTop.setSmartCurrentLimit(20);
+    IntakeTop.setSmartCurrentLimit(60);
 
     IntakeTop.burnFlash();
     IntakeBot.burnFlash();

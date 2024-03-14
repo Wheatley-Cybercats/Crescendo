@@ -20,7 +20,8 @@ public interface FlywheelIO {
   public static class FlywheelIOInputs {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
-    public double appliedVolts = 0.0;
+    public double appliedVoltsTop = 0.0;
+    public double appliedVoltsBot = 0.0;
     public double[] currentAmps = new double[] {};
   }
 
@@ -32,6 +33,20 @@ public interface FlywheelIO {
 
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+
+  public default void simpleVoltTop(double volts) {}
+
+  public default void simpleVoltBot(double volts) {}
+
+  public default boolean atSpeedTop(double speed) {
+    return false;
+  }
+  ;
+
+  public default boolean atSpeedBot(double speed) {
+    return false;
+  }
+  ;
 
   /** Stop in open loop. */
   public default void stop() {}

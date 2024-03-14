@@ -1,14 +1,14 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Preset;
+import frc.robot.Constants;
 import frc.robot.Subsystems.leadscrew.Leadscrew;
 
-public class PresetCommand extends Command {
+public class PresetLeadscrewCommand extends Command {
   private final Leadscrew leadscrew;
   private final double position;
 
-  public PresetCommand(Leadscrew leadscrew, Preset preset) {
+  public PresetLeadscrewCommand(Leadscrew leadscrew, Constants.PresetLeadscrew preset) {
     this.leadscrew = leadscrew;
     position = preset.getAngle();
     // each subsystem used by the command must be passed into the
@@ -21,7 +21,7 @@ public class PresetCommand extends Command {
 
   @Override
   public void execute() {
-    if (position == Preset.AMP.getAngle()) {
+    if (position == Constants.PresetLeadscrew.AMP.getAngle()) {
       leadscrew.runSetpoint(position);
     }
   }

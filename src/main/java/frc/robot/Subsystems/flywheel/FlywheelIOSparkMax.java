@@ -28,26 +28,25 @@ import edu.wpi.first.math.util.Units;
 public class FlywheelIOSparkMax implements FlywheelIO {
   private static final double GEAR_RATIO = 1;
 
-  private final CANSparkFlex leader = new CANSparkFlex(39, MotorType.kBrushless);
-  private final CANSparkFlex follower = new CANSparkFlex(40, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final CANSparkFlex top = new CANSparkFlex(39, MotorType.kBrushless);
+  private final CANSparkFlex bottom = new CANSparkFlex(40, MotorType.kBrushless);
+  private final RelativeEncoder encoder = top.getEncoder();
+  private final SparkPIDController pid = top.getPIDController();
 
   public FlywheelIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+    top.restoreFactoryDefaults();
+    bottom.restoreFactoryDefaults();
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
+    top.setCANTimeout(250);
+    bottom.setCANTimeout(250);
 
-    leader.setInverted(false);
-    follower.follow(leader, true);
+    top.setInverted(false);
 
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
+    top.enableVoltageCompensation(12.0);
+    top.setSmartCurrentLimit(30);
 
-    leader.burnFlash();
-    follower.burnFlash();
+    top.burnFlash();
+    bottom.burnFlash();
   }
 
   @Override
@@ -55,13 +54,24 @@ public class FlywheelIOSparkMax implements FlywheelIO {
     inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
     inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.appliedVoltsTop = top.getAppliedOutput() * top.getBusVoltage();
+    inputs.appliedVoltsBot = bottom.getAppliedOutput() * bottom.getBusVoltage();
+    inputs.currentAmps = new double[] {top.getOutputCurrent(), bottom.getOutputCurrent()};
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+    top.setVoltage(volts);
+  }
+
+  @Override
+  public void simpleVoltTop(double volts) {
+    top.setVoltage(volts);
+  }
+
+  @Override
+  public void simpleVoltBot(double volts) {
+    bottom.setVoltage(volts);
   }
 
   @Override
@@ -75,8 +85,19 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   }
 
   @Override
+  public boolean atSpeedTop(double speed) {
+    return top.getEncoder().getVelocity() > speed;
+  }
+
+  @Override
+  public boolean atSpeedBot(double speed) {
+    return bottom.getEncoder().getVelocity() < speed;
+  }
+
+  @Override
   public void stop() {
-    leader.stopMotor();
+    top.stopMotor();
+    bottom.stopMotor();
   }
 
   @Override

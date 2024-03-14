@@ -78,6 +78,11 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   }
 
   @Override
+  public void setSpeed(double speed) {
+    motor.set(speed);
+  }
+
+  @Override
   public void runSetpoint(double setEncoderRotations) {
     if (motorPosition.getValueAsDouble()
         > setEncoderRotations) { // less negative: current position is higher than desired position

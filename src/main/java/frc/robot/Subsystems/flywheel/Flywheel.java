@@ -73,6 +73,14 @@ public class Flywheel extends SubsystemBase {
     io.setVoltage(volts);
   }
 
+  public void simpleVoltTop(double volts) {
+    io.simpleVoltTop(volts);
+  }
+
+  public void simpleVoltBot(double volts) {
+    io.simpleVoltBot(volts);
+  }
+
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
@@ -80,6 +88,14 @@ public class Flywheel extends SubsystemBase {
 
     // Log flywheel setpoint
     Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
+  }
+
+  public boolean atSpeedTop(double speed) {
+    return io.atSpeedTop(speed);
+  }
+
+  public boolean atSpeedBot(double speed) {
+    return io.atSpeedBot(speed);
   }
 
   /** Stops the flywheel. */
