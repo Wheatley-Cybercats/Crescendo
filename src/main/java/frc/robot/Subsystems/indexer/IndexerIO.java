@@ -36,6 +36,10 @@ public interface IndexerIO {
 
   public default void setSpeed(double speed) {}
 
+  public default boolean hasNote() {
+    return false;
+  }
+
   /** Stop in open loop. */
   public default void stop() {}
 }

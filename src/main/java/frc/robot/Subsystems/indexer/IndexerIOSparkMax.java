@@ -74,6 +74,11 @@ public class IndexerIOSparkMax implements IndexerIO {
   }
 
   @Override
+  public boolean hasNote() {
+    return !dio.get();
+  }
+
+  @Override
   public void stop() {
     indexer.stopMotor();
   }

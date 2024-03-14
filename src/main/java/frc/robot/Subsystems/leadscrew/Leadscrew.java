@@ -72,6 +72,10 @@ public class Leadscrew extends SubsystemBase {
     io.setVoltage(volts);
   }
 
+  public void setSpeed(double speed) {
+    io.setSpeed(speed);
+  }
+
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
