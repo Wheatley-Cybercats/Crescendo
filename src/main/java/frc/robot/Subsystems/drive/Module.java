@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -35,6 +36,8 @@ public class Module {
 
   private final SimpleMotorFeedforward driveFeedforward;
   private final PIDController driveFeedback;
+  private SimpleMotorFeedforward ff =
+      new SimpleMotorFeedforward(moduleConstants.ffkS(), moduleConstants.ffkV(), 0.0);
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -51,7 +54,9 @@ public class Module {
       new LoggedTunableNumber("Drive/Module/TurnkP", moduleConstants.turnkP());
   private static final LoggedTunableNumber turnkD =
       new LoggedTunableNumber("Drive/Module/TurnkD", moduleConstants.turnkD());
-  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+
+  /** -- GETTER -- Returns the module positions received this cycle. */
+  @Getter private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   public Module(ModuleIO io, int index) {
     this.io = io;
@@ -62,9 +67,11 @@ public class Module {
     switch (Constants.currentMode) {
       case REAL:
         /*
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0);
+        driveFeedforward =
+            new SimpleMotorFeedforward(moduleConstants.ffkS(), moduleConstants.ffkV());
+        driveFeedback =
+            new PIDController(moduleConstants.drivekP(), 0.0, moduleConstants.drivekD());
+        turnFeedback = new PIDController(moduleConstants.turnkP(), 0.0, moduleConstants.turnkD());
         break;
 
          */
@@ -95,6 +102,15 @@ public class Module {
    */
   public void updateInputs() {
     io.updateInputs(inputs);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> ff = new SimpleMotorFeedforward(drivekS.get(), drivekV.get(), 0),
+        drivekS,
+        drivekV);
+    LoggedTunableNumber.ifChanged(
+        hashCode(), () -> io.setDrivePID(drivekP.get(), 0, drivekD.get()), drivekP, drivekD);
+    LoggedTunableNumber.ifChanged(
+        hashCode(), () -> io.setTurnPID(turnkP.get(), 0, turnkD.get()), turnkP, turnkD);
   }
 
   public void periodic() {
@@ -207,11 +223,6 @@ public class Module {
   /** Returns the module state (turn angle and drive velocity). */
   public SwerveModuleState getState() {
     return new SwerveModuleState(getVelocityMetersPerSec(), getAngle());
-  }
-
-  /** Returns the module positions received this cycle. */
-  public SwerveModulePosition[] getOdometryPositions() {
-    return odometryPositions;
   }
 
   /** Returns the timestamps of the samples received this cycle. */

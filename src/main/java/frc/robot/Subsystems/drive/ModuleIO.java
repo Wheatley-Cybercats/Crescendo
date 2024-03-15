@@ -1,3 +1,4 @@
+
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -17,13 +18,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
+
   @AutoLog
   public static class ModuleIOInputs {
     public double drivePositionRad = 0.0;
     public double driveVelocityRadPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
     public double[] driveCurrentAmps = new double[] {};
-
     public Rotation2d turnAbsolutePosition = new Rotation2d();
     public Rotation2d turnPosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
@@ -49,4 +50,10 @@ public interface ModuleIO {
 
   /** Enable or disable brake mode on the turn motor. */
   public default void setTurnBrakeMode(boolean enable) {}
+
+  public default void setDrivePID(double kP, double kI, double kD) {}
+  ;
+
+  public default void setTurnPID(double kP, double kI, double kD) {}
+  ;
 }

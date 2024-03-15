@@ -1,3 +1,4 @@
+
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -128,3 +129,4 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     motor.getConfigurator().apply(config);
   }
 }
+
