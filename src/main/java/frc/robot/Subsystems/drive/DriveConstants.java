@@ -1,3 +1,4 @@
+
 // Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -23,13 +24,13 @@ public final class DriveConstants {
   // Module Constants
   public static final ModuleConstants moduleConstants =
       new ModuleConstants(
-          5.0,
+          0,
+          0,
+          1.0 / DCMotor.getNeoVortex(1).KtNMPerAmp,
+              0.007,
+          -0.02,
+              -0.0072,
           0.0,
-          1.0 / DCMotor.getNeoVortex(1).KtNMPerAmp, // A/(N*m)
-          35.0,
-          0.0,
-          4000.0,
-          50.0,
           Mk4iReductions.L3.reduction,
           Mk4iReductions.TURN.reduction);
 

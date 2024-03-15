@@ -165,10 +165,11 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
-    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    driverController.y().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     driverController
-        .b()
+        .x() //reset odometry pose
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -177,26 +178,35 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorController
-        .b()
-        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheel.SPEAKER));
+    /**OPERATOR**/
 
-    operatorController
-        .a()
-        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheel.AMP));
+    operatorController.b() //SHOOT SPEAKER
+        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
 
-    operatorController.povUp().whileTrue(new MoveLeadScrewCommand(leadscrew, 0.17));
+    operatorController.a() //SHOOT AMP
+        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP));
 
-    operatorController.povDown().whileTrue(new MoveLeadScrewCommand(leadscrew, -0.17));
+    operatorController.povUp() //MOVE SHOOTER UP
+            .whileTrue(new MoveLeadScrewCommand(leadscrew, 0.17));
 
-    /*
-    operatorController
-        .b()
-        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrew.AMP));
+    operatorController.povDown() //MOVE SHOOTER DOWN
+            .whileTrue(new MoveLeadScrewCommand(leadscrew, -0.17));
 
-     */
+    operatorController.start() //AMP ANGLE PRESET
+            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP));
+
+    operatorController.povRight() //PODIUM ANGLE PRESET
+            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM));
+
+    operatorController.povLeft() //WING ANGLE PRESET
+            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING));
+
+    operatorController.y() //SUBWOOFER ANGLE PRESET
+            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
 
     operatorController.leftBumper().whileTrue(new IntakeFromGroundCommand(intake, indexer));
+
+    operatorController.rightBumper().whileTrue(new OuttakeCommand(intake, indexer));
   }
 
   /**
