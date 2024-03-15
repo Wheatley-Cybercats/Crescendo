@@ -48,6 +48,7 @@ import frc.robot.Subsystems.leadscrew.Leadscrew;
 import frc.robot.Subsystems.leadscrew.LeadscrewIO;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOSim;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOTalonFX;
+import frc.robot.Subsystems.led.Blinkin;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -66,6 +67,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Vision vision;
   private final Climber climber;
+  private final Blinkin led;
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
@@ -94,6 +96,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
 
       case SIM:
@@ -112,6 +115,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
 
       default:
@@ -130,6 +134,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
     }
 
