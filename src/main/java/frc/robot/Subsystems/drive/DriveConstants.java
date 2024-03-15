@@ -26,9 +26,9 @@ public final class DriveConstants {
           0,
           0,
           1.0 / DCMotor.getNeoVortex(1).KtNMPerAmp,
-              0.007,
-          -0.02,
-              -0.0072,
+          0.007,
+          0.02,
+          0.0072,
           0.0,
           Mk4iReductions.L3.reduction,
           Mk4iReductions.TURN.reduction);

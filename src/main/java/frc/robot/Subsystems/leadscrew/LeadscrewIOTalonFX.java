@@ -46,6 +46,8 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
     motor.optimizeBusUtilization();
+
+    motor.setPosition(115); // lead screw must physically be at "bumper up" preset
   }
 
   @Override
