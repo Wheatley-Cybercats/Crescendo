@@ -25,20 +25,25 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Commands.DriveCommands;
-import frc.robot.Commands.PresetCommand;
+import frc.robot.Commands.*;
+import frc.robot.Subsystems.climbers.Climber;
+import frc.robot.Subsystems.climbers.ClimberIOSparkMax;
 import frc.robot.Subsystems.drive.Drive;
 import frc.robot.Subsystems.drive.GyroIO;
 import frc.robot.Subsystems.drive.GyroIOPigeon2;
 import frc.robot.Subsystems.drive.ModuleIO;
 import frc.robot.Subsystems.drive.ModuleIOSim;
 import frc.robot.Subsystems.drive.ModuleIOSparkMax;
+import frc.robot.Subsystems.drive.Vision;
+import frc.robot.Subsystems.drive.VisionIOLimelight;
 import frc.robot.Subsystems.flywheel.Flywheel;
 import frc.robot.Subsystems.flywheel.FlywheelIO;
 import frc.robot.Subsystems.flywheel.FlywheelIOSim;
 import frc.robot.Subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.Subsystems.indexer.Indexer;
 import frc.robot.Subsystems.indexer.IndexerIOSparkMax;
+import frc.robot.Subsystems.intake.Intake;
+import frc.robot.Subsystems.intake.IntakeIOSparkMax;
 import frc.robot.Subsystems.leadscrew.Leadscrew;
 import frc.robot.Subsystems.leadscrew.LeadscrewIO;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOSim;
@@ -58,9 +63,11 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Leadscrew leadscrew;
   private final Indexer indexer;
-  // Controller
+  private final Intake intake;
+  private final Vision vision;
+  private final Climber climber;
   private final CommandXboxController driverController = new CommandXboxController(0);
-  private final CommandXboxController operatorController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -78,10 +85,15 @@ public class RobotContainer {
                 new ModuleIOSparkMax(0),
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+                new ModuleIOSparkMax(3),
+                new Vision(new VisionIOLimelight()));
+
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         leadscrew = new Leadscrew(new LeadscrewIOTalonFX());
         indexer = new Indexer(new IndexerIOSparkMax());
+        intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
         break;
 
       case SIM:
@@ -92,10 +104,14 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim());
+                new ModuleIOSim(),
+                new Vision(new VisionIOLimelight()));
         flywheel = new Flywheel(new FlywheelIOSim());
         leadscrew = new Leadscrew(new LeadscrewIOSim());
         indexer = new Indexer(new IndexerIOSparkMax()); // HMMHMMMHMHMHM SUS
+        intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
         break;
 
       default:
@@ -106,10 +122,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                new Vision(new VisionIOLimelight()));
         flywheel = new Flywheel(new FlywheelIO() {});
         leadscrew = new Leadscrew(new LeadscrewIO() {});
         indexer = new Indexer(new IndexerIOSparkMax());
+        intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
         break;
     }
 
@@ -172,20 +192,26 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     operatorController
-        .a()
-        .whileTrue(
-            Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+        .b()
+        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheel.SPEAKER));
 
     operatorController
-        .leftStick()
-        .whileTrue(
-            Commands.startEnd(
-                () -> leadscrew.runVolts(-operatorController.getLeftY()),
-                leadscrew::stop,
-                leadscrew));
+        .a()
+        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheel.AMP));
 
-    operatorController.b().onTrue(new PresetCommand(leadscrew, Constants.Preset.AMP));
+    operatorController.povUp().whileTrue(new MoveLeadScrewCommand(leadscrew, 0.17));
+
+    operatorController.povDown().whileTrue(new MoveLeadScrewCommand(leadscrew, -0.17));
+
+    operatorController
+        .back() // Screen share button (left mid)
+        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrew.AMP));
+
+    operatorController.leftBumper().whileTrue(new IntakeFromGroundCommand(intake, indexer));
+
+    climber.setDefaultCommand(
+        MoveClimberCommand.moveClimber(
+            climber, operatorController::getLeftY, operatorController::getRightY));
   }
 
   /**

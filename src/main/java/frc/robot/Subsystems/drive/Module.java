@@ -62,9 +62,11 @@ public class Module {
     switch (Constants.currentMode) {
       case REAL:
         /*
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0);
+        driveFeedforward =
+            new SimpleMotorFeedforward(moduleConstants.ffkS(), moduleConstants.ffkV());
+        driveFeedback =
+            new PIDController(moduleConstants.drivekP(), 0.0, moduleConstants.drivekD());
+        turnFeedback = new PIDController(moduleConstants.turnkP(), 0.0, moduleConstants.turnkD());
         break;
 
          */

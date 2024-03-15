@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import lombok.Getter;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -23,6 +25,8 @@ package frc.robot;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
+  public static final boolean tuningMode = false;
+  public static final boolean useVision = false;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -36,7 +40,8 @@ public final class Constants {
   }
 
   // Create enum and assign values to each preset
-  public static enum Preset {
+  @Getter
+  public static enum PresetLeadscrew {
     AMP(AMP_ANGLE),
     PODIUM(PODIUM_ANGLE),
     WING(WING_ANGLE),
@@ -44,11 +49,30 @@ public final class Constants {
 
     private final double angle;
 
-    Preset(double angle) {
+    PresetLeadscrew(double angle) {
+      this.angle = angle;
+    }
+  }
+
+  public static enum PresetFlywheel {
+    AMP(AMP_FLYWHEEL),
+    SPEAKER(SPEAKER_FLYWHEEL);
+
+    private final double[] angle;
+
+    PresetFlywheel(double[] angle) {
       this.angle = angle;
     }
 
-    public double getAngle() {
+    public double getVoltBot() {
+      return angle[0];
+    }
+
+    public double getVoltTop() {
+      return angle[1];
+    }
+
+    public double[] getVolt() {
       return angle;
     }
   }
@@ -58,5 +82,6 @@ public final class Constants {
   public static final double WING_ANGLE =
       21; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
-  public static final boolean tuningMode = false;
+  public static final double[] AMP_FLYWHEEL = {-1.12, 0.6}; // [BOT, TOP]
+  public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
 }

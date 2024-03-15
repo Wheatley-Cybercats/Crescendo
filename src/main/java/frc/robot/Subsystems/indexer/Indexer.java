@@ -41,6 +41,10 @@ public class Indexer extends SubsystemBase {
     io.setSpeed(speed);
   }
 
+  public boolean hasNote() {
+    return io.hasNote();
+  }
+
   /** Stops the Indexer. */
   public void stop() {
     io.stop();

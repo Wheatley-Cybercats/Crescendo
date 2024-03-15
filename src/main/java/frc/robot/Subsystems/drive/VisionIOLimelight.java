@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Subsystems.vision;
+package frc.robot.Subsystems.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,5 +46,18 @@ public class VisionIOLimelight implements VisionIO {
         nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[0],
         nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[1],
         new Rotation2d(nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[5]));
+  }
+
+  @Override
+  public double getTimeStamp() {
+    return nt.getEntry("botpose").getDoubleArray(new double[6])[6];
+  }
+
+  @Override
+  public void updateIOInputs(VisionIOInputs input) {
+    input.connected = getBotPose().getX() >= 0;
+    input.pose = getBotPose();
+    input.pose_wpiBlue = getBotPose_WPIBLUE();
+    input.pose_wpiRed = getBotPose_WPIRED();
   }
 }
