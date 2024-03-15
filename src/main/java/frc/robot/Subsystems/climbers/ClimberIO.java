@@ -46,5 +46,5 @@ public interface ClimberIO {
   ;
 
   /** Stop in open loop. */
-  public default void stop(int leftRight) {}
+  public default void stop() {}
 }

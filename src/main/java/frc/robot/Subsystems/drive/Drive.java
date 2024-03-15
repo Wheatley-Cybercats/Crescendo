@@ -35,7 +35,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,16 +42,15 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5); // 14.5
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.0); // default 25.0
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.0); // 25.0
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(25.0);
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
-  private final Vision vision;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
@@ -74,10 +72,8 @@ public class Drive extends SubsystemBase {
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO,
-      Vision visionIO) {
+      ModuleIO brModuleIO) {
     this.gyroIO = gyroIO;
-    this.vision = visionIO;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -182,14 +178,6 @@ public class Drive extends SubsystemBase {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-    }
-
-    if (Constants.useVision) {
-      var mode =
-          DriverStation.getAlliance().get().compareTo(Alliance.Red) == 0
-              ? Vision.Mode.WPI_RED
-              : Vision.Mode.WPI_BLUE;
-      addVisionMeasurement(vision.getPose(mode), vision.getTimeStamp());
     }
   }
 

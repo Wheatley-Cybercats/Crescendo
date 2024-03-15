@@ -58,17 +58,9 @@ public class Climber extends SubsystemBase {
     io.setSpeed(speed);
   }
 
-  public void setSpeedLeft(double speed) {
-    io.setSpeedLeft(speed);
-  }
-
-  public void setSpeedRight(double speed) {
-    io.setSpeedRight(speed);
-  }
-
   /** Stops the Climber. */
-  public void stop(int leftRight) {
-    io.stop(leftRight);
+  public void stop() {
+    io.stop();
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
