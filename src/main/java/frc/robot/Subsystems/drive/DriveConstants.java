@@ -23,12 +23,12 @@ public final class DriveConstants {
   // Module Constants
   public static final ModuleConstants moduleConstants =
       new ModuleConstants(
-          0.18868,
-          0.12825,
-          1.0 / DCMotor.getNeoVortex(1).KtNMPerAmp, // A/(N*m)
-          0.1,
           0,
-          20.3,
+          0,
+          1.0 / DCMotor.getNeoVortex(1).KtNMPerAmp,
+              0.007,
+          -0.02,
+              -0.0072,
           0.0,
           Mk4iReductions.L3.reduction,
           Mk4iReductions.TURN.reduction);
