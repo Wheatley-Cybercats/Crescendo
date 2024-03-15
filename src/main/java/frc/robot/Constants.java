@@ -25,8 +25,6 @@ import lombok.Getter;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
-  public static final boolean tuningMode = false;
-  public static final boolean useVision = false;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -41,7 +39,7 @@ public final class Constants {
 
   // Create enum and assign values to each preset
   @Getter
-  public static enum PresetLeadscrew {
+  public static enum PresetLeadscrewAngle {
     AMP(AMP_ANGLE),
     PODIUM(PODIUM_ANGLE),
     WING(WING_ANGLE),
@@ -49,18 +47,18 @@ public final class Constants {
 
     private final double angle;
 
-    PresetLeadscrew(double angle) {
+    PresetLeadscrewAngle(double angle) {
       this.angle = angle;
     }
   }
 
-  public static enum PresetFlywheel {
+  public static enum PresetFlywheelSpeed {
     AMP(AMP_FLYWHEEL),
     SPEAKER(SPEAKER_FLYWHEEL);
 
     private final double[] angle;
 
-    PresetFlywheel(double[] angle) {
+    PresetFlywheelSpeed(double[] angle) {
       this.angle = angle;
     }
 
@@ -79,9 +77,10 @@ public final class Constants {
 
   public static final double AMP_ANGLE = 91.5;
   public static final double PODIUM_ANGLE = 36;
-  public static final double WING_ANGLE =
-      21; // 17; //when front of bumpers are lined up with outer edge of stage
+  public static final double WING_ANGLE = 21; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
+  public static final boolean tuningMode = false;
+
   public static final double[] AMP_FLYWHEEL = {-1.12, 0.6}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
 }
