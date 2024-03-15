@@ -13,6 +13,8 @@
 
 package frc.robot.Subsystems.drive;
 
+import static frc.robot.Subsystems.drive.DriveConstants.moduleConstants;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -24,6 +26,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.OptionalDouble;
@@ -57,6 +60,8 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final StatusSignal<Double> turnAbsolutePosition;
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
+  private final PIDController driveController;
+  private final PIDController turnController;
 
   public ModuleIOSparkMax(int index) {
     switch (index) {
@@ -64,7 +69,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         driveSparkMax = new CANSparkFlex(61, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(62, MotorType.kBrushless);
         cancoder = new CANcoder(10, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.1455); // MUST BE CALIBRATED 0.1455
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.132); // MUST BE CALIBRATED 0.1455
         break;
       case 1: // FR
         driveSparkMax = new CANSparkFlex(49, MotorType.kBrushless);
@@ -76,7 +81,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         driveSparkMax = new CANSparkFlex(51, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(52, MotorType.kBrushless);
         cancoder = new CANcoder(12, "The CANivore");
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.288); // MUST BE CALIBRATED -0.288
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.305); // MUST BE CALIBRATED -0.288
         break;
       case 3: // BR
         driveSparkMax = new CANSparkFlex(56, MotorType.kBrushless);
@@ -144,9 +149,13 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     driveSparkMax.burnFlash();
     turnSparkMax.burnFlash();
-    turnAbsolutePosition = cancoder.getAbsolutePosition();
     cancoder.getConfigurator().apply(new CANcoderConfiguration());
+    turnAbsolutePosition = cancoder.getAbsolutePosition();
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, turnAbsolutePosition);
+
+    driveController = new PIDController(moduleConstants.drivekP(), 0.0, moduleConstants.drivekD());
+    turnController = new PIDController(moduleConstants.turnkP(), 0.0, moduleConstants.turnkD());
+    turnController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -204,5 +213,15 @@ public class ModuleIOSparkMax implements ModuleIO {
   @Override
   public void setTurnBrakeMode(boolean enable) {
     turnSparkMax.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+  }
+
+  @Override
+  public void setDrivePID(double kP, double kI, double kD) {
+    driveController.setPID(kP, kI, kD);
+  }
+
+  @Override
+  public void setTurnPID(double kP, double kI, double kD) {
+    turnController.setPID(kP, kI, kD);
   }
 }

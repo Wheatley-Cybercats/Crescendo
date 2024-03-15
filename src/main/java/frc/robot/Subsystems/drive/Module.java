@@ -36,6 +36,8 @@ public class Module {
 
   private final SimpleMotorFeedforward driveFeedforward;
   private final PIDController driveFeedback;
+  private SimpleMotorFeedforward ff =
+      new SimpleMotorFeedforward(moduleConstants.ffkS(), moduleConstants.ffkV(), 0.0);
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -100,6 +102,15 @@ public class Module {
    */
   public void updateInputs() {
     io.updateInputs(inputs);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> ff = new SimpleMotorFeedforward(drivekS.get(), drivekV.get(), 0),
+        drivekS,
+        drivekV);
+    LoggedTunableNumber.ifChanged(
+        hashCode(), () -> io.setDrivePID(drivekP.get(), 0, drivekD.get()), drivekP, drivekD);
+    LoggedTunableNumber.ifChanged(
+        hashCode(), () -> io.setTurnPID(turnkP.get(), 0, turnkD.get()), turnkP, turnkD);
   }
 
   public void periodic() {
