@@ -38,6 +38,8 @@ public interface LeadscrewIO {
   /** Set position of the leadscrew. */
   public default void runSetpoint(double setPointEncoderTicks) {}
 
+  public default void setPosition(double position) {}
+
   /** Check if at position given a deadband of 1.2 ticks. */
   public default boolean atPosition(double setPointEncoderTicks) {
     return false;

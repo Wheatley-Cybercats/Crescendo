@@ -53,9 +53,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * "declarative" paradigm, very little robot logic should actually be handblinkin in the {@link
+ * Robot} periodic methods (other than the scheduler calls). Instead, the structure of the robot
+ * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // Subsystems
@@ -66,7 +66,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Vision vision;
   private final Climber climber;
-  private final Blinkin led;
+  private final Blinkin blinkin;
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
@@ -93,7 +93,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
-        led = new Blinkin();
+        blinkin = new Blinkin();
         break;
 
       case SIM:
@@ -112,7 +112,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
-        led = new Blinkin();
+        blinkin = new Blinkin();
         break;
 
       default:
@@ -131,25 +131,16 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         vision = new Vision(new VisionIOLimelight());
         climber = new Climber(new ClimberIOSparkMax());
-        led = new Blinkin();
+        blinkin = new Blinkin();
         break;
     }
-
-    // Set up auto routines
-    /*
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-            () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
-     */
 
     NamedCommands.registerCommand(
         "shoot",
         new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
             .withTimeout(3));
     NamedCommands.registerCommand(
-        "intake", new IntakeFromGroundCommand(intake, indexer).withTimeout(2));
+        "intake", new IntakeFromGroundCommand(intake, indexer, blinkin).withTimeout(2));
     NamedCommands.registerCommand(
         "bumperup",
         new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER)
@@ -249,15 +240,22 @@ public class RobotContainer {
         .y() // SUBWOOFER ANGLE PRESET
         .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
 
-    operatorController.leftBumper().whileTrue(new IntakeFromGroundCommand(intake, indexer));
+    operatorController
+        .leftBumper()
+        .whileTrue(new IntakeFromGroundCommand(intake, indexer, blinkin));
 
-    operatorController.rightBumper().whileTrue(new OuttakeCommand(intake, indexer));
+    operatorController.rightBumper().whileTrue(new OuttakeCommand(intake, indexer, blinkin));
 
-    operatorController.x().whileTrue(new IntakeFromShooterCommand(flywheel, indexer, led));
+    operatorController.x().whileTrue(new IntakeFromShooterCommand(flywheel, indexer, blinkin));
 
     climber.setDefaultCommand(
         MoveClimberCommand.moveClimber(
             climber, operatorController::getLeftY, operatorController::getRightY));
+
+    operatorController
+        .back()
+        .and(operatorController.x())
+        .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
   }
 
   /**

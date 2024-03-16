@@ -115,6 +115,11 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   }
 
   @Override
+  public void setPosition(double position) {
+    motor.setPosition(position);
+  }
+
+  @Override
   public void stop() {
     motor.stopMotor();
   }

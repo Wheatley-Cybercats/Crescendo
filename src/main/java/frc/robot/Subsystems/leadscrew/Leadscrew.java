@@ -98,6 +98,10 @@ public class Leadscrew extends SubsystemBase {
     io.moveShooter(-speed);
   }
 
+  public void setPosition(double position) {
+    io.setPosition(position);
+  }
+
   /** Stops the Leadscrew. */
   public void stop() {
     io.stop();

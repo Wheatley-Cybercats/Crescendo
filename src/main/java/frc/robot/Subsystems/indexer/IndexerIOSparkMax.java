@@ -50,7 +50,7 @@ public class IndexerIOSparkMax implements IndexerIO {
         Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
     inputs.appliedVolts = indexer.getAppliedOutput() * indexer.getBusVoltage();
     inputs.currentAmps = new double[] {indexer.getOutputCurrent()};
-    inputs.hasNote = dio.get();
+    inputs.hasNote = hasNote();
   }
 
   @Override

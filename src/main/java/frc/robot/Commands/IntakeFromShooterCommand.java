@@ -28,7 +28,7 @@ public class IntakeFromShooterCommand extends Command {
   public void execute() {
     flywheel.simpleVoltTop(0.3);
     indexer.setSpeed(0.15 * 1.5);
-    led.solid_green();
+    led.strobe_gold();
   }
 
   @Override
