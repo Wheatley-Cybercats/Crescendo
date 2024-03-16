@@ -15,8 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -198,12 +196,7 @@ public class RobotContainer {
 
     driverController
         .b() // reset odometry pose
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setYaw(0),
-                    drive)
-                .ignoringDisable(true));
+        .onTrue(Commands.runOnce(() -> drive.setYaw(0), drive).ignoringDisable(true));
 
     /** OPERATOR* */
     operatorController

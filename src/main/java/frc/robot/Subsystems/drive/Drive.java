@@ -299,7 +299,7 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
-  public void setYaw(double yaw){
+  public void setYaw(double yaw) {
     gyroIO.setYaw(yaw);
   }
 

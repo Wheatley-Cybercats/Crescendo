@@ -29,5 +29,6 @@ public interface GyroIO {
 
   public default void updateInputs(GyroIOInputs inputs) {}
 
-  public default void setYaw(double yaw){};
+  public default void setYaw(double yaw) {}
+  ;
 }
