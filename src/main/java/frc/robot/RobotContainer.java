@@ -190,19 +190,18 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driverController.getLeftY(),
-            () -> -driverController.getLeftX(),
+            () -> driverController.getLeftY(),
+            () -> driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    driverController.y().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     driverController
-        .x() // reset odometry pose
+        .b() // reset odometry pose
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                        drive.setYaw(0),
                     drive)
                 .ignoringDisable(true));
 

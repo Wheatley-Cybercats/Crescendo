@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface GyroIO {
+
   @AutoLog
   public static class GyroIOInputs {
     public boolean connected = false;
@@ -27,4 +28,6 @@ public interface GyroIO {
   }
 
   public default void updateInputs(GyroIOInputs inputs) {}
+
+  public default void setYaw(double yaw){};
 }
