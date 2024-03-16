@@ -1,4 +1,3 @@
-
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -54,7 +53,7 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   @Override
   public void updateInputs(LeadscrewIOInputs inputs) {
     BaseStatusSignal.refreshAll(motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
-    inputs.positionRad = Units.rotationsToRadians(motorPosition.getValueAsDouble()) / GEAR_RATIO;
+    inputs.position = motorPosition.getValueAsDouble();
     inputs.velocityRadPerSec =
         Units.rotationsToRadians(motorVelocity.getValueAsDouble()) / GEAR_RATIO;
     inputs.appliedVolts = motorAppliedVolts.getValueAsDouble();
@@ -90,7 +89,7 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     if (motorPosition.getValueAsDouble()
         > setEncoderRotations) { // less negative: current position is higher than desired position
       moveShooter(
-          Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setEncoderRotations)) / 1.5);
+          Math.sqrt(Math.abs(motorPosition.getValueAsDouble() - setEncoderRotations)) / 2.5);
     } else if (motorPosition.getValueAsDouble()
         < setEncoderRotations) { // current position is lower than desired
       moveShooter(
@@ -129,4 +128,3 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     motor.getConfigurator().apply(config);
   }
 }
-

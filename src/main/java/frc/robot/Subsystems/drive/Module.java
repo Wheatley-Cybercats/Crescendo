@@ -102,6 +102,7 @@ public class Module {
    */
   public void updateInputs() {
     io.updateInputs(inputs);
+    /*
     LoggedTunableNumber.ifChanged(
         hashCode(),
         () -> ff = new SimpleMotorFeedforward(drivekS.get(), drivekV.get(), 0),
@@ -111,6 +112,8 @@ public class Module {
         hashCode(), () -> io.setDrivePID(drivekP.get(), 0, drivekD.get()), drivekP, drivekD);
     LoggedTunableNumber.ifChanged(
         hashCode(), () -> io.setTurnPID(turnkP.get(), 0, turnkD.get()), turnkP, turnkD);
+
+     */
   }
 
   public void periodic() {

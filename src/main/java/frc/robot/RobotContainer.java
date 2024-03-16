@@ -26,12 +26,16 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.*;
+import frc.robot.Subsystems.climbers.Climber;
+import frc.robot.Subsystems.climbers.ClimberIOSparkMax;
 import frc.robot.Subsystems.drive.Drive;
 import frc.robot.Subsystems.drive.GyroIO;
 import frc.robot.Subsystems.drive.GyroIOPigeon2;
 import frc.robot.Subsystems.drive.ModuleIO;
 import frc.robot.Subsystems.drive.ModuleIOSim;
 import frc.robot.Subsystems.drive.ModuleIOSparkMax;
+import frc.robot.Subsystems.drive.Vision;
+import frc.robot.Subsystems.drive.VisionIOLimelight;
 import frc.robot.Subsystems.flywheel.Flywheel;
 import frc.robot.Subsystems.flywheel.FlywheelIO;
 import frc.robot.Subsystems.flywheel.FlywheelIOSim;
@@ -44,8 +48,8 @@ import frc.robot.Subsystems.leadscrew.Leadscrew;
 import frc.robot.Subsystems.leadscrew.LeadscrewIO;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOSim;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOTalonFX;
+import frc.robot.Subsystems.led.Blinkin;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,14 +64,14 @@ public class RobotContainer {
   private final Leadscrew leadscrew;
   private final Indexer indexer;
   private final Intake intake;
-  // Controller
+  private final Vision vision;
+  private final Climber climber;
+  private final Blinkin led;
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,12 +84,16 @@ public class RobotContainer {
                 new ModuleIOSparkMax(0),
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+                new ModuleIOSparkMax(3),
+                new Vision(new VisionIOLimelight()));
 
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         leadscrew = new Leadscrew(new LeadscrewIOTalonFX());
         indexer = new Indexer(new IndexerIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
 
       case SIM:
@@ -96,11 +104,15 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim());
+                new ModuleIOSim(),
+                new Vision(new VisionIOLimelight()));
         flywheel = new Flywheel(new FlywheelIOSim());
         leadscrew = new Leadscrew(new LeadscrewIOSim());
         indexer = new Indexer(new IndexerIOSparkMax()); // HMMHMMMHMHMHM SUS
         intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
 
       default:
@@ -111,20 +123,45 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                new Vision(new VisionIOLimelight()));
         flywheel = new Flywheel(new FlywheelIO() {});
         leadscrew = new Leadscrew(new LeadscrewIO() {});
         indexer = new Indexer(new IndexerIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
+        vision = new Vision(new VisionIOLimelight());
+        climber = new Climber(new ClimberIOSparkMax());
+        led = new Blinkin();
         break;
     }
 
     // Set up auto routines
+    /*
     NamedCommands.registerCommand(
         "Run Flywheel",
         Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+            () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
+     */
+
+    NamedCommands.registerCommand(
+        "shoot",
+        new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
+            .withTimeout(3));
+    NamedCommands.registerCommand(
+        "intake", new IntakeFromGroundCommand(intake, indexer).withTimeout(2));
+    NamedCommands.registerCommand(
+        "bumperup",
+        new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER)
+            .withTimeout(2));
+    NamedCommands.registerCommand(
+        "podium",
+        new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM)
+            .withTimeout(2));
+    NamedCommands.registerCommand(
+        "wing",
+        new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING).withTimeout(2));
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -169,7 +206,7 @@ public class RobotContainer {
     driverController.y().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     driverController
-        .x() //reset odometry pose
+        .x() // reset odometry pose
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -178,35 +215,49 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    /**OPERATOR**/
+    /** OPERATOR* */
+    operatorController
+        .b() // SHOOT SPEAKER
+        .whileTrue(
+            new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
 
-    operatorController.b() //SHOOT SPEAKER
-        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
-
-    operatorController.a() //SHOOT AMP
+    operatorController
+        .a() // SHOOT AMP
         .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP));
 
-    operatorController.povUp() //MOVE SHOOTER UP
-            .whileTrue(new MoveLeadScrewCommand(leadscrew, 0.17));
+    operatorController
+        .povUp() // MOVE SHOOTER UP
+        .whileTrue(new MoveLeadScrewCommand(leadscrew, 0.6));
 
-    operatorController.povDown() //MOVE SHOOTER DOWN
-            .whileTrue(new MoveLeadScrewCommand(leadscrew, -0.17));
+    operatorController
+        .povDown() // MOVE SHOOTER DOWN
+        .whileTrue(new MoveLeadScrewCommand(leadscrew, -0.6));
 
-    operatorController.start() //AMP ANGLE PRESET
-            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP));
+    operatorController
+        .start() // AMP ANGLE PRESET
+        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP));
 
-    operatorController.povRight() //PODIUM ANGLE PRESET
-            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM));
+    operatorController
+        .povRight() // PODIUM ANGLE PRESET
+        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM));
 
-    operatorController.povLeft() //WING ANGLE PRESET
-            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING));
+    operatorController
+        .povLeft() // WING ANGLE PRESET
+        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING));
 
-    operatorController.y() //SUBWOOFER ANGLE PRESET
-            .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
+    operatorController
+        .y() // SUBWOOFER ANGLE PRESET
+        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
 
     operatorController.leftBumper().whileTrue(new IntakeFromGroundCommand(intake, indexer));
 
     operatorController.rightBumper().whileTrue(new OuttakeCommand(intake, indexer));
+
+    operatorController.x().whileTrue(new IntakeFromShooterCommand(flywheel, indexer, led));
+
+    climber.setDefaultCommand(
+        MoveClimberCommand.moveClimber(
+            climber, operatorController::getLeftY, operatorController::getRightY));
   }
 
   /**

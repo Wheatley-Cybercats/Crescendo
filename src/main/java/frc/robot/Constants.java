@@ -25,6 +25,7 @@ import lombok.Getter;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
+  public static final boolean useVision = false;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -77,7 +78,8 @@ public final class Constants {
 
   public static final double AMP_ANGLE = 91.5;
   public static final double PODIUM_ANGLE = 36;
-  public static final double WING_ANGLE = 21; // 17; //when front of bumpers are lined up with outer edge of stage
+  public static final double WING_ANGLE =
+      21; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
   public static final boolean tuningMode = false;
 

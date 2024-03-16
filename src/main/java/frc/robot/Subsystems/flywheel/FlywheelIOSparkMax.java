@@ -43,7 +43,8 @@ public class FlywheelIOSparkMax implements FlywheelIO {
     top.setInverted(false);
 
     top.enableVoltageCompensation(12.0);
-    top.setSmartCurrentLimit(30);
+    top.setSmartCurrentLimit(60);
+    bottom.setSmartCurrentLimit(60);
 
     top.burnFlash();
     bottom.burnFlash();

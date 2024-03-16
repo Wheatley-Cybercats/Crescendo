@@ -1,4 +1,3 @@
-
 {
   "version": 1.0,
   "startingPose": {
@@ -23,3 +22,4 @@
   },
   "folder": null,
   "choreoAuto": false
+}

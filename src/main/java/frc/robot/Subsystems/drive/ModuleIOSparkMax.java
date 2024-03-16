@@ -1,4 +1,3 @@
-
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -104,8 +103,8 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnRelativeEncoder = turnSparkMax.getEncoder();
 
     turnSparkMax.setInverted(isTurnMotorInverted);
-    driveSparkMax.setSmartCurrentLimit(40);
-    turnSparkMax.setSmartCurrentLimit(30);
+    driveSparkMax.setSmartCurrentLimit(70);
+    turnSparkMax.setSmartCurrentLimit(40);
     driveSparkMax.enableVoltageCompensation(12.0);
     turnSparkMax.enableVoltageCompensation(12.0);
 

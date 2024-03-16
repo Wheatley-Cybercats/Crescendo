@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface LeadscrewIO {
   @AutoLog
   public static class LeadscrewIOInputs {
-    public double positionRad = 0.0;
+    public double position = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
