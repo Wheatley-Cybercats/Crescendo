@@ -52,8 +52,11 @@ public class ClimberIOSparkMax implements ClimberIO {
   }
 
   @Override
-  public void stop() {
-    ClimbLeft.stopMotor();
-    ClimbRight.stopMotor();
+  public void stop(int leftRight) {
+    if (leftRight == 0) {
+      ClimbLeft.stopMotor();
+    } else {
+      ClimbRight.stopMotor();
+    }
   }
 }

@@ -39,6 +39,14 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+    /*
+       if (MathUtil.applyDeadband(xSupplier.getAsDouble(), DEADBAND) == 0
+           && MathUtil.applyDeadband(ySupplier.getAsDouble(), DEADBAND) == 0) {
+         drive.stopWithX();
+       }
+
+    */
+
     return Commands.run(
         () -> {
           // Apply deadband

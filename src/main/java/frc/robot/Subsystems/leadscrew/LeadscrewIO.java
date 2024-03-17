@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface LeadscrewIO {
   @AutoLog
   public static class LeadscrewIOInputs {
-    public double positionRad = 0.0;
+    public double position = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
@@ -37,6 +37,8 @@ public interface LeadscrewIO {
 
   /** Set position of the leadscrew. */
   public default void runSetpoint(double setPointEncoderTicks) {}
+
+  public default void setPosition(double position) {}
 
   /** Check if at position given a deadband of 1.2 ticks. */
   public default boolean atPosition(double setPointEncoderTicks) {
