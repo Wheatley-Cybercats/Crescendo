@@ -13,6 +13,7 @@
 
 package frc.robot.Subsystems.flywheel;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -45,6 +46,9 @@ public class FlywheelIOSparkMax implements FlywheelIO {
     top.enableVoltageCompensation(12.0);
     top.setSmartCurrentLimit(60);
     bottom.setSmartCurrentLimit(60);
+
+    top.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    bottom.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
     top.burnFlash();
     bottom.burnFlash();
