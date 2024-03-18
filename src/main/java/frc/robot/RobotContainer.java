@@ -210,11 +210,12 @@ public class RobotContainer {
             () -> -driverController.getRightX()));
 
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driverController.leftBumper()// .button(3) in sim
+    driverController
+        .leftBumper() // .button(3) in sim
         .onTrue(
             Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(7.5))));
     driverController
-        .leftBumper()//.button(3)
+        .leftBumper() // .button(3)
         .onFalse(
             Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(15))));
     driverController
