@@ -15,7 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -261,8 +260,11 @@ public class RobotContainer {
     driverController
         .y()
         .whileTrue(
-            DriveCommands.autoAlignCommand(
-                drive, 15, drive.getPose().getY(), Rotation2d.fromDegrees(90)));
+            new AutoAllignCommand(
+                drive,
+                15.0,
+                drive.getPose().getY(),
+                90)); // TODO: Add actual values for x and y position
   }
 
   /**
