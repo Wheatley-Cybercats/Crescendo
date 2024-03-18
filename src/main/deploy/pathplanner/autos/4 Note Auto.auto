@@ -18,7 +18,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 1.5
                 }
               },
               {
@@ -51,6 +51,12 @@
                 "data": {
                   "name": "LSP"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
               }
             ]
           }
@@ -62,13 +68,25 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 1.5
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "FWS"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LSP"
                 }
               }
             ]
@@ -100,7 +118,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 1.5
                 }
               },
               {
@@ -138,38 +156,25 @@
           }
         },
         {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Third Note To Bumper"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LSSW"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 1.5
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "FWS"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
                 }
               }
             ]
