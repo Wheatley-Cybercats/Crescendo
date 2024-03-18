@@ -186,7 +186,7 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    if (Constants.useVision) {
+    if (Constants.useVision && DriverStation.getAlliance().isPresent()) {
       var mode =
           DriverStation.getAlliance().get().compareTo(Alliance.Red) == 0
               ? Vision.Mode.WPI_RED
