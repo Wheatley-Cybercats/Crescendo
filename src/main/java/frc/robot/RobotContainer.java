@@ -15,6 +15,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -209,7 +210,14 @@ public class RobotContainer {
             () -> -driverController.getRightX()));
 
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
+    driverController
+        .button(3)
+        .onTrue(
+            Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(7.5))));
+    driverController
+        .button(3)
+        .onFalse(
+            Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(15))));
     driverController
         .b() // reset odometry pose
         .onTrue(Commands.runOnce(() -> drive.setYaw(0), drive).ignoringDisable(true));

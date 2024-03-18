@@ -44,12 +44,12 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15); // 14.5
+  public static double MAX_LINEAR_SPEED = Units.feetToMeters(15); // 14.5
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.0); // default 25.0
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.0); // 25.0
   public static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+  private static double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
   private double MAX_LINEAR_ACCEL = 3;
   private double MAX_ANGULAR_ACCEL = MAX_LINEAR_ACCEL / DRIVE_BASE_RADIUS;
   static final Lock odometryLock = new ReentrantLock();
@@ -321,5 +321,13 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public void setMaxLinearSpeedMetersPerSec(double d) {
+    if (MAX_LINEAR_SPEED != d) MAX_LINEAR_SPEED = d;
+  }
+
+  public void setMaxAngularSpeedRadPerSec(double d) {
+    if (MAX_ANGULAR_SPEED != d) MAX_ANGULAR_SPEED = d;
   }
 }

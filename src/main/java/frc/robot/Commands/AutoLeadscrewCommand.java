@@ -23,7 +23,7 @@ public class AutoLeadscrewCommand extends Command {
   public AutoLeadscrewCommand(Leadscrew leadscrew, Translation3d target, Drive drive) {
     this.leadscrew = leadscrew;
     this.target = target;
-    this.drive  = drive;
+    this.drive = drive;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(leadscrew);
   }
