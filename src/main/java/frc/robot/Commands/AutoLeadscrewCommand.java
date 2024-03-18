@@ -20,9 +20,10 @@ public class AutoLeadscrewCommand extends Command {
   private double position = 0.0;
 
   /** Creates a new AutoLeadscrewCommand. */
-  public AutoLeadscrewCommand(Leadscrew leadscrew, Translation3d target) {
+  public AutoLeadscrewCommand(Leadscrew leadscrew, Translation3d target, Drive drive) {
     this.leadscrew = leadscrew;
     this.target = target;
+    this.drive  = drive;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(leadscrew);
   }
@@ -47,7 +48,9 @@ public class AutoLeadscrewCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    leadscrew.stop();
+  }
 
   // Returns true when the command should end.
   @Override
