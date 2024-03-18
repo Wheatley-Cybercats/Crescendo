@@ -258,11 +258,11 @@ public class RobotContainer {
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
     driverController
-        .y()
+        .button(1)
         .whileTrue(
             new AutoAllignCommand(
                 drive,
-                15.0,
+                drive.getPose().getX(),
                 drive.getPose().getY(),
                 90)); // TODO: Add actual values for x and y position
   }

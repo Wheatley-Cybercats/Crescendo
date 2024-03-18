@@ -36,17 +36,28 @@ public class AutoAllignCommand extends Command {
         < heading) { // less negative: current position is higher than desired position
       drive.runVelocity(
           new ChassisSpeeds(
-              0, 0, Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading))));
+              0,
+              0,
+              Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)) / 2.5)); //
     } else if (drive.getPose().getRotation().getDegrees()
         > heading) { // current position is lower than desired
       drive.runVelocity(
           new ChassisSpeeds(
-              0, 0, -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)))));
+              0,
+              0,
+              -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)))
+                  / 2.5)); //
     } else if (drive.getPose().getRotation().getDegrees() == heading) {
       drive.stop();
     } else {
       drive.stop();
     }
+  }
+
+  public boolean atPosition() {
+    // the motor should stop whenever it is at a specific position
+    return drive.getPose().getRotation().getDegrees() - heading < 1.2
+        && drive.getPose().getRotation().getDegrees() - heading > -1.2;
   }
 
   // Called once the command ends or is interrupted.
@@ -58,6 +69,6 @@ public class AutoAllignCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return drive.getPose().getRotation().getDegrees() == heading;
+    return atPosition();
   }
 }
