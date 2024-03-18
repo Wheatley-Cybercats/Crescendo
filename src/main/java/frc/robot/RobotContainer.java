@@ -258,25 +258,22 @@ public class RobotContainer {
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
     driverController
-        .button(1) // .button(1) for sim .y() for real
+        .y()// .button(1) for sim .y() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
                 () -> driverController.getLeftY(),
                 () -> driverController.getLeftX(),
-                0.0,
-                FieldConstants.Speaker.centerSpeakerOpening
-                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+                FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
     // passed through autoalign
     driverController
-        .button(2) // .button(2) for sim .a() for real
+        .a() // .button(2) for sim .a() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
                 () -> driverController.getLeftY(),
                 () -> driverController.getLeftX(),
-                0.0,
-                FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d())); //
+                FieldConstants.ampCenter)); //
     //
   }
 

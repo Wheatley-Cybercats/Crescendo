@@ -18,7 +18,6 @@ public class AutoAllignCommand extends Command {
   private final DoubleSupplier xSupplier;
   private final DoubleSupplier ySupplier;
   private final Drive drive;
-  private double heading;
   private double targetHeading;
   private double DEADBAND = 0.1;
   private Translation2d linearVelocity;
@@ -26,15 +25,10 @@ public class AutoAllignCommand extends Command {
 
   /** Creates a new AutoAllignCommand. */
   public AutoAllignCommand(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      double heading,
-      Translation2d target) {
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Translation2d target) {
     this.drive = drive;
     this.xSupplier = xSupplier;
     this.ySupplier = ySupplier;
-    this.heading = heading;
     this.target = target;
     double linearMagnitude =
         MathUtil.applyDeadband(
@@ -61,31 +55,6 @@ public class AutoAllignCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*if (target == null) {
-      System.out.println(" heading: " + heading);
-      // drive.pathFind(new Pose2d(xPosition, yPosition, heading));
-      if (drive.getPose().getRotation().getDegrees()
-          < heading) { // less negative: current position is higher than desired position
-        drive.runVelocity(
-            new ChassisSpeeds(
-                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading))
-                    / 2.5)); //
-      } else if (drive.getPose().getRotation().getDegrees()
-          > heading) { // current position is lower than desired
-        drive.runVelocity(
-            new ChassisSpeeds(
-                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)))
-                    / 2.5)); //
-      } else if (drive.getPose().getRotation().getDegrees() == heading) {
-        drive.stop();
-      } else {
-        drive.stop();
-      }
-    } else {*/
     targetHeading =
         Math.toDegrees(
             Math.atan(
@@ -113,16 +82,9 @@ public class AutoAllignCommand extends Command {
     }
   }
 
-  // }
-
   public boolean atPosition() {
-    /*if (target == null) {
-      return drive.getPose().getRotation().getDegrees() - heading < .7
-          && drive.getPose().getRotation().getDegrees() - heading > -.7;
-    } else {*/
     return drive.getPose().getRotation().getDegrees() - targetHeading < .7
         && drive.getPose().getRotation().getDegrees() - targetHeading > -.7;
-    // }
     // the motor should stop whenever it is at a specific position
 
   }

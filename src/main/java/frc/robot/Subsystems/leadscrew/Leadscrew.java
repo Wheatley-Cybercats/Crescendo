@@ -24,6 +24,9 @@ import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Leadscrew extends SubsystemBase {
+  private static final double HEIGHT_CONVERSION =
+      0.0; // Measure physical height of leadscrew and map them with the encoder values than find a
+  // constant that best fits and plug in
   private final LeadscrewIO io;
   private final LeadscrewIOInputsAutoLogged inputs = new LeadscrewIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
@@ -65,6 +68,10 @@ public class Leadscrew extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Leadscrew", inputs);
+  }
+
+  public double getHeight() {
+    return inputs.position * HEIGHT_CONVERSION;
   }
 
   /** Run open loop at the specified voltage. */
