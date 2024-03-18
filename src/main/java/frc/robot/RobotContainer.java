@@ -160,6 +160,13 @@ public class RobotContainer {
         "LSSW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
     NamedCommands.registerCommand(
         "FWS", new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
+    NamedCommands.registerCommand(
+        "AA",
+        new AutoAllignCommand(
+            drive,
+            () -> 0.0,
+            () -> 0.0,
+            FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d()));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -258,16 +265,17 @@ public class RobotContainer {
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
     driverController
-        .y()// .button(1) for sim .y() for real
+        .button(1) // .button(1) for sim .y() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
                 () -> driverController.getLeftY(),
                 () -> driverController.getLeftX(),
-                FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+                FieldConstants.Speaker.centerSpeakerOpening
+                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
     // passed through autoalign
     driverController
-        .a() // .button(2) for sim .a() for real
+        .button(2) // .button(2) for sim .a() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,

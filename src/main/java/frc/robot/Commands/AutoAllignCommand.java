@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
@@ -55,12 +57,17 @@ public class AutoAllignCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    /*if(isFlipped){
+      drive.getRotation().plus(new Rotation2d(Math.PI));
+    }*/
     targetHeading =
         Math.toDegrees(
             Math.atan(
                 (target.getY() - drive.getPose().getY())
                     / (target.getX() - drive.getPose().getX())));
-    System.out.println("target heading: " + targetHeading);
     if (drive.getPose().getRotation().getDegrees() < targetHeading) {
       drive.runVelocity(
           new ChassisSpeeds(
