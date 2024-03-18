@@ -86,6 +86,11 @@ public class AutoAllignCommand extends Command {
         drive.stop();
       }
     } else {*/
+    targetHeading =
+        Math.toDegrees(
+            Math.atan(
+                (target.getY() - drive.getPose().getY())
+                    / (target.getX() - drive.getPose().getX())));
     System.out.println("target heading: " + targetHeading);
     if (drive.getPose().getRotation().getDegrees() < targetHeading) {
       drive.runVelocity(
