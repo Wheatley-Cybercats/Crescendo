@@ -36,7 +36,7 @@ public class AutoLeadscrewCommand extends Command {
   public void execute() {
     double hDelta = target.getZ() - leadscrew.getHeight();
     double angle =
-        Math.atan(target.getZ() - leadscrew.getHeight() / target.getX() - drive.getPose().getX());
+        Math.atan(hDelta / target.getX() - drive.getPose().getX());
     position =
         Math.pow(leadscrewLegLength, 2)
             + Math.pow(leadscrewLegLength2, 2)
