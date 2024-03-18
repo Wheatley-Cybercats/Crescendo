@@ -45,21 +45,18 @@ public class AutoAllignCommand extends Command {
         new Pose2d(new Translation2d(), linearDirection)
             .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
             .getTranslation();
+    targetHeading =
+        Math.toDegrees(
+            Math.atan(
+                (target.getY() - drive.getPose().getY())
+                    / (target.getX() - drive.getPose().getX())));
     // Use addRequirements() here to declare subsystem dependencies.
-
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-    targetHeading =
-        Math.toDegrees(
-            Math.atan((target.getY() - drive.getPose().getY()) / (drive.getPose().getX())));
-    if (targetHeading > 360) {
-      targetHeading = heading;
-    }
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -89,8 +86,11 @@ public class AutoAllignCommand extends Command {
         drive.stop();
       }
     } else {*/
-
-    targetHeading = Math.toDegrees(targetHeading);
+    targetHeading =
+        Math.toDegrees(
+            Math.atan(
+                (target.getY() - drive.getPose().getY())
+                    / (target.getX() - drive.getPose().getX())));
     System.out.println("target heading: " + targetHeading);
     if (drive.getPose().getRotation().getDegrees() < targetHeading) {
       drive.runVelocity(
@@ -98,14 +98,14 @@ public class AutoAllignCommand extends Command {
               linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
               linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
               Math.sqrt(
-                  Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading) / 7.5))); //
+                  Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading) / 1.5))); //
     } else if (drive.getPose().getRotation().getDegrees() > targetHeading) {
       drive.runVelocity(
           new ChassisSpeeds(
               linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
               linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
               -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading))
-                  / 7.5))); //
+                  / 1.5))); //
     } else if (drive.getPose().getRotation().getDegrees() == targetHeading) {
       drive.stop();
     } else {
