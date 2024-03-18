@@ -4,60 +4,127 @@
 
 package frc.robot.Commands;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.drive.Drive;
+import java.util.function.DoubleSupplier;
 
 public class AutoAllignCommand extends Command {
-  private final double xPosition;
-  private final double yPosition;
+  private final DoubleSupplier xSupplier;
+  private final DoubleSupplier ySupplier;
   private final Drive drive;
   private double heading;
+  private double targetHeading;
+  private double DEADBAND = 0.1;
+  private Translation2d linearVelocity;
+  private Translation2d target;
 
   /** Creates a new AutoAllignCommand. */
-  public AutoAllignCommand(Drive drive, double xPosition, double yPosition, double heading) {
+  public AutoAllignCommand(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      double heading,
+      Translation2d target) {
     this.drive = drive;
-    this.xPosition = xPosition;
-    this.yPosition = yPosition;
+    this.xSupplier = xSupplier;
+    this.ySupplier = ySupplier;
     this.heading = heading;
-
+    this.target = target;
+    double linearMagnitude =
+        MathUtil.applyDeadband(
+            Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
+    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+    linearMagnitude = linearMagnitude * linearMagnitude;
+    linearVelocity =
+        new Pose2d(new Translation2d(), linearDirection)
+            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+            .getTranslation();
     // Use addRequirements() here to declare subsystem dependencies.
+
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+    targetHeading =
+        Math.toDegrees(
+            Math.atan((target.getY() - drive.getPose().getY()) / (drive.getPose().getX())));
+    if (targetHeading > 360) {
+      targetHeading = heading;
+    }
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // drive.pathFind(new Pose2d(xPosition, yPosition, heading));
-    if (drive.getPose().getRotation().getDegrees()
-        < heading) { // less negative: current position is higher than desired position
+    /*if (target == null) {
+      System.out.println(" heading: " + heading);
+      // drive.pathFind(new Pose2d(xPosition, yPosition, heading));
+      if (drive.getPose().getRotation().getDegrees()
+          < heading) { // less negative: current position is higher than desired position
+        drive.runVelocity(
+            new ChassisSpeeds(
+                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading))
+                    / 2.5)); //
+      } else if (drive.getPose().getRotation().getDegrees()
+          > heading) { // current position is lower than desired
+        drive.runVelocity(
+            new ChassisSpeeds(
+                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)))
+                    / 2.5)); //
+      } else if (drive.getPose().getRotation().getDegrees() == heading) {
+        drive.stop();
+      } else {
+        drive.stop();
+      }
+    } else {*/
+
+    targetHeading = Math.toDegrees(targetHeading);
+    System.out.println("target heading: " + targetHeading);
+    if (drive.getPose().getRotation().getDegrees() < targetHeading) {
       drive.runVelocity(
           new ChassisSpeeds(
-              0,
-              0,
-              Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)) / 2.5)); //
-    } else if (drive.getPose().getRotation().getDegrees()
-        > heading) { // current position is lower than desired
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              Math.sqrt(
+                  Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading) / 7.5))); //
+    } else if (drive.getPose().getRotation().getDegrees() > targetHeading) {
       drive.runVelocity(
           new ChassisSpeeds(
-              0,
-              0,
-              -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - heading)))
-                  / 2.5)); //
-    } else if (drive.getPose().getRotation().getDegrees() == heading) {
+              linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+              -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading))
+                  / 7.5))); //
+    } else if (drive.getPose().getRotation().getDegrees() == targetHeading) {
       drive.stop();
     } else {
       drive.stop();
     }
   }
 
+  // }
+
   public boolean atPosition() {
+    /*if (target == null) {
+      return drive.getPose().getRotation().getDegrees() - heading < .7
+          && drive.getPose().getRotation().getDegrees() - heading > -.7;
+    } else {*/
+    return drive.getPose().getRotation().getDegrees() - targetHeading < .7
+        && drive.getPose().getRotation().getDegrees() - targetHeading > -.7;
+    // }
     // the motor should stop whenever it is at a specific position
-    return drive.getPose().getRotation().getDegrees() - heading < 1.2
-        && drive.getPose().getRotation().getDegrees() - heading > -1.2;
+
   }
 
   // Called once the command ends or is interrupted.
