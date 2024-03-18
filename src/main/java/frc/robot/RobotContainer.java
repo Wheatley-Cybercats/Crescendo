@@ -15,6 +15,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -150,7 +151,16 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "wing",
         new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING).withTimeout(2));
-
+    NamedCommands.registerCommand("IC", new IntakeFromGroundCommand(intake, indexer, blinkin));
+    NamedCommands.registerCommand("OC", new OuttakeCommand(intake, indexer, blinkin));
+    NamedCommands.registerCommand(
+        "LSW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING));
+    NamedCommands.registerCommand(
+        "LSP", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM));
+    NamedCommands.registerCommand(
+        "LSSW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
+    NamedCommands.registerCommand(
+        "FWS", new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -248,6 +258,11 @@ public class RobotContainer {
         .back()
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
+    driverController
+        .button(1)
+        .whileTrue(
+            DriveCommands.autoAlignCommand(
+                drive, 15, drive.getPose().getY(), Rotation2d.fromDegrees(90)));
   }
 
   /**

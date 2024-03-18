@@ -82,4 +82,13 @@ public class DriveCommands {
         },
         drive);
   }
+
+  public static Command autoAlignCommand(
+      Drive drive, double xPostion, double yPosition, Rotation2d heading) {
+    return Commands.run(
+        () -> {
+          drive.pathFind(new Pose2d(xPostion, yPosition, heading));
+        },
+        drive);
+  }
 }

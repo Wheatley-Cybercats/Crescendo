@@ -16,6 +16,7 @@ package frc.robot.Subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -43,13 +44,14 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(19.3); // 14.5
+  public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15); // 14.5
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.0); // default 25.0
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.0); // 25.0
-  private static final double DRIVE_BASE_RADIUS =
+  public static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
-
+  private double MAX_LINEAR_ACCEL = 3;
+  private double MAX_ANGULAR_ACCEL = MAX_LINEAR_ACCEL / DRIVE_BASE_RADIUS;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final Vision vision;
@@ -75,9 +77,9 @@ public class Drive extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
-      Vision visionIO) {
+      Vision vision) {
     this.gyroIO = gyroIO;
-    this.vision = visionIO;
+    this.vision = vision;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -199,6 +201,7 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
@@ -301,6 +304,13 @@ public class Drive extends SubsystemBase {
 
   public void setYaw(double yaw) {
     gyroIO.setYaw(yaw);
+  }
+
+  public Command pathFind(Pose2d pose) {
+    return AutoBuilder.pathfindToPose(
+        pose,
+        new PathConstraints(
+            MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL));
   }
 
   /** Returns an array of module translations. */
