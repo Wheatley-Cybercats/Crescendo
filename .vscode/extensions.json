@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "mechanical-advantage.event-deploy-wpilib",
-    "richardwillis.vscode-spotless-gradle"
+    "richardwillis.vscode-spotless-gradle",
+    "wpilibsuite.vscode-wpilib"
   ]
 }
