@@ -259,7 +259,7 @@ public class RobotContainer {
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
     driverController
-        .button(1)
+        .y()
         .whileTrue(
             DriveCommands.autoAlignCommand(
                 drive, 15, drive.getPose().getY(), Rotation2d.fromDegrees(90)));
