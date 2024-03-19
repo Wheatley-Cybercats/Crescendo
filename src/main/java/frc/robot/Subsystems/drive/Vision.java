@@ -62,4 +62,12 @@ public class Vision extends SubsystemBase {
   public double getTimeStamp() {
     return io.getTimeStamp();
   }
+
+  public boolean hasTarget() {
+    return io.getHasTarget();
+  }
+
+  public double getTagCount() {
+    return io.getTagCount();
+  }
 }

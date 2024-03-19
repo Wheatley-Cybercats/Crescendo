@@ -21,6 +21,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,6 +55,8 @@ public class Drive extends SubsystemBase {
   private double MAX_LINEAR_ACCEL = 3;
   private double MAX_ANGULAR_ACCEL = MAX_LINEAR_ACCEL / DRIVE_BASE_RADIUS;
   static final Lock odometryLock = new ReentrantLock();
+  private static final double VISION_STD_DEV_COEFFICENT = 0.025;
+
   private final GyroIO gyroIO;
   private final Vision vision;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -194,6 +197,8 @@ public class Drive extends SubsystemBase {
               ? Vision.Mode.WPI_RED
               : Vision.Mode.WPI_BLUE;
       addVisionMeasurement(vision.getPose(mode), vision.getTimeStamp());
+
+      Logger.recordOutput("Vision Pose", vision.getPose(mode));
     }
   }
 
@@ -291,7 +296,15 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    if (vision.hasTarget() && vision.getTagCount() > 1) {
+      poseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(
+              Math.pow(visionPose.getX(), 2) * VISION_STD_DEV_COEFFICENT,
+              Math.pow(visionPose.getY(), 2) * VISION_STD_DEV_COEFFICENT,
+              5.0));
+      poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    }
+    return;
   }
 
   /** Returns the maximum linear speed in meters per sec. */

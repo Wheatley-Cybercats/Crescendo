@@ -71,6 +71,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+private Boolean manual;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -208,7 +209,8 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
-
+    leadscrew.setDefaultCommand(
+        new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive).onlyIf(() ->!manual));
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
@@ -304,6 +306,7 @@ public class RobotContainer {
                 () -> driverController.getLeftY(),
                 () -> driverController.getLeftX(),
                 FieldConstants.ampCenter)); //
+
     //
   }
 

@@ -5,7 +5,9 @@
 package frc.robot.Subsystems.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -49,8 +51,30 @@ public class VisionIOLimelight implements VisionIO {
   }
 
   @Override
+  public Pose3d getBotPose3d() {
+    return new Pose3d(
+        nt.getEntry("botpose").getDoubleArray(new double[6])[0],
+        nt.getEntry("botpose").getDoubleArray(new double[6])[1],
+        nt.getEntry("botpose").getDoubleArray(new double[6])[2],
+        new Rotation3d(
+            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[3]),
+            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[4]),
+            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[5])));
+  }
+
+  @Override
   public double getTimeStamp() {
-    return nt.getEntry("botpose").getDoubleArray(new double[6])[6];
+    return nt.getEntry("botpose").getDoubleArray(new double[7])[6];
+  }
+
+  @Override
+  public double getTagCount() {
+    return nt.getEntry("botpose").getDoubleArray(new double[7])[7];
+  }
+
+  @Override
+  public boolean getHasTarget() {
+    return nt.getEntry("tv").getDouble(0) == 1;
   }
 
   @Override
@@ -59,5 +83,12 @@ public class VisionIOLimelight implements VisionIO {
     input.pose = getBotPose();
     input.pose_wpiBlue = getBotPose_WPIBLUE();
     input.pose_wpiRed = getBotPose_WPIRED();
+    input.pose3d = getBotPose3d();
+    if (nt.getEntry("tv").getDouble(0) == 1) {
+      input.hasTarget = true;
+    } else {
+      input.hasTarget = false;
+    }
+    input.tagCount = nt.getEntry("botpose").getDoubleArray(new double[8])[7];
   }
 }

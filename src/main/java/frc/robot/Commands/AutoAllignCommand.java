@@ -74,14 +74,14 @@ public class AutoAllignCommand extends Command {
               linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
               linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
               Math.sqrt(
-                  Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading) / 1.5))); //
+                  Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading) / 4.5))); //
     } else if (drive.getPose().getRotation().getDegrees() > targetHeading) {
       drive.runVelocity(
           new ChassisSpeeds(
               linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
               linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
               -(Math.sqrt(Math.abs(drive.getPose().getRotation().getDegrees() - targetHeading))
-                  / 1.5))); //
+                  / 4.5)));
     } else if (drive.getPose().getRotation().getDegrees() == targetHeading) {
       drive.stop();
     } else {
@@ -90,8 +90,8 @@ public class AutoAllignCommand extends Command {
   }
 
   public boolean atPosition() {
-    return drive.getPose().getRotation().getDegrees() - targetHeading < .7
-        && drive.getPose().getRotation().getDegrees() - targetHeading > -.7;
+    return drive.getPose().getRotation().getDegrees() - targetHeading < 1.2
+        && drive.getPose().getRotation().getDegrees() - targetHeading > -1.2;
     // the motor should stop whenever it is at a specific position
 
   }

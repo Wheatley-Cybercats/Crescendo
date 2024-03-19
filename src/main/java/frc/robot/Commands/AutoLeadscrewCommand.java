@@ -8,15 +8,15 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.drive.Drive;
 import frc.robot.Subsystems.leadscrew.Leadscrew;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoLeadscrewCommand extends Command {
-  private static final double DISTANCE_PER_ROTATION = 0;
-  private static final double GEAR_RATIO = 0;
+  // private static final double LEADSCREW_CF = 300130; // do not set to zero will return NaN
   private final Leadscrew leadscrew;
   private final Translation3d target;
   private Drive drive;
-  private double leadscrewLegLength = 10.25;
-  private double leadscrewLegLength2 = 10.25;
+  // private double leadscrewLegLength = Units.inchesToMeters(10.25);
+  // private double leadscrewLegLength2 = Units.inchesToMeters(10.25);
   private double position = 0.0;
 
   /** Creates a new AutoLeadscrewCommand. */
@@ -33,15 +33,36 @@ public class AutoLeadscrewCommand extends Command {
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
+  /*
+   * public static final double AMP_ANGLE = 91.5;
+  public static final double PODIUM_ANGLE = 36;
+  public static final double WING_ANGLE =
+      21; // 17; //when front of bumpers are lined up with outer edge of stage
+  public static final double SUBWOOFER_ANGLE = 115;
+   */
   @Override
   public void execute() {
     double hDelta = target.getZ() - leadscrew.getHeight();
     double angle = Math.atan(hDelta / target.getX() - drive.getPose().getX());
-    position =
-        Math.pow(leadscrewLegLength, 2)
-            + Math.pow(leadscrewLegLength2, 2)
-            - (2 * leadscrewLegLength * leadscrewLegLength2 * Math.cos(angle));
-    position = Math.sqrt(position / GEAR_RATIO * DISTANCE_PER_ROTATION);
+    if (angle < 0) {
+      angle = 0;
+    }
+    if (drive.getPose().getX() < 1.75) {
+      position = 115;
+    } else if (drive.getPose().getX() < 3.5 && drive.getPose().getX() > 1.75) {
+      position = 36;
+    } else if (drive.getPose().getX() < 5.25 && drive.getPose().getX() > 3.5) {
+      position = 21;
+
+      /*
+      position =
+          Math.pow(leadscrewLegLength, 2)
+              + Math.pow(leadscrewLegLength2, 2)
+              - (2 * leadscrewLegLength * leadscrewLegLength2 * Math.cos(angle));
+      position = Math.sqrt(position * LEADSCREW_CF) + 16;*/
+    }
+    Logger.recordOutput("Lead Screw Anlge/Leadscrew", Math.toDegrees(angle));
+    Logger.recordOutput("Lead Screw position/Leadscrew", position);
     leadscrew.runSetpoint(position);
   }
 
