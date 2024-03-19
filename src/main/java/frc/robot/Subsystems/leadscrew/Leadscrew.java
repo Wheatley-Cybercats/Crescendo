@@ -26,7 +26,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class Leadscrew extends SubsystemBase {
   private static final double HEIGHT_CONVERSION =
-      0.0; // Measure physical height of leadscrew and map them with the encoder values than find a
+      91.5
+          / Units.inchesToMeters(
+              26); // Measure physical height of leadscrew and map them with the encoder values than
+  // find a
   // constant that best fits and plug in
   private final LeadscrewIO io;
   private final LeadscrewIOInputsAutoLogged inputs = new LeadscrewIOInputsAutoLogged();

@@ -15,8 +15,8 @@ public class AutoLeadscrewCommand extends Command {
   private final Leadscrew leadscrew;
   private final Translation3d target;
   private Drive drive;
-  private double leadscrewLegLength = 0.0;
-  private double leadscrewLegLength2 = 0.0;
+  private double leadscrewLegLength = 10.25;
+  private double leadscrewLegLength2 = 10.25;
   private double position = 0.0;
 
   /** Creates a new AutoLeadscrewCommand. */
