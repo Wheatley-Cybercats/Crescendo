@@ -17,8 +17,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -233,7 +234,13 @@ public class RobotContainer {
     driverController
         .b() // reset odometry pose
         .onTrue(Commands.runOnce(() -> drive.setYaw(0), drive).ignoringDisable(true));
-
+    if (indexer.hasNote()) {
+      driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.5);
+      driverController.getHID().setRumble(RumbleType.kRightRumble, 0.5);
+    } else {
+      driverController.getHID().setRumble(RumbleType.kLeftRumble, 0);
+      driverController.getHID().setRumble(RumbleType.kRightRumble, 0);
+    }
     /** OPERATOR* */
     operatorController
         .b() // SHOOT SPEAKER
