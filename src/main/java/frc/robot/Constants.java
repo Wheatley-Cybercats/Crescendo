@@ -46,7 +46,7 @@ public final class Constants {
     WING(WING_ANGLE),
     SUBWOOFER(SUBWOOFER_ANGLE),
     AUTO(AUTO_ANGLE);
-    
+
     private final double angle;
 
     PresetLeadscrewAngle(double angle) {
@@ -56,7 +56,8 @@ public final class Constants {
 
   public static enum PresetFlywheelSpeed {
     AMP(AMP_FLYWHEEL),
-    SPEAKER(SPEAKER_FLYWHEEL);
+    SPEAKER(SPEAKER_FLYWHEEL),
+    LOB(LOB_FLYWHEEL);
 
     private final double[] angle;
 
@@ -77,13 +78,14 @@ public final class Constants {
     }
   }
 
-  public static final double AMP_ANGLE = 91.5;
+  public static final double AMP_ANGLE = 81.8;
   public static final double PODIUM_ANGLE = 36;
   public static final double WING_ANGLE =
       21; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
-public static final double AUTO_ANGLE = 55;
+  public static final double AUTO_ANGLE = 55;
   public static final boolean tuningMode = false;
-  public static final double[] AMP_FLYWHEEL = {-1.12, 0.6}; // [BOT, TOP]
+  public static final double[] AMP_FLYWHEEL = {-4.1, 0.5}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
+  public static final double[] LOB_FLYWHEEL = {-5, 5}; // [BOT, TOP]
 }
