@@ -32,6 +32,10 @@ public class PresetFlywheelCommand extends Command {
       if (flywheel.atSpeedTop(4100) && flywheel.atSpeedBot(-4100)) {
         indexer.setSpeed(-0.17);
       }
+    } else if (presetFlywheelSpeed.equals(Constants.PresetFlywheelSpeed.LOB)) {
+      if (flywheel.atSpeedTop(550) && flywheel.atSpeedBot(-550)) {
+        indexer.setSpeed(-0.17);
+      }
     }
   }
 

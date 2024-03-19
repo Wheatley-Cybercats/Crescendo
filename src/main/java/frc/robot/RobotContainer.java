@@ -205,19 +205,27 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> driverController.getLeftY(),
-            () -> driverController.getLeftX(),
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
         .onTrue(
-            Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(7.5))));
+            Commands.runOnce(
+                () -> {
+                  drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(4));
+                  drive.setMaxAngularSpeedRadPerSec(Units.feetToMeters(6));
+                }));
     driverController
         .leftBumper() // .button(3)
         .onFalse(
-            Commands.runOnce(() -> drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(15))));
+            Commands.runOnce(
+                () -> {
+                  drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(15));
+                  drive.setMaxAngularSpeedRadPerSec(Units.feetToMeters(15));
+                }));
     driverController
         .b() // reset odometry pose
         .onTrue(Commands.runOnce(() -> drive.setYaw(0), drive).ignoringDisable(true));
@@ -272,8 +280,14 @@ public class RobotContainer {
         .back()
         .and(operatorController.x())
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
+
+    operatorController
+        .back()
+        .and(operatorController.a())
+        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.LOB));
+
     driverController
-        .button(1) // .button(1) for sim .y() for real
+        .y() // .button(1) for sim .y() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
@@ -283,7 +297,7 @@ public class RobotContainer {
                     .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
     // passed through autoalign
     driverController
-        .button(2) // .button(2) for sim .a() for real
+        .a() // .button(2) for sim .a() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
