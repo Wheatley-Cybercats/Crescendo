@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4212732506178001,
-      "y": 7.25
+      "x": 0.8,
+      "y": 6.55
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -16,21 +16,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "Amp zone to first shot"
+                  "waitTime": 1.5
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "FWS"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LSP"
                 }
               }
             ]

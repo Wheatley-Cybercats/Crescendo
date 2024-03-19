@@ -48,6 +48,7 @@ import frc.robot.Subsystems.leadscrew.LeadscrewIO;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOSim;
 import frc.robot.Subsystems.leadscrew.LeadscrewIOTalonFX;
 import frc.robot.Subsystems.led.Blinkin;
+import frc.robot.util.NoteVisualizer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -71,7 +72,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-private Boolean manual;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -161,7 +161,9 @@ private Boolean manual;
     NamedCommands.registerCommand(
         "LSSW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
     NamedCommands.registerCommand(
-        "FWS", new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
+        "FWS",
+        new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
+            .andThen(NoteVisualizer.shoot()));
     NamedCommands.registerCommand(
         "AA",
         new AutoAllignCommand(
@@ -210,7 +212,7 @@ private Boolean manual;
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
     leadscrew.setDefaultCommand(
-        new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive).onlyIf(() ->!manual));
+        new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive));
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
@@ -236,12 +238,13 @@ private Boolean manual;
     operatorController
         .b() // SHOOT SPEAKER
         .whileTrue(
-            new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER));
-
+            new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
+                .andThen(NoteVisualizer.shoot()));
     operatorController
         .a() // SHOOT AMP
-        .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP));
-
+        .whileTrue(
+            new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP)
+                .andThen(NoteVisualizer.shoot()));
     operatorController
         .povUp() // MOVE SHOOTER UP
         .whileTrue(new MoveLeadScrewCommand(leadscrew, 0.6));
