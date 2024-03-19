@@ -68,8 +68,8 @@ public class VisionIOLimelight implements VisionIO {
   }
 
   @Override
-  public double getTagCount() {
-    return nt.getEntry("botpose").getDoubleArray(new double[7])[7];
+  public double getTagArea() {
+    return nt.getEntry("ta").getDouble(0);
   }
 
   @Override
@@ -89,6 +89,6 @@ public class VisionIOLimelight implements VisionIO {
     } else {
       input.hasTarget = false;
     }
-    input.tagCount = nt.getEntry("botpose").getDoubleArray(new double[8])[7];
+    input.tagArea = nt.getEntry("ta").getDouble(0);
   }
 }

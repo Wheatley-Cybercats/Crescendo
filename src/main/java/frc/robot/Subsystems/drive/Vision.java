@@ -67,7 +67,7 @@ public class Vision extends SubsystemBase {
     return io.getHasTarget();
   }
 
-  public double getTagCount() {
-    return io.getTagCount();
+  public double getTagArea() {
+    return io.getTagArea();
   }
 }

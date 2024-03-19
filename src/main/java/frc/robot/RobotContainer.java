@@ -159,7 +159,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "LSP", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AUTO));
     NamedCommands.registerCommand(
-        "LSSW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
+        "LSPW", new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
     NamedCommands.registerCommand(
         "FWS",
         new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)

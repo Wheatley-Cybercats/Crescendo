@@ -19,7 +19,7 @@ public interface VisionIO {
     public Pose2d pose_wpiRed = new Pose2d();
     public boolean hasTarget = false;
     public Pose3d pose3d = new Pose3d();
-    public double tagCount = 0;
+    public double tagArea = 0;
   }
 
   public default void setPipeline(int pipeline) {}
@@ -51,7 +51,7 @@ public interface VisionIO {
     return false;
   }
 
-  public default double getTagCount() {
+  public default double getTagArea() {
     return 0;
   }
 

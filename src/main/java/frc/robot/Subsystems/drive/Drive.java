@@ -296,7 +296,7 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    if (vision.hasTarget() && vision.getTagCount() > 1) {
+    if (vision.hasTarget() && vision.getTagArea() > 1) {
       poseEstimator.setVisionMeasurementStdDevs(
           VecBuilder.fill(
               Math.pow(visionPose.getX(), 2) * VISION_STD_DEV_COEFFICENT,
