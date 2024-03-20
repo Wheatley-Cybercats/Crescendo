@@ -15,6 +15,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class VisionIOLimelight implements VisionIO {
 
   private final NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight");
+  private final double[] table = nt.getEntry("botpose").getDoubleArray(new double[7]);
+  private final double[] table_red = nt.getEntry("botpose_wpired").getDoubleArray(new double[7]);
+  private final double[] table_blue = nt.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
 
   @Override
   public void setPipeline(int pipeline) {
@@ -28,47 +31,46 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public Pose2d getBotPose() {
-    var table = nt.getEntry("botpose").getDoubleArray(new double[6]);
     return new Pose2d(
-        table[0],
-        table[1],
-        new Rotation2d(Math.toRadians(table[5])));
+        table[0], // nt.getEntry("botpose").getDoubleArray(new double[6])[0]
+        table[1], // nt.getEntry("botpose").getDoubleArray(new double[6])
+        new Rotation2d(table[5])); // nt.getEntry("botpose").getDoubleArray(new double[6])
   }
 
   @Override
   public Pose2d getBotPose_WPIRED() {
-    var table = nt.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-    return new Pose2d(
-        table[0],
-        table[1],
-            new Rotation2d(Math.toRadians(table[5])));
+    return new Pose2d(table_red[0], table_red[1], new Rotation2d(table_red[5]));
+    /*return new Pose2d(
+    nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[0],
+    nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[1],
+    new Rotation2d(nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[5]));*/
   }
 
   @Override
   public Pose2d getBotPose_WPIBLUE() {
-    var table = nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-    return new Pose2d(
-        table[0],
-        table[1],
-            new Rotation2d(Math.toRadians(table[5])));
+    return new Pose2d(table_blue[0], table_blue[1], new Rotation2d(table_blue[5]));
+    /*return new Pose2d(
+    nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[0],
+    nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[1],
+    new Rotation2d(nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[5]));*/
   }
 
   @Override
   public Pose3d getBotPose3d() {
-    var table = nt.getEntry("botpose").getDoubleArray(new double[6]);
-    return new Pose3d(
-        table[0],
-        table[1],
-        table[2],
-        new Rotation3d(
-            Math.toRadians(table[3]),
-            Math.toRadians(table[4]),
-            Math.toRadians(table[5])));
+    return new Pose3d(table[0], table[1], table[2], new Rotation3d(table[3], table[4], table[5]));
+    /*return new Pose3d(
+    nt.getEntry("botpose").getDoubleArray(new double[6])[0],
+    nt.getEntry("botpose").getDoubleArray(new double[6])[1],
+    nt.getEntry("botpose").getDoubleArray(new double[6])[2],
+    new Rotation3d(
+        Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[3]),
+        Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[4]),
+        Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[5])));*/
   }
 
   @Override
   public double getTimeStamp() {
-    return nt.getEntry("botpose").getDoubleArray(new double[7])[6]; //why is it length 7 ?????
+    return table[6];
   }
 
   @Override

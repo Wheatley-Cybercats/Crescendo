@@ -50,7 +50,7 @@ public class AutoLeadscrewCommand extends Command {
     if (drive.getPose().getX() < 1.75) {
       position = 115;
     } else if (drive.getPose().getX() > 1.75) {
-      position = (-13.63636364 * (drive.getPose().getX()-1.75)) + 36;
+      position = (-13.63636364 * (drive.getPose().getX() - 1.75)) + 36;
     }
 
     /*
