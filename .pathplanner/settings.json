@@ -4,7 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "4 Note Auto Paths",
-    "Centerline Three note"
+    "Centerline Three note",
+    "Stage Side 3 Note Centerline"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

@@ -35,9 +35,9 @@ public class AutoLeadscrewCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   /*
    * public static final double AMP_ANGLE = 91.5;
-  public static final double PODIUM_ANGLE = 36;
+  public static final double PODIUM_ANGLE = 36; distance of 2.8 meters from wall 1 meter is 15 lead screw positions
   public static final double WING_ANGLE =
-      21; // 17; //when front of bumpers are lined up with outer edge of stage
+      21; // 17; //when front of bumpers are lined up with outer edge of stage distance of 3.9 meters from wall
   public static final double SUBWOOFER_ANGLE = 115;
    */
   @Override
@@ -49,18 +49,17 @@ public class AutoLeadscrewCommand extends Command {
     }
     if (drive.getPose().getX() < 1.75) {
       position = 115;
-    } else if (drive.getPose().getX() < 3.5 && drive.getPose().getX() > 1.75) {
-      position = 36;
-    } else if (drive.getPose().getX() < 5.25 && drive.getPose().getX() > 3.5) {
-      position = 21;
-
-      /*
-      position =
-          Math.pow(leadscrewLegLength, 2)
-              + Math.pow(leadscrewLegLength2, 2)
-              - (2 * leadscrewLegLength * leadscrewLegLength2 * Math.cos(angle));
-      position = Math.sqrt(position * LEADSCREW_CF) + 16;*/
+    } else if (drive.getPose().getX() > 1.75) {
+      position = (-13.63636364 * (drive.getPose().getX()-1.75)) + 36;
     }
+
+    /*
+    position =
+        Math.pow(leadscrewLegLength, 2)
+            + Math.pow(leadscrewLegLength2, 2)
+            - (2 * leadscrewLegLength * leadscrewLegLength2 * Math.cos(angle));
+    position = Math.sqrt(position * LEADSCREW_CF) + 16;*/
+
     Logger.recordOutput("Lead Screw Anlge/Leadscrew", Math.toDegrees(angle));
     Logger.recordOutput("Lead Screw position/Leadscrew", position);
     leadscrew.runSetpoint(position);
