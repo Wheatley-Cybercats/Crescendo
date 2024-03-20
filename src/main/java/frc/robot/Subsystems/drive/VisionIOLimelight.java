@@ -28,43 +28,47 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public Pose2d getBotPose() {
+    var table = nt.getEntry("botpose").getDoubleArray(new double[6]);
     return new Pose2d(
-        nt.getEntry("botpose").getDoubleArray(new double[6])[0],
-        nt.getEntry("botpose").getDoubleArray(new double[6])[1],
-        new Rotation2d(nt.getEntry("botpose").getDoubleArray(new double[6])[5]));
+        table[0],
+        table[1],
+        new Rotation2d(Math.toRadians(table[5])));
   }
 
   @Override
   public Pose2d getBotPose_WPIRED() {
+    var table = nt.getEntry("botpose_wpired").getDoubleArray(new double[6]);
     return new Pose2d(
-        nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[0],
-        nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[1],
-        new Rotation2d(nt.getEntry("botpose_wpired").getDoubleArray(new double[6])[5]));
+        table[0],
+        table[1],
+            new Rotation2d(Math.toRadians(table[5])));
   }
 
   @Override
   public Pose2d getBotPose_WPIBLUE() {
+    var table = nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
     return new Pose2d(
-        nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[0],
-        nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[1],
-        new Rotation2d(nt.getEntry("botpose_wpiblue").getDoubleArray(new double[6])[5]));
+        table[0],
+        table[1],
+            new Rotation2d(Math.toRadians(table[5])));
   }
 
   @Override
   public Pose3d getBotPose3d() {
+    var table = nt.getEntry("botpose").getDoubleArray(new double[6]);
     return new Pose3d(
-        nt.getEntry("botpose").getDoubleArray(new double[6])[0],
-        nt.getEntry("botpose").getDoubleArray(new double[6])[1],
-        nt.getEntry("botpose").getDoubleArray(new double[6])[2],
+        table[0],
+        table[1],
+        table[2],
         new Rotation3d(
-            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[3]),
-            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[4]),
-            Math.toRadians(nt.getEntry("botpose").getDoubleArray(new double[6])[5])));
+            Math.toRadians(table[3]),
+            Math.toRadians(table[4]),
+            Math.toRadians(table[5])));
   }
 
   @Override
   public double getTimeStamp() {
-    return nt.getEntry("botpose").getDoubleArray(new double[7])[6];
+    return nt.getEntry("botpose").getDoubleArray(new double[7])[6]; //why is it length 7 ?????
   }
 
   @Override
