@@ -16,7 +16,6 @@ package frc.robot.Subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -321,12 +320,12 @@ public class Drive extends SubsystemBase {
     gyroIO.setYaw(yaw);
   }
 
-  public Command pathFind(Pose2d pose) {
+  /*public Command pathFind(Pose2d pose) {
     return AutoBuilder.pathfindToPose(
         pose,
         new PathConstraints(
             MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL));
-  }
+  }*/
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
