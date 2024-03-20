@@ -1,0 +1,219 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2879723980088535,
+      "y": 5.706580903078771
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "First Shot to Stage note"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LSP"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LSP"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Stage first Note to second"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Stage Second Note to Third"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FWS"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IC"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Stage Third note to centerline"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
