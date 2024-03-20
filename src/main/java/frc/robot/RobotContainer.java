@@ -15,7 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.*;
 import frc.robot.Subsystems.climbers.Climber;
@@ -73,6 +73,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private Boolean autoMode;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -213,34 +214,28 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
     leadscrew.setDefaultCommand(
-        new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive));
+        new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive)
+            .onlyIf(() -> autoMode));
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
         .onTrue(
-            Commands.runOnce(
-                () -> {
-                  drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(4));
-                  drive.setMaxAngularSpeedRadPerSec(Units.feetToMeters(6));
-                }));
-    driverController
-        .leftBumper() // .button(3)
-        .onFalse(
-            Commands.runOnce(
-                () -> {
-                  drive.setMaxLinearSpeedMetersPerSec(Units.feetToMeters(15));
-                  drive.setMaxAngularSpeedRadPerSec(Units.feetToMeters(15));
-                }));
+            DriveCommands.joystickDrive(
+                drive,
+                () -> -driverController.getLeftY() * .5,
+                () -> -driverController.getLeftX() * .5,
+                () -> -driverController.getRightX() * .25));
+
     driverController
         .b() // reset odometry pose
         .onTrue(Commands.runOnce(() -> drive.setYaw(0), drive).ignoringDisable(true));
-    if (indexer.hasNote()) {
-      driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.5);
-      driverController.getHID().setRumble(RumbleType.kRightRumble, 0.5);
-    } else {
-      driverController.getHID().setRumble(RumbleType.kLeftRumble, 0);
-      driverController.getHID().setRumble(RumbleType.kRightRumble, 0);
-    }
+    Trigger rumbleTrigger = new Trigger(indexer::hasNote);
+    rumbleTrigger.onTrue(
+        Commands.runOnce(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.5))
+            .withTimeout(1)
+            .andThen(
+                Commands.runOnce(
+                    () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0))));
     /** OPERATOR* */
     operatorController
         .b() // SHOOT SPEAKER
@@ -254,27 +249,39 @@ public class RobotContainer {
                 .andThen(NoteVisualizer.shoot()));
     operatorController
         .povUp() // MOVE SHOOTER UP
-        .whileTrue(new MoveLeadScrewCommand(leadscrew, 0.6));
+        .whileTrue(
+            new MoveLeadScrewCommand(leadscrew, 0.6)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .povDown() // MOVE SHOOTER DOWN
-        .whileTrue(new MoveLeadScrewCommand(leadscrew, -0.6));
+        .whileTrue(
+            new MoveLeadScrewCommand(leadscrew, -0.6)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .start() // AMP ANGLE PRESET
-        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP));
+        .onTrue(
+            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .povRight() // PODIUM ANGLE PRESET
-        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM));
+        .onTrue(
+            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.PODIUM)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .povLeft() // WING ANGLE PRESET
-        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING));
+        .onTrue(
+            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .y() // SUBWOOFER ANGLE PRESET
-        .onTrue(new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER));
+        .onTrue(
+            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER)
+                .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
         .leftBumper()
@@ -283,6 +290,10 @@ public class RobotContainer {
     operatorController.rightBumper().whileTrue(new OuttakeCommand(intake, indexer, blinkin));
 
     operatorController.x().whileTrue(new IntakeFromShooterCommand(flywheel, indexer, blinkin));
+    operatorController
+        .back()
+        .and(operatorController.povUp())
+        .onTrue(Commands.runOnce(() -> autoMode = false));
 
     climber.setDefaultCommand(
         MoveClimberCommand.moveClimber(
