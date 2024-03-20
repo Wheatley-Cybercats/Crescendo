@@ -13,7 +13,7 @@ public class Blinkin extends SubsystemBase {
    * 0 corresponds to 1500us
    * 1 corresponds to 2000us
    */
-  private Spark blinkin = new Spark(0);
+  private Spark blinkin = new Spark(9);
 
   public Blinkin() {
     solid_dark_red();
