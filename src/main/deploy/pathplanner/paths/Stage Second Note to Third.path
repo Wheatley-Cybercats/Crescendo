@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.55,
-        "y": 5.567344824504464
+        "y": 5.5630097649084185
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.7080452309052767,
-        "y": 5.949784805125166
+        "y": 5.94544974552912
       },
       "isLocked": false,
       "linkedName": null
@@ -40,7 +40,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 25.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "4 note Starting Stage",
