@@ -212,19 +212,19 @@ public class RobotContainer {
             drive,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
-            () -> -driverController.getRightX()));
+            () -> -driverController.getRightX() * .85));
     // leadscrew.setDefaultCommand( new AutoLeadscrewCommand(leadscrew,
     // FieldConstants.Speaker.centerSpeakerOpening, drive) .onlyIf(() -> autoMode));
 
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
-        .onTrue(
+        .whileTrue(
             DriveCommands.joystickDrive(
                 drive,
                 () -> -driverController.getLeftY() * .5,
                 () -> -driverController.getLeftX() * .5,
-                () -> -driverController.getRightX() * .25));
+                () -> -driverController.getRightX() * .5));
 
     driverController
         .b() // reset odometry pose

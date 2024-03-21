@@ -24,7 +24,7 @@ import lombok.Getter;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
   public static final boolean useVision = true;
 
   public static enum Mode {
