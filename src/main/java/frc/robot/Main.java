@@ -1,3 +1,5 @@
+package frc.robot;
+
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -10,8 +12,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-
-package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
