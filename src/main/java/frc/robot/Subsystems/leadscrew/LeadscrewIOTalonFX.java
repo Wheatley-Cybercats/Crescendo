@@ -23,9 +23,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Subsystems.Faultable;
-import java.util.ArrayList;
 
 public class LeadscrewIOTalonFX implements LeadscrewIO {
   private static final double GEAR_RATIO = 1.5;
@@ -39,8 +36,6 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
   private final PositionTorqueCurrentFOC positionControl =
       new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
-  private ArrayList<Faultable> faultableList = new ArrayList<>();
-
   public LeadscrewIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
@@ -53,18 +48,6 @@ public class LeadscrewIOTalonFX implements LeadscrewIO {
     motor.optimizeBusUtilization();
 
     motor.setPosition(115); // lead screw must physically be at "bumper up" preset
-
-    faultableList.add(
-        new Faultable(
-            () ->
-                !(this.motorAppliedVolts.getValueAsDouble() > 2)
-                    || !(this.motorVelocity.getValueAsDouble() > 10),
-            () -> SmartDashboard.putBoolean("Lead Screw Health", false),
-            1000));
-
-    for (Faultable fault : faultableList) {
-      fault.execute();
-    }
   }
 
   @Override

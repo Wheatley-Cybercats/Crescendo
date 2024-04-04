@@ -12,42 +12,28 @@ public class Faultable {
     this.toTrigger = toTrigger;
     this.whenTriggered = whenTriggered;
     this.sleepInterval = sleepInterval;
-    this.executor = Executors.newFixedThreadPool(2);
+    this.executor = Executors.newFixedThreadPool(30);
   }
 
   public void execute() {
-    Future<?> future =
-        executor.submit(
-            () -> {
-              try {
-                boolean shouldContinue = true;
-                while (!Thread.currentThread().isInterrupted() && shouldContinue) {
-                  shouldContinue = toTrigger.call();
-                  if (shouldContinue) {
-                    Thread.sleep(sleepInterval); // Delay between iterations
-                  }
-                }
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Handle the interruption status
-              } catch (Exception e) {
-                // Handle other exceptions from the callable task
-              } finally {
-                // Ensure the whenTriggered runs after breaking out of the loop
-                whenTriggered.run();
-              }
-            });
-    try {
-      future.get(); // Wait for task completion
-    } catch (InterruptedException | ExecutionException e) {
-      Thread.currentThread().interrupt();
-    }
-    executor.shutdown();
-    try {
-      if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-        executor.shutdownNow();
-      }
-    } catch (InterruptedException e) {
-      executor.shutdownNow();
-    }
+    executor.submit(
+        () -> {
+          try {
+            while (!Thread.currentThread().isInterrupted()) {
+              boolean shouldContinue = toTrigger.call();
+              if (!shouldContinue) break; // Exit the loop based on the condition
+              Thread.sleep(sleepInterval);
+            }
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          } catch (Exception e) {
+            // Handle exception
+          } finally {
+            // Ensure this is non-blocking
+            whenTriggered.run();
+          }
+        });
+    // Consider removing or adjusting blocking calls here
+    // executor.shutdown(), awaitTermination(), etc. are removed or adjusted
   }
 }
