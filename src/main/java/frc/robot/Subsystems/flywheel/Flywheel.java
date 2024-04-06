@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Subsystems.Faultable;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,10 +35,13 @@ public class Flywheel extends SubsystemBase {
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
   private ArrayList<Faultable> faultableList = new ArrayList<>();
+  private AtomicInteger aint = new AtomicInteger();
 
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
+
+    aint.set(5);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -68,92 +73,12 @@ public class Flywheel extends SubsystemBase {
     faultableList.add(
         new Faultable(
             () -> {
-              System.out.println("Checking flywheel health 0");
-              return true;
+              System.out.println("Checking flywheel health");
+                return aint.decrementAndGet() != 0;
             },
             () -> SmartDashboard.putBoolean("Flywheel Health", false),
             1000));
 
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 1");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 2");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 3");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 4");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 5");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 6");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 7");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 8");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
-
-    faultableList.add(
-        new Faultable(
-            () -> {
-              System.out.println("Checking flywheel health 9");
-              return true;
-            },
-            () -> SmartDashboard.putBoolean("Flywheel Health", false),
-            1000));
 
     for (Faultable fault : faultableList) {
       fault.execute();
