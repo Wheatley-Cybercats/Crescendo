@@ -26,7 +26,7 @@ import lombok.Getter;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
   public static final boolean useVision = true;
 
   public static enum Mode {
@@ -90,6 +90,5 @@ public final class Constants {
   public static final double[] AMP_FLYWHEEL = {-4.1, 0.5}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
   public static final double[] LOB_FLYWHEEL = {-5, 5}; // [BOT, TOP]
-  public static final Transform3d robotToPhoton = new Transform3d(1, 1, 0,new Rotation3d(0, 0, 0));
-
+  public static final Transform3d robotToPhoton = new Transform3d(1, 1, 0, new Rotation3d(0, 0, 0));
 }
