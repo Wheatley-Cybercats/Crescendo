@@ -13,12 +13,9 @@
 
 package frc.robot.subsystems.flywheel;
 
-import com.revrobotics.CANSparkBase;
+import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
@@ -29,8 +26,8 @@ import edu.wpi.first.math.util.Units;
 public class FlywheelIOSparkMax implements FlywheelIO {
   private static final double GEAR_RATIO = 1;
 
-  private final CANSparkFlex top = new CANSparkFlex(39, MotorType.kBrushless);
-  private final CANSparkFlex bottom = new CANSparkFlex(40, MotorType.kBrushless);
+  public final CANSparkFlex top = new CANSparkFlex(39, MotorType.kBrushless);
+  public final CANSparkFlex bottom = new CANSparkFlex(40, MotorType.kBrushless);
   private final RelativeEncoder encoder = top.getEncoder();
   private final SparkPIDController pid = top.getPIDController();
 
@@ -107,6 +104,11 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   @Override
   public double getVelocity() {
     return Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+  }
+
+  @Override
+  public CANSparkFlex getTopSparkFlex() {
+    return top;
   }
 
   @Override

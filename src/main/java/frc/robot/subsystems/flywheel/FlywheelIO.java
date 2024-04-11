@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.flywheel;
 
+import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FlywheelIO {
@@ -54,6 +56,10 @@ public interface FlywheelIO {
 
   public default double getVelocity() {
     return 0.0;
+  }
+
+  public default CANSparkFlex getTopSparkFlex() {
+    return new CANSparkFlex(-1, CANSparkLowLevel.MotorType.kBrushless);
   }
 
   /** Stop in open loop. */

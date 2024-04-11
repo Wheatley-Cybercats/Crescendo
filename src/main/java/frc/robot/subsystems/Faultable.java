@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkFlex;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.*;
@@ -45,4 +48,67 @@ public class Faultable {
   public static String generateDebugMessage(double c1, double c2) {
     return " " + df.format(c1) + " | " + df.format(c2);
   }
+
+  /**
+   * @param motorController The motor Controller that needs to be checked
+   * @return Faultable A faultable object that contains checks for common motor faults including 1.
+   *     Voltage fault - No movement when a voltage is applied
+   */
+  public static Faultable motorCommonFaultsSparkFlex(
+      CANSparkFlex motorController, String subsystemName) {
+
+    return new Faultable(
+        () -> {
+          SmartDashboard.putBoolean(subsystemName + " Health", true);
+          SmartDashboard.putString(subsystemName + " Fault Message", "Health check passed");
+          if (motorController.getAppliedOutput() * motorController.getBusVoltage() > 0
+              && motorController.getEncoder().getVelocity() == 0) {
+            DriverStation.reportError(
+                subsystemName
+                    + " Voltage Fault "
+                    + Faultable.generateDebugMessage(
+                        motorController.getAppliedOutput() * motorController.getBusVoltage(),
+                        motorController.getEncoder().getVelocity()),
+                false);
+            return false;
+          }
+          return true;
+        },
+        () -> {
+          SmartDashboard.putBoolean(subsystemName + " Health", false);
+          SmartDashboard.putString(
+              subsystemName + " Fault Message",
+              "Voltage Fault"
+                  + Faultable.generateDebugMessage(
+                      motorController.getAppliedOutput() * motorController.getBusVoltage(),
+                      motorController.getEncoder().getVelocity()));
+        },
+        1000);
+  }
+  /*
+   public static Faultable motorCommonFaultsSparkFlex(CANSparkMax motorController){
+
+     return new Faultable(
+             () -> {
+
+             },
+             () -> {
+
+             }, 1000
+     );
+   }
+
+   public static Faultable motorCommonFaultsTalonFX(CANSparkMax motorController){
+
+     return new Faultable(
+             () -> {
+
+             },
+             () -> {
+
+             }, 1000
+     );
+   }
+
+  */
 }

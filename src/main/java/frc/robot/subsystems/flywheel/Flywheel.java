@@ -18,8 +18,6 @@ import static frc.robot.subsystems.Faultable.faultableList;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -64,29 +62,33 @@ public class Flywheel extends SubsystemBase {
                 null,
                 (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+    /*
+       faultableList.add(
+           new Faultable(
+               () -> {
+                 SmartDashboard.putBoolean("Flywheel Health", true);
+                 SmartDashboard.putString("Flywheel Fault Message", "Health check passed");
+                 if (io.getVoltageTop() > 0 && io.getVelocity() == 0) {
+                   DriverStation.reportError(
+                       "Flywheel setpoint voltage fault "
+                           + Faultable.generateDebugMessage(io.getVoltageTop(), io.getVelocity()),
+                       false);
+                   return false;
+                 }
+                 return true;
+               },
+               () -> {
+                 SmartDashboard.putBoolean("Flywheel Health", false);
+                 SmartDashboard.putString(
+                     "Flywheel Fault Message",
+                     "Setpoint Fault"
+                         + Faultable.generateDebugMessage(io.getVoltageTop(), io.getVelocity()));
+               },
+               1000));
 
-    faultableList.add(
-        new Faultable(
-            () -> {
-              SmartDashboard.putBoolean("Flywheel Health", true);
-              SmartDashboard.putString("Flywheel Fault Message", "Health check passed");
-              if (io.getVoltageTop() > 0 && io.getVelocity() == 0) {
-                DriverStation.reportError(
-                    "Flywheel setpoint voltage fault "
-                        + Faultable.generateDebugMessage(io.getVoltageTop(), io.getVelocity()),
-                    false);
-                return false;
-              }
-              return true;
-            },
-            () -> {
-              SmartDashboard.putBoolean("Flywheel Health", false);
-              SmartDashboard.putString(
-                  "Flywheel Fault Message",
-                  "Setpoint Fault"
-                      + Faultable.generateDebugMessage(io.getVoltageTop(), io.getVelocity()));
-            },
-            1000));
+    */
+
+    faultableList.add(Faultable.motorCommonFaultsSparkFlex(io.getTopSparkFlex(), "Flywheel Top"));
   }
 
   @Override
