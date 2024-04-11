@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -343,5 +344,14 @@ public class Drive extends SubsystemBase {
 
   public void setMaxAngularSpeedRadPerSec(double d) {
     if (MAX_ANGULAR_SPEED != d) MAX_ANGULAR_SPEED = d;
+  }
+
+  public Command generatePath(Pose2d end) {
+    return AutoBuilder.pathfindToPose(
+        end,
+        new PathConstraints(
+            MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL),
+        0,
+        0);
   }
 }

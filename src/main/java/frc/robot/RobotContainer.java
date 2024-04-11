@@ -15,6 +15,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
@@ -73,6 +75,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private Boolean autoMode = true;
+
+  Command speakerPathFind;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -195,6 +199,8 @@ public class RobotContainer {
         "Flywheel SysId (Dynamic Forward)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Flywheel SysId (Dynamic Reverse)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    speakerPathFind = drive.generatePath(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -330,7 +336,9 @@ public class RobotContainer {
                 () -> driverController.getLeftX(),
                 FieldConstants.ampCenter)); //
 
+    driverController.y().onTrue(speakerPathFind);
     //
+
   }
 
   /**
