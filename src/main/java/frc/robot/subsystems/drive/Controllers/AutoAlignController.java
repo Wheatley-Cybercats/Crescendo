@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive.controllers;
+package frc.robot.subsystems.drive.Controllers;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,12 +14,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.Supplier;
 import lombok.experimental.ExtensionMethod;
-import org.littletonrobotics.frc2024.RobotState;
-import org.littletonrobotics.frc2024.subsystems.drive.DriveConstants;
-import org.littletonrobotics.frc2024.util.GeomUtil;
-import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -115,9 +115,9 @@ public class AutoAlignController {
 
   private void resetControllers() {
     // Reset measurements and velocities
-    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+    Pose2d currentPose = Drive.getInstance().getPose();
     Pose2d goalPose = poseSupplier.get();
-    Twist2d fieldVelocity = RobotState.getInstance().fieldVelocity();
+    Twist2d fieldVelocity = Drive.getInstance().fieldVelocity();
     Rotation2d robotToGoalAngle =
         goalPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
     double linearVelocity =
@@ -161,7 +161,7 @@ public class AutoAlignController {
         slowAngularAcceleration);
 
     // Control to setpoint
-    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+    Pose2d currentPose = Drive.getInstance().getPose();
     Pose2d targetPose = poseSupplier.get();
 
     // Calculate drive speed

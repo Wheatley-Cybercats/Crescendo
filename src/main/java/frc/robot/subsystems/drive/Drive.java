@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.swerve.ModuleLimits;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -59,6 +60,7 @@ public class Drive extends SubsystemBase {
 
   private final GyroIO gyroIO;
   private final Vision vision;
+  private Twist2d robotVelocity = new Twist2d();
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
@@ -317,6 +319,10 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
+  public double getMaxAngularSpeedRadPerSecSquared() {
+    return MAX_ANGULAR_SPEED;
+  }
+
   public void setYaw(double yaw) {
     gyroIO.setYaw(yaw);
   }
@@ -353,5 +359,23 @@ public class Drive extends SubsystemBase {
             MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL),
         0,
         0);
+  }
+
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public Twist2d fieldVelocity() {
+    Translation2d linearFieldVelocity =
+        new Translation2d(robotVelocity.dx, robotVelocity.dy).rotateBy(getPose().getRotation());
+    return new Twist2d(
+        linearFieldVelocity.getX(), linearFieldVelocity.getY(), robotVelocity.dtheta);
+  }
+
+  private static Drive instance;
+
+  public static Drive getInstance() {
+    return instance;
+  }
+
+  public ModuleLimits getModuleLimits() {
+    return DriveConstants.moduleLimitsFree;
   }
 }

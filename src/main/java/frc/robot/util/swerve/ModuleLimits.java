@@ -5,4 +5,5 @@
 package frc.robot.util.swerve;
 
 /** Add your docs here. */
-public class ModuleLimits {}
+public record ModuleLimits(
+    double maxDriveVelocity, double maxDriveAcceleration, double maxSteeringVelocity) {}

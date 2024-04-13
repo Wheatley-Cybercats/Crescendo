@@ -12,6 +12,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import frc.robot.util.swerve.ModuleLimits;
+import lombok.Builder;
 
 /** All Constants Measured in Meters and Radians (m/s, m/s^2, rad/s, rad/s^2) */
 public final class DriveConstants {
@@ -19,7 +22,30 @@ public final class DriveConstants {
 
   public static final Matrix<N3, N1> odometryStateStdDevs =
       new Matrix<>(VecBuilder.fill(0.003, 0.003, 0.0002));
-
+  public static final DriveConfig driveConfig =
+      DriveConfig.builder()
+          .wheelRadius(Units.inchesToMeters(1.942)) // 1.936
+          .trackWidthX(Units.inchesToMeters(20.75))
+          .trackWidthY(Units.inchesToMeters(20.75))
+          .bumperWidthX(Units.inchesToMeters(37))
+          .bumperWidthY(Units.inchesToMeters(33))
+          .maxLinearVelocity(Units.feetToMeters(15.0))
+          .maxLinearAcceleration(Units.feetToMeters(75.0))
+          .maxAngularVelocity(12.0)
+          .maxAngularAcceleration(6.0)
+          .build();
+  public static final TrajectoryConstants trajectoryConstants =
+      new TrajectoryConstants(
+          6.0,
+          0.0,
+          8.0,
+          0.0,
+          Units.inchesToMeters(4.0),
+          Units.degreesToRadians(5.0),
+          Units.inchesToMeters(5.0),
+          Units.degreesToRadians(7.0),
+          driveConfig.maxLinearVelocity() / 2.0,
+          driveConfig.maxAngularVelocity() / 2.0);
   // Module Constants
   public static final ModuleConstants moduleConstants =
       new ModuleConstants(
@@ -32,6 +58,42 @@ public final class DriveConstants {
           0,
           Mk4iReductions.L3.reduction,
           Mk4iReductions.TURN.reduction);
+  public static final HeadingControllerConstants headingControllerConstants =
+      new HeadingControllerConstants(5.0, 0.0, 8.0, 20.0);
+  public static final ModuleLimits moduleLimitsFree =
+      new ModuleLimits(
+          driveConfig.maxLinearVelocity(),
+          driveConfig.maxLinearAcceleration(),
+          Units.degreesToRadians(1080.0));
+
+  @Builder
+  public record DriveConfig(
+      double wheelRadius,
+      double trackWidthX,
+      double trackWidthY,
+      double bumperWidthX,
+      double bumperWidthY,
+      double maxLinearVelocity,
+      double maxLinearAcceleration,
+      double maxAngularVelocity,
+      double maxAngularAcceleration) {
+    public double driveBaseRadius() {
+      return Math.hypot(trackWidthX / 2.0, trackWidthY / 2.0);
+    }
+  }
+
+  @Builder
+  public record TrajectoryConstants(
+      double linearkP,
+      double linearkD,
+      double thetakP,
+      double thetakD,
+      double linearTolerance,
+      double thetaTolerance,
+      double goalLinearTolerance,
+      double goalThetaTolerance,
+      double linearVelocityTolerance,
+      double angularVelocityTolerance) {}
 
   public record ModuleConstants(
       double ffkS,

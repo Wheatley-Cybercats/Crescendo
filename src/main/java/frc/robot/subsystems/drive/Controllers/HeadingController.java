@@ -5,21 +5,21 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive.controllers;
+package frc.robot.subsystems.drive.Controllers;
 
-import static org.littletonrobotics.frc2024.subsystems.drive.DriveConstants.headingControllerConstants;
+import static frc.robot.subsystems.drive.DriveConstants.headingControllerConstants;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.EqualsUtil;
+import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.swerve.ModuleLimits;
 import java.util.function.Supplier;
-import org.littletonrobotics.frc2024.Constants;
-import org.littletonrobotics.frc2024.RobotState;
-import org.littletonrobotics.frc2024.subsystems.drive.DriveConstants;
-import org.littletonrobotics.frc2024.util.EqualsUtil;
-import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
-import org.littletonrobotics.frc2024.util.swerve.ModuleLimits;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -51,8 +51,8 @@ public class HeadingController {
     this.goalHeadingSupplier = goalHeadingSupplier;
 
     controller.reset(
-        RobotState.getInstance().getEstimatedPose().getRotation().getRadians(),
-        RobotState.getInstance().fieldVelocity().dtheta);
+        Drive.getInstance().getPose().getRotation().getRadians(),
+        Drive.getInstance().fieldVelocity().dtheta);
   }
 
   /** Returns the rotation rate to turn to aim at speaker */
@@ -61,7 +61,7 @@ public class HeadingController {
     controller.setPID(kP.get(), 0, kD.get());
     controller.setTolerance(Units.degreesToRadians(toleranceDegrees.get()));
 
-    ModuleLimits moduleLimits = RobotState.getInstance().getModuleLimits();
+    ModuleLimits moduleLimits = Drive.getInstance().getModuleLimits();
     double maxAngularAcceleration =
         moduleLimits.maxDriveAcceleration()
             / DriveConstants.driveConfig.driveBaseRadius()
@@ -75,7 +75,7 @@ public class HeadingController {
 
     var output =
         controller.calculate(
-            RobotState.getInstance().getEstimatedPose().getRotation().getRadians(),
+            Drive.getInstance().getPose().getRotation().getRadians(),
             goalHeadingSupplier.get().getRadians());
 
     Logger.recordOutput("Drive/HeadingController/HeadingError", controller.getPositionError());
