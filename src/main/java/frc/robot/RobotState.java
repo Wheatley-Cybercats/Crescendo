@@ -185,7 +185,7 @@ public class RobotState {
         new AimingParameters(
             targetVehicleDirection,
             Rotation2d.fromDegrees(
-                armAngleDegrees + shotCompensationDegrees + autoFarArmCorrection),
+                +shotCompensationDegrees + autoFarArmCorrection), // TODO: armDegreeAngle?
             targetDistance,
             new FlywheelSpeeds(0, 0));
     return latestParameters;
