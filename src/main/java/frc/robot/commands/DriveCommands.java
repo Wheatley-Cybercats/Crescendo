@@ -23,11 +23,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drive.Controllers.HeadingController;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
+  private static HeadingController headingController = null;
 
   private DriveCommands() {}
 
@@ -63,16 +67,33 @@ public class DriveCommands {
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
+          ChassisSpeeds desiredSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+                      : drive.getRotation());
+          if (headingController != null) {
+            desiredSpeeds.omegaRadiansPerSecond = headingController.update();
+          }
+          drive.runVelocity(desiredSpeeds);
         },
         drive);
+  }
+
+  public static void setHeadingGoal(Supplier<Rotation2d> goalHeadingSupplier) {
+    headingController = new HeadingController(goalHeadingSupplier);
+  }
+
+  public void clearHeadingGoal() {
+    headingController = null;
+  }
+
+  @AutoLogOutput(key = "Drive/AtHeadingGoal")
+  public boolean atHeadingGoal() {
+    return headingController == null || headingController.atGoal();
   }
 
   /*public static Command autoAlignCommand(

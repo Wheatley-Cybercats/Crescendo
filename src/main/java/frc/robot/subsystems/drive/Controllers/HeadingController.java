@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.EqualsUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -51,8 +51,8 @@ public class HeadingController {
     this.goalHeadingSupplier = goalHeadingSupplier;
 
     controller.reset(
-        Drive.getInstance().getPose().getRotation().getRadians(),
-        Drive.getInstance().fieldVelocity().dtheta);
+        RobotState.getInstance().getEstimatedPose().getRotation().getRadians(),
+        RobotState.getInstance().fieldVelocity().dtheta);
   }
 
   /** Returns the rotation rate to turn to aim at speaker */
@@ -61,7 +61,7 @@ public class HeadingController {
     controller.setPID(kP.get(), 0, kD.get());
     controller.setTolerance(Units.degreesToRadians(toleranceDegrees.get()));
 
-    ModuleLimits moduleLimits = Drive.getInstance().getModuleLimits();
+    ModuleLimits moduleLimits = RobotState.getInstance().getModuleLimits();
     double maxAngularAcceleration =
         moduleLimits.maxDriveAcceleration()
             / DriveConstants.driveConfig.driveBaseRadius()
@@ -75,7 +75,7 @@ public class HeadingController {
 
     var output =
         controller.calculate(
-            Drive.getInstance().getPose().getRotation().getRadians(),
+            RobotState.getInstance().getEstimatedPose().getRotation().getRadians(),
             goalHeadingSupplier.get().getRadians());
 
     Logger.recordOutput("Drive/HeadingController/HeadingError", controller.getPositionError());

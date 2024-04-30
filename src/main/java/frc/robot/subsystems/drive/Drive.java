@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Controllers.HeadingController;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.swerve.ModuleLimits;
 import java.util.concurrent.locks.Lock;
@@ -47,6 +48,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+
   public static double MAX_LINEAR_SPEED = Units.feetToMeters(15); // 14.5
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.0); // default 25.0
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.0); // 25.0
@@ -57,7 +59,7 @@ public class Drive extends SubsystemBase {
   private double MAX_ANGULAR_ACCEL = MAX_LINEAR_ACCEL / DRIVE_BASE_RADIUS;
   static final Lock odometryLock = new ReentrantLock();
   private static final double VISION_STD_DEV_COEFFICENT = 0.025;
-
+  private HeadingController headingController = null;
   private final GyroIO gyroIO;
   private final Vision vision;
   private Twist2d robotVelocity = new Twist2d();

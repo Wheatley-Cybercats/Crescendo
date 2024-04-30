@@ -9,6 +9,7 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -65,6 +66,8 @@ public final class DriveConstants {
           driveConfig.maxLinearVelocity(),
           driveConfig.maxLinearAcceleration(),
           Units.degreesToRadians(1080.0));
+  public static SwerveDriveKinematics kinematics;
+  public static ModuleLimits moduleLimitsFlywheelSpinup;
 
   @Builder
   public record DriveConfig(

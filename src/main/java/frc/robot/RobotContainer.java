@@ -246,12 +246,15 @@ public class RobotContainer {
         .b() // SHOOT SPEAKER
         .whileTrue(
             new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
-                .andThen(NoteVisualizer.shoot()));
+                .alongWith(
+                    Commands.runOnce(
+                        () -> DriveCommands.setHeadingGoal(() -> Rotation2d.fromDegrees(90)))));
     operatorController
         .a() // SHOOT AMP
         .whileTrue(
             new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP)
                 .andThen(NoteVisualizer.shoot()));
+
     operatorController
         .povUp() // MOVE SHOOTER UP
         .whileTrue(

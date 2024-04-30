@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 
 /** Drive controller for outputting {@link ChassisSpeeds} from driver joysticks. */
@@ -72,7 +72,7 @@ public class TeleopDriveController {
           linearVelocity.getX() * driveConfig.maxLinearVelocity(),
           linearVelocity.getY() * driveConfig.maxLinearVelocity(),
           omega * maxAngularVelocity,
-          Drive.getInstance().getPose().getRotation());
+          RobotState.getInstance().getEstimatedPose().getRotation());
     }
   }
 

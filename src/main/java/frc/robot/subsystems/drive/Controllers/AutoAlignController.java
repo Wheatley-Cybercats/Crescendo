@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -115,9 +115,9 @@ public class AutoAlignController {
 
   private void resetControllers() {
     // Reset measurements and velocities
-    Pose2d currentPose = Drive.getInstance().getPose();
+    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
     Pose2d goalPose = poseSupplier.get();
-    Twist2d fieldVelocity = Drive.getInstance().fieldVelocity();
+    Twist2d fieldVelocity = RobotState.getInstance().fieldVelocity();
     Rotation2d robotToGoalAngle =
         goalPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
     double linearVelocity =
@@ -161,7 +161,7 @@ public class AutoAlignController {
         slowAngularAcceleration);
 
     // Control to setpoint
-    Pose2d currentPose = Drive.getInstance().getPose();
+    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
     Pose2d targetPose = poseSupplier.get();
 
     // Calculate drive speed
