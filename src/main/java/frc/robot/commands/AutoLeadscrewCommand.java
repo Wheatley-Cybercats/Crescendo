@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.leadscrew.Leadscrew;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,16 +13,14 @@ public class AutoLeadscrewCommand extends Command {
   // private static final double LEADSCREW_CF = 300130; // do not set to zero will return NaN
   private final Leadscrew leadscrew;
   private final Translation3d target;
-  private Drive drive;
   // private double leadscrewLegLength = Units.inchesToMeters(10.25);
   // private double leadscrewLegLength2 = Units.inchesToMeters(10.25);
   private double position = 0.0;
 
   /** Creates a new AutoLeadscrewCommand. */
-  public AutoLeadscrewCommand(Leadscrew leadscrew, Translation3d target, Drive drive) {
+  public AutoLeadscrewCommand(Leadscrew leadscrew, Translation3d target) {
     this.leadscrew = leadscrew;
     this.target = target;
-    this.drive = drive;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(leadscrew);
   }
@@ -42,26 +39,30 @@ public class AutoLeadscrewCommand extends Command {
    */
   @Override
   public void execute() {
-    double hDelta = target.getZ() - leadscrew.getHeight();
-    double angle = Math.atan(hDelta / target.getX() - drive.getPose().getX());
-    if (angle < 0) {
-      angle = 0;
-    }
-    if (drive.getPose().getX() < 1.75) {
-      position = 115;
-    } else if (drive.getPose().getX() > 1.75) {
-      position = (-13.63636364 * (drive.getPose().getX() - 1.75)) + 36;
-    }
-
     /*
-    position =
-        Math.pow(leadscrewLegLength, 2)
-            + Math.pow(leadscrewLegLength2, 2)
-            - (2 * leadscrewLegLength * leadscrewLegLength2 * Math.cos(angle));
-    position = Math.sqrt(position * LEADSCREW_CF) + 16;*/
+       Pose2d curLoc = RobotState.getInstance().getEstimatedPose();
+       Pose2d allianceAdjustedSpeaker = new Pose2d();
+       if (DriverStation.getAlliance().isPresent())
+         allianceAdjustedSpeaker =
+                 DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
+                         ? new Pose2d(target.getX(), target.getY(), Rotation2d.fromDegrees(0))
+                         : new Pose2d(
+                         target.getX(),
+                         target.getY(),
+                         Rotation2d.fromDegrees(180)); // TODO: data for red alliance speaker
+       else SmartDashboard.putString("System Status", "Auto-aiming alliance cannot be obtained");
 
-    Logger.recordOutput("Lead Screw Anlge/Leadscrew", Math.toDegrees(angle));
-    Logger.recordOutput("Lead Screw position/Leadscrew", position);
+       position =
+               calculateSetPoint(
+                       calculateDistance(
+                               curLoc.getX(),
+                               allianceAdjustedSpeaker.getX(),
+                               curLoc.getY(),
+                               allianceAdjustedSpeaker.getY()));
+
+    */
+
+    Logger.recordOutput("Lead Screw Position/Leadscrew Target", position);
     leadscrew.runSetpoint(position);
   }
 
@@ -75,5 +76,13 @@ public class AutoLeadscrewCommand extends Command {
   @Override
   public boolean isFinished() {
     return leadscrew.atPosition(position);
+  }
+
+  private double calculateSetPoint(double distance) {
+    return (Math.pow(distance, 1.0 / 2.33)) * 7.2;
+  }
+
+  private double calculateDistance(double x1, double x2, double y1, double y2) {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
   }
 }

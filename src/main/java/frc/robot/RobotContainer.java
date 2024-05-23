@@ -293,9 +293,7 @@ public class RobotContainer {
     operatorController
         .back()
         .and(operatorController.povUp())
-        .onTrue(
-            new AutoLeadscrewCommand(
-                leadscrew, FieldConstants.Speaker.centerSpeakerOpening, drive));
+        .onTrue(new AutoLeadscrewCommand(leadscrew, FieldConstants.Speaker.centerSpeakerOpening));
     // .onTrue(Commands.runOnce(() -> autoMode = false));
 
     climber.setDefaultCommand(
@@ -311,16 +309,18 @@ public class RobotContainer {
         .back()
         .and(operatorController.a())
         .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.LOB));
+    /*
+       driverController
+           .y() // .button(1) for sim .y() for real
+           .whileTrue(
+               new AutoAllignCommand(
+                   drive,
+                   () -> driverController.getLeftY(),
+                   () -> driverController.getLeftX(),
+                   FieldConstants.Speaker.centerSpeakerOpening
+                       .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
 
-    driverController
-        .y() // .button(1) for sim .y() for real
-        .whileTrue(
-            new AutoAllignCommand(
-                drive,
-                () -> driverController.getLeftY(),
-                () -> driverController.getLeftX(),
-                FieldConstants.Speaker.centerSpeakerOpening
-                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+    */
     // passed through autoalign
     driverController
         .a() // .button(2) for sim .a() for real
