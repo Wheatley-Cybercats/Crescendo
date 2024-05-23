@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.ExtensionMethod;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 @ExtensionMethod({GeomUtil.class})
 public class RobotState {
@@ -140,7 +139,7 @@ public class RobotState {
     trajectoryVelocity = robotVelocity;
   }
 
-  public AimingParameters getAimingParameters() {
+  /*public AimingParameters getAimingParameters() {
     if (latestParameters != null) {
       // Cache previously calculated aiming parameters. Cache is invalidated whenever new
       // observations are added.
@@ -185,11 +184,10 @@ public class RobotState {
         new AimingParameters(
             targetVehicleDirection,
             Rotation2d.fromDegrees(
-                +shotCompensationDegrees + autoFarArmCorrection), // TODO: armDegreeAngle?
             targetDistance,
             new FlywheelSpeeds(0, 0));
     return latestParameters;
-  }
+  }*/
 
   public ModuleLimits getModuleLimits() {
     return flywheelAccelerating && !DriverStation.isAutonomousEnabled()
