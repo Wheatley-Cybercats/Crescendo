@@ -16,6 +16,8 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -37,12 +39,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Controllers.HeadingController;
+import frc.robot.util.LocalADStarAK;
+import frc.robot.util.swerve.ModuleLimits;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+
   public static double MAX_LINEAR_SPEED = Units.feetToMeters(15); // 14.5
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.0); // default 25.0
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.0); // 25.0
@@ -53,9 +59,10 @@ public class Drive extends SubsystemBase {
   private double MAX_ANGULAR_ACCEL = MAX_LINEAR_ACCEL / DRIVE_BASE_RADIUS;
   static final Lock odometryLock = new ReentrantLock();
   private static final double VISION_STD_DEV_COEFFICENT = 0.025;
-
+  private HeadingController headingController = null;
   private final GyroIO gyroIO;
   private final Vision vision;
+  private Twist2d robotVelocity = new Twist2d();
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
@@ -102,7 +109,7 @@ public class Drive extends SubsystemBase {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
-    // Pathfinding.setPathfinder(new LocalADStarAK());
+    Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -314,6 +321,10 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
+  public double getMaxAngularSpeedRadPerSecSquared() {
+    return MAX_ANGULAR_SPEED;
+  }
+
   public void setYaw(double yaw) {
     gyroIO.setYaw(yaw);
   }
@@ -341,5 +352,32 @@ public class Drive extends SubsystemBase {
 
   public void setMaxAngularSpeedRadPerSec(double d) {
     if (MAX_ANGULAR_SPEED != d) MAX_ANGULAR_SPEED = d;
+  }
+
+  public Command generatePath(Pose2d end) {
+    return AutoBuilder.pathfindToPose(
+        end,
+        new PathConstraints(
+            MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL),
+        0,
+        0);
+  }
+
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public Twist2d fieldVelocity() {
+    Translation2d linearFieldVelocity =
+        new Translation2d(robotVelocity.dx, robotVelocity.dy).rotateBy(getPose().getRotation());
+    return new Twist2d(
+        linearFieldVelocity.getX(), linearFieldVelocity.getY(), robotVelocity.dtheta);
+  }
+
+  private static Drive instance;
+
+  public static Drive getInstance() {
+    return instance;
+  }
+
+  public ModuleLimits getModuleLimits() {
+    return DriveConstants.moduleLimitsFree;
   }
 }
