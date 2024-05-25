@@ -216,7 +216,7 @@ public class RobotContainer {
     // leadscrew.setDefaultCommand( new AutoLeadscrewCommand(leadscrew,
     // FieldConstants.Speaker.centerSpeakerOpening, drive) .onlyIf(() -> autoMode));
 
-    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
         .whileTrue(
@@ -309,27 +309,20 @@ public class RobotContainer {
         .back()
         .and(operatorController.a())
         .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.LOB));
-    /*
-       driverController
-           .y() // .button(1) for sim .y() for real
-           .whileTrue(
-               new AutoAllignCommand(
-                   drive,
-                   () -> driverController.getLeftY(),
-                   () -> driverController.getLeftX(),
-                   FieldConstants.Speaker.centerSpeakerOpening
-                       .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
 
-    */
-    // passed through autoalign
     driverController
-        .a() // .button(2) for sim .a() for real
+        .x() // .button(1) for sim .y() for real
         .whileTrue(
             new AutoAllignCommand(
                 drive,
                 () -> driverController.getLeftY(),
                 () -> driverController.getLeftX(),
-                FieldConstants.ampCenter)); //
+                FieldConstants.Speaker.centerSpeakerOpening
+                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+
+    driverController
+        .a() // .button(2) for sim .a() for real
+        .whileTrue(new AutoNoteCommand(blinkin, drive, indexer, intake, leadscrew, vision)); //
 
     //
   }

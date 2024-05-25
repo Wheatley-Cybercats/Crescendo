@@ -20,6 +20,8 @@ public interface VisionIO {
     public boolean hasTarget = false;
     public Pose3d pose3d = new Pose3d();
     public double tagArea = 0;
+    public double tx = 0;
+    public double ty = 0;
   }
 
   public default void setPipeline(int pipeline) {}
@@ -56,5 +58,12 @@ public interface VisionIO {
   }
 
   public default void updateIOInputs(VisionIOInputs inputs) {}
-  ;
+
+  public default double getTX() {
+    return 0;
+  }
+
+  public default double getTY() {
+    return 0;
+  }
 }

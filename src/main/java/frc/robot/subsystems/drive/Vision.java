@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
 
-  public static enum Mode {
+  public enum Mode {
     WPI_RED,
     WPI_BLUE,
     WPI_CENTER
@@ -57,6 +57,14 @@ public class Vision extends SubsystemBase {
       return io.getBotPose();
     }
     return new Pose2d();
+  }
+
+  public double getTX() {
+    return io.getTX();
+  }
+
+  public double getTY() {
+    return io.getTY();
   }
 
   public double getTimeStamp() {

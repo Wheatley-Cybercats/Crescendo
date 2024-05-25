@@ -4,9 +4,15 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotState;
 import frc.robot.subsystems.leadscrew.Leadscrew;
+import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class AutoLeadscrewCommand extends Command {
@@ -29,41 +35,33 @@ public class AutoLeadscrewCommand extends Command {
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  /*
-   * public static final double AMP_ANGLE = 91.5;
-  public static final double PODIUM_ANGLE = 36; distance of 2.8 meters from wall 1 meter is 15 lead screw positions
-  public static final double WING_ANGLE =
-      21; // 17; //when front of bumpers are lined up with outer edge of stage distance of 3.9 meters from wall
-  public static final double SUBWOOFER_ANGLE = 115;
-   */
   @Override
   public void execute() {
-    /*
-       Pose2d curLoc = RobotState.getInstance().getEstimatedPose();
-       Pose2d allianceAdjustedSpeaker = new Pose2d();
-       if (DriverStation.getAlliance().isPresent())
-         allianceAdjustedSpeaker =
-                 DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
-                         ? new Pose2d(target.getX(), target.getY(), Rotation2d.fromDegrees(0))
-                         : new Pose2d(
-                         target.getX(),
-                         target.getY(),
-                         Rotation2d.fromDegrees(180)); // TODO: data for red alliance speaker
-       else SmartDashboard.putString("System Status", "Auto-aiming alliance cannot be obtained");
+    Pose2d curLoc = RobotState.getInstance().getEstimatedPose();
+    Translation2d allianceAdjustedSpeaker = new Translation2d();
+    if (DriverStation.getAlliance().isPresent())
+      allianceAdjustedSpeaker =
+          DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
+              ? new Translation2d(target.getX(), target.getY())
+              : AllianceFlipUtil.apply(
+                  new Translation2d(
+                      target.getX(), target.getY())); // TODO: data for red alliance speaker
+    else SmartDashboard.putString("System Status", "Auto-aiming alliance cannot be obtained");
 
-       position =
-               calculateSetPoint(
-                       calculateDistance(
-                               curLoc.getX(),
-                               allianceAdjustedSpeaker.getX(),
-                               curLoc.getY(),
-                               allianceAdjustedSpeaker.getY()));
-
-    */
+    position =
+        calculateSetPoint(
+            calculateDistance(
+                curLoc.getX(),
+                allianceAdjustedSpeaker.getX(),
+                curLoc.getY(),
+                allianceAdjustedSpeaker.getY()));
 
     Logger.recordOutput("Lead Screw Position/Leadscrew Target", position);
-    leadscrew.runSetpoint(position);
+    if (position > 21 && position < 115) {
+      leadscrew.runSetpoint(position);
+    } else {
+      SmartDashboard.putString("System Status", "Erroneous Leadscrew Position");
+    }
   }
 
   // Called once the command ends or is interrupted.
