@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import lombok.Getter;
 
 /**
@@ -89,4 +90,7 @@ public final class Constants {
   public static final double[] AMP_FLYWHEEL = {-4.1, 0.5}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
   public static final double[] LOB_FLYWHEEL = {-5, 5}; // [BOT, TOP]
+
+  public static final Transform3d leftCamToRobot = new Transform3d();
+  public static final Transform3d rightCamToRobot = new Transform3d();
 }

@@ -15,15 +15,8 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
-
-  public enum Mode {
-    WPI_RED,
-    WPI_BLUE,
-    WPI_CENTER
-  }
 
   private final VisionIO io;
   private final VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
@@ -38,44 +31,27 @@ public class Vision extends SubsystemBase {
     io.updateIOInputs(visionInputs);
   }
 
-  public void setPipeline(int pipeline) {
-    io.setPipeline(pipeline);
-    Logger.recordOutput("Vision/Pipeline", pipeline);
+  public double getNoteTX() {
+    return io.getNoteTX();
   }
 
-  public void setCamMode(int mode) {
-    io.setCamMode(mode);
-    Logger.recordOutput("Vision/CamMode", mode);
+  public double getNoteTY() {
+    return io.getNoteTY();
   }
 
-  public Pose2d getPose(Mode mode) {
-    if (mode.equals(Mode.WPI_BLUE)) {
-      return io.getBotPose_WPIBLUE();
-    } else if (mode.equals(Mode.WPI_RED)) {
-      return io.getBotPose_WPIRED();
-    } else if (mode.equals(Mode.WPI_CENTER)) {
-      return io.getBotPose();
-    }
-    return new Pose2d();
-  }
-
-  public double getTX() {
-    return io.getTX();
-  }
-
-  public double getTY() {
-    return io.getTY();
-  }
-
-  public double getTimeStamp() {
-    return io.getTimeStamp();
-  }
-
-  public boolean hasTarget() {
-    return io.getHasTarget();
+  public boolean hasNote() {
+    return io.hasNote();
   }
 
   public double getTagArea() {
     return io.getTagArea();
+  }
+
+  public Pose2d getVisionPose() {
+    return io.getVisionPose();
+  }
+
+  public double getVisionTimestampPhoton() {
+    return io.getVisionTimestampPhoton();
   }
 }

@@ -10,7 +10,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.leadscrew.Leadscrew;
 import frc.robot.subsystems.led.Blinkin;
 
-public class AutoNoteCommand extends Command {
+public class AutoNotePickupCommand extends Command {
   private final Blinkin blinkin;
   private final Drive drive;
   private final Indexer indexer;
@@ -18,7 +18,7 @@ public class AutoNoteCommand extends Command {
   private final Leadscrew leadscrew;
   private final Vision vision;
 
-  public AutoNoteCommand(
+  public AutoNotePickupCommand(
       Blinkin blinkin,
       Drive drive,
       Indexer indexer,
@@ -42,13 +42,13 @@ public class AutoNoteCommand extends Command {
 
   @Override
   public void execute() {
-    if (vision.hasTarget() && !indexer.hasNote()) {
-      if (MathUtil.applyDeadband(vision.getTX(), 0.2) > 0) {
+    if (vision.hasNote() && !indexer.hasNote()) {
+      if (MathUtil.applyDeadband(vision.getNoteTX(), 0.2) > 0) {
         drive.runVelocity(new ChassisSpeeds(0, 0, -0.2));
-      } else if (MathUtil.applyDeadband(vision.getTX(), 0.2) < 0) {
+      } else if (MathUtil.applyDeadband(vision.getNoteTX(), 0.2) < 0) {
         drive.runVelocity(new ChassisSpeeds(0, 0, 0.2));
       }
-      if (MathUtil.applyDeadband(vision.getTY(), 0.2) > -5) {
+      if (MathUtil.applyDeadband(vision.getNoteTY(), 0.2) > -5) {
         drive.runVelocity(new ChassisSpeeds(0.5, 0, 0));
       }
 

@@ -23,7 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
-import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -54,9 +53,7 @@ public class Module {
       new LoggedTunableNumber("Drive/Module/TurnkP", moduleConstants.turnkP());
   private static final LoggedTunableNumber turnkD =
       new LoggedTunableNumber("Drive/Module/TurnkD", moduleConstants.turnkD());
-
-  /** -- GETTER -- Returns the module positions received this cycle. */
-  @Getter private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   public Module(ModuleIO io, int index) {
     this.io = io;

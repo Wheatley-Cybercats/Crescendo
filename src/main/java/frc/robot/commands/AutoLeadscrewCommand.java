@@ -45,7 +45,7 @@ public class AutoLeadscrewCommand extends Command {
               ? new Translation2d(target.getX(), target.getY())
               : AllianceFlipUtil.apply(
                   new Translation2d(
-                      target.getX(), target.getY())); // TODO: data for red alliance speaker
+                      target.getX(), target.getY()));
     else SmartDashboard.putString("System Status", "Auto-aiming alliance cannot be obtained");
 
     position =

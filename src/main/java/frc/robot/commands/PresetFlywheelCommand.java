@@ -41,7 +41,7 @@ public class PresetFlywheelCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // TODO: Make this return true when this Command no longer needs to run execute()
+    //Doesn't need this because it is whileTrue
     return false;
   }
 

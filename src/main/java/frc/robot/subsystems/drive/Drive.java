@@ -195,14 +195,8 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    if (Constants.useVision && DriverStation.getAlliance().isPresent()) {
-      var mode =
-          DriverStation.getAlliance().get().compareTo(Alliance.Red) == 0
-              ? Vision.Mode.WPI_RED
-              : Vision.Mode.WPI_BLUE;
-      addVisionMeasurement(vision.getPose(mode), vision.getTimeStamp());
-
-      Logger.recordOutput("Vision Pose", vision.getPose(mode));
+    if (Constants.useVision) {
+      addVisionMeasurement(vision.getVisionPose(), vision.getVisionTimestampPhoton());
     }
   }
 
@@ -300,7 +294,7 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    if (vision.hasTarget() && vision.getTagArea() > 1) {
+    if (vision.getTagArea() > 1) {
       poseEstimator.setVisionMeasurementStdDevs(
           VecBuilder.fill(
               Math.pow(visionPose.getX(), 2) * VISION_STD_DEV_COEFFICENT,

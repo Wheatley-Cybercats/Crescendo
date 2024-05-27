@@ -35,7 +35,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.Vision;
-import frc.robot.subsystems.drive.VisionIOLimelight;
+import frc.robot.subsystems.drive.VisionIOPhotonLight;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
@@ -87,13 +87,13 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
-                new Vision(new VisionIOLimelight()));
+                new Vision(new VisionIOPhotonLight()));
 
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         leadscrew = new Leadscrew(new LeadscrewIOTalonFX());
         indexer = new Indexer(new IndexerIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
-        vision = new Vision(new VisionIOLimelight());
+        vision = new Vision(new VisionIOPhotonLight());
         climber = new Climber(new ClimberIOSparkMax());
         blinkin = new Blinkin();
         break;
@@ -107,12 +107,12 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new Vision(new VisionIOLimelight()));
+                new Vision(new VisionIOPhotonLight()));
         flywheel = new Flywheel(new FlywheelIOSim());
         leadscrew = new Leadscrew(new LeadscrewIOSim());
         indexer = new Indexer(new IndexerIOSparkMax()); // HMMHMMMHMHMHM SUS
         intake = new Intake(new IntakeIOSparkMax());
-        vision = new Vision(new VisionIOLimelight());
+        vision = new Vision(new VisionIOPhotonLight());
         climber = new Climber(new ClimberIOSparkMax());
         blinkin = new Blinkin();
         break;
@@ -126,12 +126,12 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new Vision(new VisionIOLimelight()));
+                new Vision(new VisionIOPhotonLight()));
         flywheel = new Flywheel(new FlywheelIO() {});
         leadscrew = new Leadscrew(new LeadscrewIO() {});
         indexer = new Indexer(new IndexerIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
-        vision = new Vision(new VisionIOLimelight());
+        vision = new Vision(new VisionIOPhotonLight());
         climber = new Climber(new ClimberIOSparkMax());
         blinkin = new Blinkin();
         break;
@@ -201,11 +201,6 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
-   * XboxController}), and then passing it to a {@link JoystickButton}.
-   */
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -213,10 +208,6 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX() * .85));
-    // leadscrew.setDefaultCommand( new AutoLeadscrewCommand(leadscrew,
-    // FieldConstants.Speaker.centerSpeakerOpening, drive) .onlyIf(() -> autoMode));
-
-    // driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driverController
         .leftBumper() // .button(3) in sim
         .whileTrue(
@@ -315,14 +306,15 @@ public class RobotContainer {
         .whileTrue(
             new AutoAllignCommand(
                 drive,
-                () -> driverController.getLeftY(),
-                () -> driverController.getLeftX(),
+                    driverController::getLeftX,
+                    driverController::getLeftY,
                 FieldConstants.Speaker.centerSpeakerOpening
                     .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
 
     driverController
         .a() // .button(2) for sim .a() for real
-        .whileTrue(new AutoNoteCommand(blinkin, drive, indexer, intake, leadscrew, vision)); //
+        .whileTrue(
+            new AutoNotePickupCommand(blinkin, drive, indexer, intake, leadscrew, vision)); //
 
     //
   }

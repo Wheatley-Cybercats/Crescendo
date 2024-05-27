@@ -9,8 +9,7 @@ public class IntakeFromShooterCommand extends Command {
   private final Flywheel flywheel;
   private final Indexer indexer;
   private final Blinkin led;
-
-  // private final DigitalInput beamBreak = new DigitalInput(0);
+  private long timer = 0;
 
   public IntakeFromShooterCommand(Flywheel flywheel, Indexer indexer, Blinkin led) {
     this.flywheel = flywheel;
@@ -22,7 +21,9 @@ public class IntakeFromShooterCommand extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer = System.currentTimeMillis();
+  }
 
   @Override
   public void execute() {
@@ -33,8 +34,7 @@ public class IntakeFromShooterCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // TODO: Make this return true when this Command no longer needs to run execute()
-    return false; // indexer.getBeamBreakState();
+    return (System.currentTimeMillis() - timer > 2000 && !indexer.hasNote());
   }
 
   @Override
