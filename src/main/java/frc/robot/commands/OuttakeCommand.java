@@ -31,7 +31,7 @@ public class OuttakeCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    //Doesn't need this because it is whileTrue
+    // Doesn't need this because it is whileTrue
     return false;
   }
 

@@ -15,13 +15,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
@@ -227,17 +224,33 @@ public class RobotContainer {
             .andThen(
                 Commands.runOnce(
                     () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0))));
-    /** OPERATOR* */
-    operatorController
-        .b() // SHOOT SPEAKER
+
+    driverController
+        .x() // .button(1) for sim .y() for real
+        .whileTrue(
+            new AutoAllignCommand(
+                drive,
+                driverController::getLeftX,
+                driverController::getLeftY,
+                FieldConstants.Speaker.centerSpeakerOpening
+                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+
+    driverController
+        .a() // .button(2) for sim .a() for real
+        .whileTrue(
+            new AutoNotePickupCommand(blinkin, drive, indexer, intake, leadscrew, vision)); //
+
+    driverController
+        .rightBumper() // SHOOT SPEAKER
         .whileTrue(
             new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.SPEAKER)
                 .andThen(NoteVisualizer.shoot()));
-    operatorController
-        .a() // SHOOT AMP
+    driverController
+        .y() // SHOOT AMP
         .whileTrue(
             new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.AMP)
                 .andThen(NoteVisualizer.shoot()));
+    /** OPERATOR* */
     operatorController
         .povUp() // MOVE SHOOTER UP
         .whileTrue(
@@ -251,7 +264,7 @@ public class RobotContainer {
                 .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
-        .start() // AMP ANGLE PRESET
+        .y() // AMP ANGLE PRESET
         .onTrue(
             new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.AMP)
                 .alongWith(Commands.runOnce(() -> autoMode = false)));
@@ -269,7 +282,7 @@ public class RobotContainer {
                 .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
-        .y() // SUBWOOFER ANGLE PRESET
+        .a() // SUBWOOFER ANGLE PRESET
         .onTrue(
             new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.SUBWOOFER)
                 .alongWith(Commands.runOnce(() -> autoMode = false)));
@@ -300,21 +313,6 @@ public class RobotContainer {
         .back()
         .and(operatorController.a())
         .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.LOB));
-
-    driverController
-        .x() // .button(1) for sim .y() for real
-        .whileTrue(
-            new AutoAllignCommand(
-                drive,
-                    driverController::getLeftX,
-                    driverController::getLeftY,
-                FieldConstants.Speaker.centerSpeakerOpening
-                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
-
-    driverController
-        .a() // .button(2) for sim .a() for real
-        .whileTrue(
-            new AutoNotePickupCommand(blinkin, drive, indexer, intake, leadscrew, vision)); //
 
     //
   }

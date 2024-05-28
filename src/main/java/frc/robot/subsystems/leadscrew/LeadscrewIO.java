@@ -48,6 +48,10 @@ public interface LeadscrewIO {
   /** Move motor up */
   public default void moveShooter(double speed) {}
 
+  public default double getPosition() {
+    return 0;
+  }
+
   /** Stop in open loop. */
   public default void stop() {}
 

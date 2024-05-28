@@ -14,9 +14,7 @@ public class IntakeFromGroundCommand extends Command {
     this.intake = intake;
     this.indexer = indexer;
     this.blinkin = blinkin;
-    // each subsystem used by the command must be passed into the
-    // addRequirements() method (which takes a vararg of Subsystem)
-    addRequirements(this.intake);
+    addRequirements(this.intake, this.indexer, this.blinkin);
   }
 
   @Override

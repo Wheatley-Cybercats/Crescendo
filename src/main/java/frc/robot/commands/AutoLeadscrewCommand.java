@@ -43,9 +43,7 @@ public class AutoLeadscrewCommand extends Command {
       allianceAdjustedSpeaker =
           DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
               ? new Translation2d(target.getX(), target.getY())
-              : AllianceFlipUtil.apply(
-                  new Translation2d(
-                      target.getX(), target.getY()));
+              : AllianceFlipUtil.apply(new Translation2d(target.getX(), target.getY()));
     else SmartDashboard.putString("System Status", "Auto-aiming alliance cannot be obtained");
 
     position =

@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import lombok.Getter;
 
@@ -85,12 +86,14 @@ public final class Constants {
   public static final double WING_ANGLE =
       23; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
-  public static final double AUTO_ANGLE = 55;
+  public static final double AUTO_ANGLE = 53;
   public static final boolean tuningMode = false;
   public static final double[] AMP_FLYWHEEL = {-4.1, 0.5}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
   public static final double[] LOB_FLYWHEEL = {-5, 5}; // [BOT, TOP]
 
-  public static final Transform3d leftCamToRobot = new Transform3d();
-  public static final Transform3d rightCamToRobot = new Transform3d();
+  public static final Transform3d leftCamToRobot =
+      new Transform3d(11, -7.25, 9.875, new Rotation3d(0, 60, 25));
+  public static final Transform3d rightCamToRobot =
+      new Transform3d(-11, -7.25, 9.875, new Rotation3d(0, 60, -25));
 }

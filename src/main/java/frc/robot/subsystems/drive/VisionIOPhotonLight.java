@@ -14,8 +14,8 @@ import org.photonvision.PhotonCamera;
 
 /** Add your docs here. */
 public class VisionIOPhotonLight implements VisionIO {
-  private PhotonCamera leftCam = new PhotonCamera("photonvision");
-  private PhotonCamera rightCam = new PhotonCamera("photonvision");
+  private PhotonCamera leftCam = new PhotonCamera("leftCam");
+  private PhotonCamera rightCam = new PhotonCamera("rightCam");
   private final NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight");
 
   @Override
