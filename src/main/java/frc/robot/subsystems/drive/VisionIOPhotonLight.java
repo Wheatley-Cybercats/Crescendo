@@ -4,19 +4,36 @@
 
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
+import frc.robot.RobotState;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 /** Add your docs here. */
 public class VisionIOPhotonLight implements VisionIO {
   private PhotonCamera leftCam = new PhotonCamera("leftCam");
   private PhotonCamera rightCam = new PhotonCamera("rightCam");
   private final NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight");
+  AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+  PhotonPoseEstimator leftCamPoseEstimator =
+      new PhotonPoseEstimator(
+          aprilTagFieldLayout,
+          PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+          leftCam,
+          Constants.leftCamToRobot);
+  PhotonPoseEstimator rightCamPoseEstimator =
+      new PhotonPoseEstimator(
+          aprilTagFieldLayout,
+          PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+          rightCam,
+          Constants.rightCamToRobot);
 
   @Override
   public boolean isConnected() {
@@ -25,30 +42,30 @@ public class VisionIOPhotonLight implements VisionIO {
 
   @Override
   public Pose2d getVisionPose() {
-    var resultLeftCam = leftCam.getLatestResult();
-    Transform3d fieldToLeftCam = new Transform3d();
-    if (resultLeftCam.getMultiTagResult().estimatedPose.isPresent) {
-      fieldToLeftCam = resultLeftCam.getMultiTagResult().estimatedPose.best;
+    leftCamPoseEstimator.setReferencePose(RobotState.getInstance().getEstimatedPose());
+    rightCamPoseEstimator.setReferencePose(RobotState.getInstance().getEstimatedPose());
+    Pose2d pose;
+    if (leftCamPoseEstimator.update().isPresent() && rightCamPoseEstimator.update().isPresent()) {
+      Pose2d leftEstimatedPose = leftCamPoseEstimator.update().get().estimatedPose.toPose2d();
+      Pose2d rightEstimatedPose = rightCamPoseEstimator.update().get().estimatedPose.toPose2d();
+      double x = (leftEstimatedPose.getX() + rightEstimatedPose.getX()) / 2;
+      double y = (leftEstimatedPose.getY() + rightEstimatedPose.getY()) / 2;
+      Rotation2d rotation =
+          Rotation2d.fromDegrees(
+              (leftEstimatedPose.getRotation().getDegrees()
+                      + rightEstimatedPose.getRotation().getDegrees())
+                  / 2);
+      pose = new Pose2d(x, y, rotation);
+    } else if (leftCamPoseEstimator.update().isPresent()
+        && rightCamPoseEstimator.update().isEmpty()) {
+      pose = leftCamPoseEstimator.update().get().estimatedPose.toPose2d();
+    } else if (leftCamPoseEstimator.update().isEmpty()
+        && rightCamPoseEstimator.update().isPresent()) {
+      pose = rightCamPoseEstimator.update().get().estimatedPose.toPose2d();
+    } else {
+      pose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     }
-    var resultRightCam = rightCam.getLatestResult();
-    Transform3d fieldToRightCam = new Transform3d();
-    if (resultRightCam.getMultiTagResult().estimatedPose.isPresent) {
-      fieldToRightCam = resultRightCam.getMultiTagResult().estimatedPose.best;
-    }
-
-    fieldToLeftCam.plus(Constants.leftCamToRobot);
-    fieldToRightCam.plus(Constants.rightCamToRobot);
-
-    double x =
-        (fieldToLeftCam.getTranslation().getX() + fieldToRightCam.getTranslation().getX()) / 2;
-    double y =
-        (fieldToLeftCam.getTranslation().getY() + fieldToRightCam.getTranslation().getY()) / 2;
-    Rotation2d rotation =
-        Rotation2d.fromDegrees(
-            (fieldToLeftCam.getRotation().toRotation2d().getDegrees()
-                    + fieldToRightCam.getRotation().toRotation2d().getDegrees())
-                / 2);
-    return new Pose2d(x, y, rotation);
+    return pose;
   }
 
   @Override
@@ -60,7 +77,17 @@ public class VisionIOPhotonLight implements VisionIO {
 
   @Override
   public double getTagArea() {
-    return nt.getEntry("ta").getDouble(0);
+    if (leftCam.getLatestResult().hasTargets() && rightCam.getLatestResult().hasTargets()) {
+      return (leftCam.getLatestResult().getBestTarget().getArea()
+              + rightCam.getLatestResult().getBestTarget().getArea())
+          / 2;
+    } else if (leftCam.getLatestResult().hasTargets() && !rightCam.getLatestResult().hasTargets()) {
+      return leftCam.getLatestResult().getBestTarget().getArea();
+    } else if (!leftCam.getLatestResult().hasTargets() && rightCam.getLatestResult().hasTargets()) {
+      return rightCam.getLatestResult().getBestTarget().getArea();
+    } else {
+      return 0;
+    }
   }
 
   @Override

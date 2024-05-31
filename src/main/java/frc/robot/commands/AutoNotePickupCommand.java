@@ -43,14 +43,24 @@ public class AutoNotePickupCommand extends Command {
   @Override
   public void execute() {
     if (vision.hasNote() && !indexer.hasNote()) {
+      /*
       if (MathUtil.applyDeadband(vision.getNoteTX(), 0.2) > 0) {
         drive.runVelocity(new ChassisSpeeds(0, 0, -0.2));
       } else if (MathUtil.applyDeadband(vision.getNoteTX(), 0.2) < 0) {
         drive.runVelocity(new ChassisSpeeds(0, 0, 0.2));
-      }
-      if (MathUtil.applyDeadband(vision.getNoteTY(), 0.2) > -5) {
+      } else if (MathUtil.applyDeadband(vision.getNoteTY(), 0.2) > -5) {
         drive.runVelocity(new ChassisSpeeds(0.5, 0, 0));
       }
+
+       */
+      double noteTX = MathUtil.applyDeadband(vision.getNoteTX(), 0.2);
+      double noteTY = MathUtil.applyDeadband(vision.getNoteTY(), 0.2);
+
+      double omega = (noteTX > 0) ? -Math.pow(noteTX, 1.0 / 4) / 3 : Math.pow(noteTX, 1.0 / 4) / 3;
+      double vx = (noteTY > -5) ? Math.pow(noteTY, 1.0 / 4) / 4 : 0;
+      ChassisSpeeds speed = new ChassisSpeeds(vx, 0, omega);
+
+      drive.runVelocity(speed);
 
       intake.setSpeed(-0.6);
       indexer.setSpeed(-0.17);

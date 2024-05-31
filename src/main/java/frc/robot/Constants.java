@@ -48,7 +48,8 @@ public final class Constants {
     PODIUM(PODIUM_ANGLE),
     WING(WING_ANGLE),
     SUBWOOFER(SUBWOOFER_ANGLE),
-    AUTO(AUTO_ANGLE);
+    AUTO(AUTO_ANGLE),
+    LOBFLAT(Constants.LOBFLAT);
 
     private final double angle;
 
@@ -87,13 +88,14 @@ public final class Constants {
       23; // 17; //when front of bumpers are lined up with outer edge of stage
   public static final double SUBWOOFER_ANGLE = 115;
   public static final double AUTO_ANGLE = 53;
+  public static final double LOBFLAT = 1;
   public static final boolean tuningMode = false;
   public static final double[] AMP_FLYWHEEL = {-4.1, 0.5}; // [BOT, TOP]
   public static final double[] SPEAKER_FLYWHEEL = {-7.5, 7.5}; // [BOT, TOP]
   public static final double[] LOB_FLYWHEEL = {-5, 5}; // [BOT, TOP]
 
   public static final Transform3d leftCamToRobot =
-      new Transform3d(11, -7.25, 9.875, new Rotation3d(0, 60, 25));
+      new Transform3d(-7.25, 11, 9.875, new Rotation3d(0, 60, 25));
   public static final Transform3d rightCamToRobot =
       new Transform3d(-11, -7.25, 9.875, new Rotation3d(0, 60, -25));
 }

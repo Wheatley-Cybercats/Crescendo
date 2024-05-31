@@ -224,7 +224,7 @@ public class RobotContainer {
             .andThen(
                 Commands.runOnce(
                     () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0))));
-
+/*
     driverController
         .x() // .button(1) for sim .y() for real
         .whileTrue(
@@ -234,6 +234,8 @@ public class RobotContainer {
                 driverController::getLeftY,
                 FieldConstants.Speaker.centerSpeakerOpening
                     .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+
+ */
 
     driverController
         .a() // .button(2) for sim .a() for real
@@ -278,7 +280,7 @@ public class RobotContainer {
     operatorController
         .povLeft() // WING ANGLE PRESET
         .onTrue(
-            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.WING)
+            new PresetLeadscrewCommand(leadscrew, Constants.PresetLeadscrewAngle.LOBFLAT)
                 .alongWith(Commands.runOnce(() -> autoMode = false)));
 
     operatorController
@@ -310,8 +312,7 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> leadscrew.setPosition(115), leadscrew));
 
     operatorController
-        .back()
-        .and(operatorController.a())
+        .b()
         .whileTrue(new PresetFlywheelCommand(indexer, flywheel, Constants.PresetFlywheelSpeed.LOB));
 
     //

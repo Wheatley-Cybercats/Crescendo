@@ -14,6 +14,7 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -31,6 +32,8 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     io.updateIOInputs(visionInputs);
     Logger.processInputs("Photon", visionInputs);
+
+    SmartDashboard.putBoolean("Pick Up", visionInputs.hasNote);
   }
 
   public double getNoteTX() {
