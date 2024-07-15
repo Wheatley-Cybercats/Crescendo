@@ -14,11 +14,19 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 
 /** Add your docs here. */
-public class VisionIOPhotonLight implements VisionIO {
+public class VisionIOSim implements VisionIO {
+  private VisionSystemSim visionSim = new VisionSystemSim("main");
+  SimCameraProperties cameraProp = new SimCameraProperties();
+  private Drive drive;
   private PhotonCamera leftCam = new PhotonCamera("Sunshines_iPhone_Camera");
   private PhotonCamera rightCam = new PhotonCamera("FaceTime_HD_Camera");
+  PhotonCameraSim rightcameraSim = new PhotonCameraSim(rightCam, cameraProp);
+  PhotonCameraSim leftcameraSim = new PhotonCameraSim(leftCam, cameraProp);
   private final NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight");
   AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -26,13 +34,13 @@ public class VisionIOPhotonLight implements VisionIO {
       new PhotonPoseEstimator(
           aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-          leftCam,
+          leftcameraSim.getCamera(),
           Constants.leftCamToRobot);
   PhotonPoseEstimator rightCamPoseEstimator =
       new PhotonPoseEstimator(
           aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-          rightCam,
+          rightcameraSim.getCamera(),
           Constants.rightCamToRobot);
 
   @Override
@@ -42,6 +50,10 @@ public class VisionIOPhotonLight implements VisionIO {
 
   @Override
   public Pose2d getVisionPose() {
+    visionSim.addAprilTags(aprilTagFieldLayout);
+    visionSim.addCamera(leftcameraSim, Constants.leftCamToRobot);
+    visionSim.addCamera(rightcameraSim, Constants.rightCamToRobot);
+    visionSim.update(new Pose2d());
     leftCamPoseEstimator.setReferencePose(RobotState.getInstance().getEstimatedPose());
     rightCamPoseEstimator.setReferencePose(RobotState.getInstance().getEstimatedPose());
     Pose2d pose;

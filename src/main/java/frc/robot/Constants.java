@@ -27,8 +27,8 @@ import lombok.Getter;
  */
 public final class Constants {
   public static final double loopPeriodSecs = 0.02;
-  public static final Mode currentMode = Mode.REAL;
-  public static final boolean useVision = false;
+  public static final Mode currentMode = Mode.SIM;
+  public static final boolean useVision = true;
 
   public static enum Mode {
     /** Running on a real robot. */

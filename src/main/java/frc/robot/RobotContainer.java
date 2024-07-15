@@ -33,6 +33,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.drive.Vision;
 import frc.robot.subsystems.drive.VisionIOPhotonLight;
+import frc.robot.subsystems.drive.VisionIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
@@ -63,6 +64,7 @@ public class RobotContainer {
   private final Indexer indexer;
   private final Intake intake;
   private final Vision vision;
+  // private final Vision vision;
   private final Climber climber;
   private final Blinkin blinkin;
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -104,12 +106,12 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new Vision(new VisionIOPhotonLight()));
+                new Vision(new VisionIOSim()));
         flywheel = new Flywheel(new FlywheelIOSim());
         leadscrew = new Leadscrew(new LeadscrewIOSim());
-        indexer = new Indexer(new IndexerIOSparkMax()); // HMMHMMMHMHMHM SUS
+        indexer = new Indexer(new IndexerIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
-        vision = new Vision(new VisionIOPhotonLight());
+        vision = new Vision(new VisionIOSim());
         climber = new Climber(new ClimberIOSparkMax());
         blinkin = new Blinkin();
         break;
@@ -204,7 +206,7 @@ public class RobotContainer {
             drive,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
-            () -> -driverController.getRightX() * .85));
+            () -> -driverController.getRawAxis(2) * .85));
     driverController
         .leftBumper() // .button(3) in sim
         .whileTrue(
@@ -224,18 +226,18 @@ public class RobotContainer {
             .andThen(
                 Commands.runOnce(
                     () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0))));
-/*
-    driverController
-        .x() // .button(1) for sim .y() for real
-        .whileTrue(
-            new AutoAllignCommand(
-                drive,
-                driverController::getLeftX,
-                driverController::getLeftY,
-                FieldConstants.Speaker.centerSpeakerOpening
-                    .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
+    /*
+       driverController
+           .x() // .button(1) for sim .y() for real
+           .whileTrue(
+               new AutoAllignCommand(
+                   drive,
+                   driverController::getLeftX,
+                   driverController::getLeftY,
+                   FieldConstants.Speaker.centerSpeakerOpening
+                       .toTranslation2d())); // FieldConstants.ampCenter returns negative infinity when
 
- */
+    */
 
     driverController
         .a() // .button(2) for sim .a() for real

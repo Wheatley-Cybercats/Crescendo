@@ -32,8 +32,11 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     io.updateIOInputs(visionInputs);
     Logger.processInputs("Photon", visionInputs);
-
     SmartDashboard.putBoolean("Pick Up", visionInputs.hasNote);
+    // SmartDashboard.putNumber("x, y, and rotation", vis.getVisionPose());
+
+    VisionIOPhotonLight vis = new VisionIOPhotonLight();
+    VisionIOPhotonLight t = new VisionIOPhotonLight(); // constructor, give
   }
 
   public double getNoteTX() {
